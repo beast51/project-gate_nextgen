@@ -1,4 +1,4 @@
-import { UserPage } from '../../src/pages/UserPage/index';
+import { UserPage } from '../../src/pages/UserPage';
 
 const User = () => {
   return <UserPage />;

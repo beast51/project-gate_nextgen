@@ -19,7 +19,7 @@
       }
     ],
     "paths": {
-      "@/styles*": ["./src/styles/*"],
+      "@/styles*": ["./src/application/styles/*"],
       "@/shared*": ["./src/shared/*"],
       "@/widgets*": ["./src/widgets/*"],
     }

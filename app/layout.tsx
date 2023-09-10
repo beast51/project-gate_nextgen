@@ -1,11 +1,9 @@
 import '@/styles/index.scss';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-// import { Inter } from 'next/font/google';
 import cn from 'classnames';
 import ThemeProvider from '../src/theme/ThemeProvider';
 
-// const inter = Inter({ subsets: ['latin'] });
 const sfpro = localFont({
   src: [
     {
@@ -48,7 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <ThemeProvider>
-        <body className={cn(sfpro.className, 'app')}>{children}</body>
+        <body className={cn(sfpro.className)}>{children}</body>
       </ThemeProvider>
     </html>
   );
