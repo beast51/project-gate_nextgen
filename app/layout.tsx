@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 // import { Inter } from 'next/font/google';
 import cn from 'classnames';
+import ThemeProvider from '../src/theme/ThemeProvider';
 
 // const inter = Inter({ subsets: ['latin'] });
 const sfpro = localFont({
@@ -46,7 +47,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={cn(sfpro.className, 'app')}>{children}</body>
+      <ThemeProvider>
+        <body className={cn(sfpro.className, 'app')}>{children}</body>
+      </ThemeProvider>
     </html>
   );
 }
