@@ -18,11 +18,14 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
-      "@/styles*": ["./src/application/styles/*"],
-      "@/shared*": ["./src/shared/*"],
-      "@/widgets*": ["./src/widgets/*"],
-    }
+      "@/styles*": ["./app/(appLayer)/styles/*"],
+      "@/appLayer*": ["./app/(appLayer)/*"],
+      "@/sharedLayer*": ["./app/sharedLayer/*"],
+      "@/widgetsLayer*": ["./app/widgetsLayer/*"],
+      "*": ["./app/*"],
+    },
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

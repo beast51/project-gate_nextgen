@@ -1,8 +1,7 @@
 import '@/styles/index.scss';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-import cn from 'classnames';
-import ThemeProvider from '../src/theme/ThemeProvider';
+import ThemeProvider from './(appLayer)/providers/ThemeProvider/ui/ThemeProvider';
 
 const sfpro = localFont({
   src: [
@@ -45,9 +44,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <ThemeProvider>
-        <body className={cn(sfpro.className)}>{children}</body>
-      </ThemeProvider>
+      <body className={sfpro.className}>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }

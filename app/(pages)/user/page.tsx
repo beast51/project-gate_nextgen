@@ -1,4 +1,4 @@
-import { UserPage } from '../../src/pages/UserPage';
+import { UserPage } from 'pagesLayer/UserPage';
 
 const User = () => {
   return <UserPage />;
