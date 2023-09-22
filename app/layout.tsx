@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import ThemeProvider from './(appLayer)/providers/ThemeProvider/ui/ThemeProvider';
 import { Suspense } from 'react';
+import I18nProvider from '@/appLayerproviders/I18nProvider/ui/I18nProvider';
 
 const sfpro = localFont({
   src: [
@@ -47,7 +48,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={sfpro.className}>
         <Suspense fallback="loading">
-          <ThemeProvider>{children}</ThemeProvider>
+          <I18nProvider>
+            <ThemeProvider>{children}</ThemeProvider>
+          </I18nProvider>
         </Suspense>
       </body>
     </html>
