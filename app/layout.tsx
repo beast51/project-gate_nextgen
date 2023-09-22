@@ -2,6 +2,7 @@ import '@/styles/index.scss';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import ThemeProvider from './(appLayer)/providers/ThemeProvider/ui/ThemeProvider';
+import { Suspense } from 'react';
 
 const sfpro = localFont({
   src: [
@@ -45,7 +46,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={sfpro.className}>
-        <ThemeProvider>{children}</ThemeProvider>
+        <Suspense fallback="loading">
+          <ThemeProvider>{children}</ThemeProvider>
+        </Suspense>
       </body>
     </html>
   );

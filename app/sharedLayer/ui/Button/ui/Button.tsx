@@ -1,0 +1,101 @@
+'use client';
+
+import React, { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
+import { ButtonProps } from '../button.type';
+import cn from 'classnames';
+import cls from './Button.module.scss';
+
+export const Button: React.FC<
+  ButtonProps & ButtonHTMLAttributes<HTMLButtonElement>
+> = ({
+  type,
+  fullWidth,
+  border,
+  children,
+  color,
+  disabled,
+  className,
+  ...otherProps
+}) => {
+  return (
+    <button
+      type={type}
+      disabled={disabled}
+      className={cn(
+        cls.button,
+        { 'full-width': fullWidth, color, border },
+        className,
+      )}
+      {...otherProps}
+    >
+      {children}
+    </button>
+  );
+};
+
+// {
+//    <button
+// onClick={onClick}
+// type={type}
+// disabled={disabled}
+// className={cn(
+//   `
+//   flex
+//   justify-center
+//   rounded-md
+//   px-3
+//   py-2
+//   text-sm
+//   font-semibold
+//   focus-visible:outline
+//   focus-visible:outline-2
+//   focus-visible:outline-offset-2
+// `,
+//   disabled && 'opacity-50 cursor-default',
+//   fullWidth && 'w-full',
+//   secondary ? 'text-gray-900' : 'text-white',
+//   danger &&
+//     `
+//   bg-rose-500
+//   hover:bg-rose-600
+//   focus-visible:outline-rose-600
+//   `,
+//   !secondary &&
+//     !danger &&
+//     'bg-sky-500 hover:bg-sky-600 focus-visible:outline-sky-600',
+//   className,
+// )}
+
+// }
+
+// import { classNames } from 'shared/lib/classNames/classNames';
+// import cls from './Button.module.scss';
+// import { type ButtonHTMLAttributes, type FC } from 'react';
+
+// export enum ThemeButton {
+//   CLEAR = 'clear',
+//   OUTLINE = 'outline',
+// }
+
+// interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+//   className?: string;
+//   theme?: ThemeButton;
+// }
+
+// export const Button: FC<ButtonProps> = (props) => {
+//   const {
+//     className = '',
+//     children,
+//     theme = ThemeButton.CLEAR,
+//     ...otherProps
+//   } = props;
+
+//   return (
+//     <button
+//       className={classNames(cls.button, {}, [cls[theme], className])}
+//       {...otherProps}
+//     >
+//       {children}
+//     </button>
+//   );
+// };
