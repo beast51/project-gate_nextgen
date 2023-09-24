@@ -1,4 +1,4 @@
-import getIntl from '../intl';
+import getIntl from './providers/ServerIntlProvider/lib/intl';
 import styles from './page.module.css';
 import cn from 'classnames';
 

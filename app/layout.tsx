@@ -3,8 +3,8 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import ThemeProvider from './(appLayer)/providers/ThemeProvider/ui/ThemeProvider';
 import { Suspense } from 'react';
-import ServerIntlProvider from './ServerIntlProvider';
-import getIntl from './intl';
+import ServerIntlProvider from './(appLayer)/providers/ServerIntlProvider/ui/ServerIntlProvider';
+import getIntl from './(appLayer)/providers/ServerIntlProvider/lib/intl';
 import { currentLocale } from 'next-i18n-router';
 
 const sfpro = localFont({

@@ -3,4 +3,4 @@ const i18nConfig = {
   defaultLocale: 'uk',
 };
 
-module.exports = i18nConfig;
+export default i18nConfig;

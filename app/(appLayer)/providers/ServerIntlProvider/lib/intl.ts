@@ -7,6 +7,6 @@ export default async function getIntl() {
 
   return createIntl({
     locale: locale,
-    messages: (await import(`./../locales/${locale}.json`)).default,
+    messages: (await import(`@/locales/${locale}.json`)).default,
   });
 }
