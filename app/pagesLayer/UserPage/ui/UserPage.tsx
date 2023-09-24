@@ -4,15 +4,19 @@ import React from 'react';
 import styles from './UserPage.module.scss';
 import { Button } from '@/sharedLayerui/Button';
 import { useTheme } from '(appLayer)/providers/ThemeProvider';
-import { useI18n, useScopedI18n } from '../../../../locales/client';
+import { useIntl } from 'react-intl';
+import LangSwitcher from '@/sharedLayerui/LangSwitcher/LangSwitcher';
+// import { useIntl } from 'react-intl';
 
-export const UserPage = () => {
+export const UserPage = async () => {
   const { toggleTheme } = useTheme();
-  const t = useI18n();
+  const { $t } = useIntl();
   return (
     <main className={styles.user}>
       USER Page
-      <Button onClick={toggleTheme}>{t('theme')}</Button>
+      <Button onClick={toggleTheme}>{$t({ id: 'theme' })}</Button>
+      <LangSwitcher />
+      {/* <Button onClick={toggleTheme}>{'theme'}</Button> */}
     </main>
   );
 };

@@ -7,7 +7,7 @@
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "esnext",
+    "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -24,9 +24,19 @@
       "@/appLayer*": ["app/(appLayer)/*"],
       "@/sharedLayer*": ["./app/sharedLayer/*"],
       "@/widgetsLayer*": ["./app/widgetsLayer/*"],
-      "*": ["./app/*"],
-    },
+      "@/*": ["./*"],
+      "*": ["./app/*"]
+      // "*": ["./*"]
+    }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "i18nConfig.js"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "i18nConfig.ts",
+    "app/(appLayer)/providers/ServerIntlProvider/ui/ServerIntlProvider.jsx"
+, "middleware.оі"  ],
+  "exclude": ["node_modules"],
+  
 }

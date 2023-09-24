@@ -3,7 +3,9 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import ThemeProvider from './(appLayer)/providers/ThemeProvider/ui/ThemeProvider';
 import { Suspense } from 'react';
-import I18nProvider from '@/appLayerproviders/I18nProvider/ui/I18nProvider';
+import ServerIntlProvider from './ServerIntlProvider';
+import getIntl from './intl';
+import { currentLocale } from 'next-i18n-router';
 
 const sfpro = localFont({
   src: [
@@ -39,18 +41,23 @@ export const metadata: Metadata = {
   themeColor: '#fff',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const intl = await getIntl();
+
   return (
-    <html lang="en">
+    <html lang={currentLocale()}>
       <body className={sfpro.className}>
         <Suspense fallback="loading">
-          <I18nProvider>
+          <ServerIntlProvider
+            messages={JSON.parse(JSON.stringify(intl.messages))}
+            locale={JSON.parse(JSON.stringify(intl.locale))}
+          >
             <ThemeProvider>{children}</ThemeProvider>
-          </I18nProvider>
+          </ServerIntlProvider>
         </Suspense>
       </body>
     </html>
