@@ -51,7 +51,9 @@ export default async function RootLayout({
   return (
     <html lang={currentLocale()}>
       <body className={sfpro.className}>
-        <Suspense fallback="loading">
+        <Suspense
+        // fallback="loading"
+        >
           <ServerIntlProvider
             messages={JSON.parse(JSON.stringify(intl.messages))}
             locale={JSON.parse(JSON.stringify(intl.locale))}

@@ -36,7 +36,7 @@
     ".next/types/**/*.ts",
     "i18nConfig.ts",
     "app/(appLayer)/providers/ServerIntlProvider/ui/ServerIntlProvider.jsx"
-, "middleware.оі"  ],
+, "middleware.оі", "next.config.js"  ],
   "exclude": ["node_modules"],
   
 }
