@@ -20,10 +20,10 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/styles*": ["app/(appLayer)/styles/*"],
+      "@/styles/*": ["app/(appLayer)/styles/*"],
       "@/appLayer/*": ["app/(appLayer)/*"],
-      "@/sharedLayer*": ["./app/sharedLayer/*"],
-      "@/widgetsLayer*": ["./app/widgetsLayer/*"],
+      "@/sharedLayer/*": ["./app/sharedLayer/*"],
+      "@/widgetsLayer/*": ["./app/widgetsLayer/*"],
       "@/*": ["./*"],
       "*": ["./app/*"]
       // "*": ["./*"]
@@ -34,7 +34,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "i18nConfig.ts",
+    "app/sharedLayer/config/i18n/i18nConfig.ts",
     "app/(appLayer)/providers/ServerIntlProvider/ui/ServerIntlProvider.jsx"
 , "middleware.оі", "next.config.js"  ],
   "exclude": ["node_modules"],
