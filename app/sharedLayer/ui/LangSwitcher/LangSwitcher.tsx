@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import { useCurrentLocale } from 'next-i18n-router/client';
-import i18nConfig from '../../../../i18nConfig';
+import i18nConfig from '../../config/i18n/i18nConfig';
 import { ChangeEvent } from 'react';
 
 export default function LanguageChanger() {
