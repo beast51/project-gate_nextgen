@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  name           String    @unique
+  email          String?   @unique
+  emailVerified  DateTime?
+  phoneNumber    String?   @unique
+  carNumber      String?   @unique
+  image          String?
+  hashedPassword String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  accounts Account[]
+  calls    Call[]
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model GateUser {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  idInApi         String?
+  name            String?
+  phoneNumber     String
+  carNumber       String[]
+  apartmentNumber String?
+  image           String?
+  isBlackListed   Boolean?
+  blackListedFrom String?
+  blackListedTo   String?
+
+  calls Call[]
+
+  @@unique([phoneNumber])
+}
+
+model Call {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  number          String
+  time            String
+  callerName      String?
+  carNumber       String[]
+  apartmentNumber String?
+  image           String?
+  isBlackListed   Boolean?
+  blackListedFrom String?
+  blackListedTo   String?
+
+  // userId String @db.ObjectId
+  // user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  gateUser   GateUser? @relation(fields: [gateUserId], references: [id])
+  gateUserId String?   @db.ObjectId
+  // user       User?     @relation(fields: [userId], references: [id])
+  // userId     String?   @db.ObjectId
+  User       User?     @relation(fields: [userId], references: [id])
+  userId     String?   @db.ObjectId
+}
+
+model LastCallsRequestFromApi {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  time String
+}
+
+model lastGateUserRequestFromApi {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  time String
+}

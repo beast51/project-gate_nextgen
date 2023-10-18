@@ -6,8 +6,10 @@ import { Suspense } from 'react';
 import ServerIntlProvider from '@/appLayer/providers/ServerIntlProvider/ui/ServerIntlProvider';
 import getIntl from '@/appLayer/providers/ServerIntlProvider/lib/intl';
 import { currentLocale } from 'next-i18n-router';
+import AuthContext from './(appLayer)/context/AuthContext';
+import ToasterContext from './(appLayer)/context/ToasterContext';
 
-const sfpro = localFont({
+export const sfpro = localFont({
   src: [
     {
       path: '../public/fonts/SFPRODISPLAYLIGHTITALIC.woff2',
@@ -51,16 +53,19 @@ export default async function RootLayout({
   return (
     <html lang={currentLocale()}>
       <body className={sfpro.className}>
-        <Suspense
-        // fallback="loading"
-        >
-          <ServerIntlProvider
-            messages={JSON.parse(JSON.stringify(intl.messages))}
-            locale={JSON.parse(JSON.stringify(intl.locale))}
+        <AuthContext>
+          <ToasterContext />
+          <Suspense
+          // fallback="loading"
           >
-            <ThemeProvider>{children}</ThemeProvider>
-          </ServerIntlProvider>
-        </Suspense>
+            <ServerIntlProvider
+              messages={JSON.parse(JSON.stringify(intl.messages))}
+              locale={JSON.parse(JSON.stringify(intl.locale))}
+            >
+              <ThemeProvider>{children}</ThemeProvider>
+            </ServerIntlProvider>
+          </Suspense>
+        </AuthContext>
       </body>
     </html>
   );

@@ -1,0 +1,19 @@
+.mobileFooter {
+  position: fixed;
+  justify-content: space-between;
+  width: 100%;
+  bottom: 0;
+  z-index: 40;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  align-items: center;
+  background-color: var(--form-default);
+  gap: 8px;
+  padding: 8px;
+  // border-top: 1px solid var(--input-border); // Убедитесь, что у вас есть цвет по умолчанию для границы, или укажите его явно
+
+  @media (min-width: 1024px) {
+    // lg в Tailwind соответствует минимальной ширине экрана в 1024px
+    display: none;
+  }
+}

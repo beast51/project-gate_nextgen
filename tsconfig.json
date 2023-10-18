@@ -36,7 +36,7 @@
     ".next/types/**/*.ts",
     "app/sharedLayer/config/i18n/i18nConfig.ts",
     "app/(appLayer)/providers/ServerIntlProvider/ui/ServerIntlProvider.jsx"
-, "middleware.оі", "next.config.js"  ],
+, "middleware.оі", "next.config.js", "app/sharedLayer/stories/color.mdx"  ],
   "exclude": ["node_modules"],
   
 }

@@ -2,5 +2,33 @@
   --bg-color: #141414;
 
   --primary-color: #F5F5F7;
-  --secondary-color: #6E6E73;
+  --secondary-color: rgba(38, 70, 83, 1);
+  ;
+  // --secondary-color: rgba(42, 58, 73, 0.64);
+  // --secondary-color: #6E6E73;
+  --basic-white: rgba(255, 255, 255, .5);
+  --text-grey: rgba(42, 58, 73, 0.64);
+
+  --shadow: rgba(1, 141, 134, 0.2);
+  --border-grey-border: rgba(5, 6, 17, 0.12);
+  --border-blue-border: #264653;
+
+
+  --form-default: #333;
+  --input-default: #333;
+  --input-border: #F5F5F7;
+
+  --icon-default-color: rgba(38, 70, 83, 1);
+  --icon-default-color-hover: rgba(38, 70, 83, .8);
+
+  --shadow-1dp: 0px 2px 2px rgba(1, 141, 134, 0.15),
+    0px 0px 2px rgba(1, 141, 134, 0.16),
+    0px 1px 3px rgba(1, 141, 134, 0.20);
+  --shadow-8dp: 0px 12px 17px rgba(0, 8, 29, 5%), 0px 5px 22px rgba(0, 8, 29, 6%), 0px 7px 8px rgba(0, 8, 29, 8%);
+
+
+  --button-green: rgba(42, 157, 143, .8);
+  --button-green-hover: rgba(42, 157, 143, 1);
+  --button-green-color: #264653;
+  --button-green-color-hover: #F5F5F7;
 }

@@ -2,10 +2,12 @@
 
 import React from 'react';
 import styles from './UserPage.module.scss';
-import { Button } from '@/sharedLayerui/Button';
+
 import { useTheme } from '(appLayer)/providers/ThemeProvider';
 import { useIntl } from 'react-intl';
-import LangSwitcher from '@/sharedLayerui/LangSwitcher/LangSwitcher';
+
+import { Button } from '@/sharedLayer/ui/Button';
+import LangSwitcher from '@/sharedLayer/ui/LangSwitcher/LangSwitcher';
 // import { useIntl } from 'react-intl';
 
 export const UserPage = async () => {

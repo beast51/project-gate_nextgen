@@ -1,0 +1,28 @@
+.mobileItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  color: var(--button-green-color);
+  background-color: var(--button-green);
+  border-radius: 60px;
+  box-shadow: var(--shadow-1dp);
+
+  &:hover {
+    color: var(--button-green-color-hover);
+    background-color: var(--button-green-hover);
+    box-shadow: var(--shadow-8dp);
+  }
+}
+
+.active {
+  color: var(--button-green-color-hover);
+  background-color: var(--button-green-hover);
+  box-shadow: var(--shadow-8dp);
+
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+}

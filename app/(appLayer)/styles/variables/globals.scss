@@ -1,22 +1,12 @@
 :root {
-  --font-family-main: 'SF Pro Display', sans-serif;
+  // --font-family-main: 'SF Pro Display', sans-serif;
 
-  --font-size-s: 12px;
-  --font-line-s: 150%;
-  --font-s: var(--font-size-s) / var(--font-line-m) var(--font-family-main);
-
-  --font-size-sm: 14px;
-  --font-line-sm: 150%;
-  --font-sm: var(--font-size-sm) / var(--font-line-sm) var(--font-family-main);
-
-  --font-size-m: 16px;
-  --font-line-m: 150%;
-  --font-m: var(--font-size-m) / var(--font-line-m) var(--font-family-main);
-
-  --font-size-l: 18px;
-  --font-line-l: 150%;
-  --font-l: var(--font-size-l) / var(--font-line-l) var(--font-family-main);
-
+  --green: #2a9d8f;
+  --blue: #264653;
+  --yellow: #e9c46a;
+  --orange: #f4a261;
+  --red: #e76f51;
+  --white: #ffffff;
 }
 
 // :root {

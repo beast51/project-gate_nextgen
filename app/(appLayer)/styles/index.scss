@@ -6,10 +6,47 @@
 
 
 .app {
-  font: var(--font-l);
+  font: var(--font-m);
   background: var(--bg-color);
   color: var(--primary-color);
 
   min-height: 100dvh;
   min-height: 100vh;
+}
+
+.mb8 {
+  margin-bottom: 8px;
+}
+
+.mb16 {
+  margin-bottom: 16px;
+}
+
+.mb24 {
+  margin-bottom: 24px;
+}
+
+.mb32 {
+  margin-bottom: 32px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.full-height {
+  min-height: 100dvh;
+  min-height: 100vh;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }

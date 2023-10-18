@@ -1,4 +1,5 @@
 import type { Preview } from "@storybook/react";
+import '@fontsource/material-icons';
 
 const preview: Preview = {
   parameters: {
