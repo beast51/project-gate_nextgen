@@ -8,7 +8,6 @@ import { useIntl } from 'react-intl';
 
 import { Button } from '@/sharedLayer/ui/Button';
 import LangSwitcher from '@/sharedLayer/ui/LangSwitcher/LangSwitcher';
-// import { useIntl } from 'react-intl';
 
 export const UserPage = async () => {
   const { toggleTheme } = useTheme();
