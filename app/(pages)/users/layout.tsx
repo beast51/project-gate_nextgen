@@ -1,6 +1,6 @@
 // 'use client';
 
-import { Sidebar } from '@/widgetsLayer/SIdebar';
+import { Sidebar } from '@/widgetsLayer/Sidebar';
 
 // import { ReactNode } from 'react';
 

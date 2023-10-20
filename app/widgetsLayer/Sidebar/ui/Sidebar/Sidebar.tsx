@@ -5,6 +5,7 @@
 // import clsx from 'clsx';
 import getCurrentUser from '../../actions/getCurrentUser';
 import MobileFooter from '../MobileFooter/MobileFooter';
+import MobileHeader from '../MobileHeader/MobileHeader';
 
 export async function Sidebar({
   title,
@@ -20,7 +21,7 @@ export async function Sidebar({
   console.log('currentUser', currentUser);
   return (
     <div className="full-height">
-      {/* <MobileHeader title={title} type={type} /> */}
+      <MobileHeader title={title} type={type} />
       <MobileFooter />
       {/* <DesktopSidebar currentUser={currentUser!} /> */}
 

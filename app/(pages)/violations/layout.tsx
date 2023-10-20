@@ -1,6 +1,6 @@
 // 'use client';
 
-import { Sidebar } from '@/widgetsLayer/SIdebar';
+import { Sidebar } from '@/widgetsLayer/Sidebar';
 
 // import { ReactNode } from 'react';
 
@@ -39,7 +39,7 @@ export default async function UsersLayout({
 
   // const users = await getGateUserFromDb();
   return (
-    <Sidebar type="usersList" title="Список пользователей:">
+    <Sidebar type="violationsList" title="">
       <div className="full-height">
         {/* <UserList users={users} /> */}
         {children}

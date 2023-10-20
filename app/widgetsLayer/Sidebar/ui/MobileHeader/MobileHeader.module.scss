@@ -1,0 +1,14 @@
+.header {
+  display: flex;
+  padding: 0 16px;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: var(--form-default);
+}
+
+.container {
+  padding: 14px 0 8px
+}
