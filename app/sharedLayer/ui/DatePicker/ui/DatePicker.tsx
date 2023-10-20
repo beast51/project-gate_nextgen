@@ -24,6 +24,13 @@ export const DatePicker: React.FC<DatePickerTypeProps> = ({
   const newTheme = createTheme(
     {
       components: {
+        MuiPaper: {
+          styleOverrides: {
+            root: {
+              borderRadius: '32px',
+            },
+          },
+        },
         MuiButton: {
           styleOverrides: {
             root: {
@@ -57,6 +64,7 @@ export const DatePicker: React.FC<DatePickerTypeProps> = ({
             },
             notchedOutline: {
               borderColor: '#11A694 !important',
+              borderRadius: '60px',
             },
           },
         },

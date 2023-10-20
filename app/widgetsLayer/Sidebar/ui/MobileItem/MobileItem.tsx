@@ -29,7 +29,7 @@ const MobileItem: React.FC<MobileItemProps> = ({
 
   return (
     <Link
-      // onClick={handleClick}
+      onClick={handleClick}
       href={href}
       className={cn(cls.mobileItem, { [cls.active]: active })}
       // className={clsx(
