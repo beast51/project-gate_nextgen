@@ -40,17 +40,7 @@ export const metadata: Metadata = {
   description: 'Made by Beast',
   manifest: '/manifest.json',
   icons: { apple: '/icon.png' },
-  themeColor: [
-    {
-      color: '#fff',
-      media: '(prefers-color-scheme: light)',
-    },
-
-    // {
-    //   color: '#1f1f1f',
-    //   media: '(prefers-color-scheme: dark)',
-    // },
-  ],
+  themeColor: '#fff',
 };
 
 export default async function RootLayout({
