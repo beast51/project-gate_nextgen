@@ -15,10 +15,7 @@ export function useTheme(): UseThemeResult {
         setTheme(newTheme)
         localStorage.setItem(LOCAL_STORAGE_THEME_KEY, newTheme)
         const metaThemeColor = document.querySelector("meta[name=theme-color]");
-
-        metaThemeColor?.setAttribute("content", `${theme === Theme.DARK ? '#1f1f1f' : '#F2F1F6'}`); 
-        // metaThemeColor?.setAttribute("media", `(prefers-color-scheme: ${theme === Theme.DARK ?'light' : 'dark'})`)
-
+        metaThemeColor?.setAttribute("content", `${theme === Theme.DARK ? '#1f1f1f' : '#ffffff'}`); 
 
     }
 
