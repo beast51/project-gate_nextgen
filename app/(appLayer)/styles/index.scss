@@ -3,6 +3,17 @@
 @import 'themes/light';
 @import 'themes/dark';
 
+body {
+  viewport-fit: cover;
+}
+
+@supports (margin: env(safe-area-inset-bottom)) {
+  body {
+    margin-bottom: env(safe-area-inset-bottom);
+    background-color: #050505;
+  }
+}
+
 
 
 .app {
