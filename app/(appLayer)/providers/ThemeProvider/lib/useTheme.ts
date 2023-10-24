@@ -14,10 +14,10 @@ export function useTheme(): UseThemeResult {
         const newTheme = theme === Theme.DARK ? Theme.LIGHT : Theme.DARK
         setTheme(newTheme)
         localStorage.setItem(LOCAL_STORAGE_THEME_KEY, newTheme)
-        const metaThemeColor = document.querySelector("meta[name=theme-color]");
+        // const metaThemeColor = document.querySelector("meta[name=theme-color]");
 
-        metaThemeColor?.setAttribute("content", `${theme === Theme.DARK ? '#1f1f1f' : '#ffffff'}`); 
-        metaThemeColor?.setAttribute("media", `(prefers-color-scheme: ${theme === Theme.DARK ?'light' : 'dark'})`)
+        // metaThemeColor?.setAttribute("content", `${theme === Theme.DARK ? '#1f1f1f' : '#ffffff'}`); 
+        // metaThemeColor?.setAttribute("media", `(prefers-color-scheme: ${theme === Theme.DARK ?'light' : 'dark'})`)
 
 
     }
