@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   icons: { apple: '/icon.png' },
   themeColor: [
     {
-      color: '#fff',
+      color: '#F2F1F6',
       media: '(prefers-color-scheme: light)',
     },
     {
