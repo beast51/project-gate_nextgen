@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import classes from './MobileHeader.module.scss';
+import { Button } from '@/sharedLayer/ui/Button';
 
 export const getFromToFromDataPicker = (date: string | null) => {
   const from = moment(date, 'ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (zz)').format(
@@ -48,18 +49,17 @@ const MobileHeader = ({
 
   return (
     <div className={classes.header}>
-      {type !== 'usersList' ? (
-        <div className={classes.container}>
-          {/* <p className="m-4 font-lg font-medium">{title}</p> */}
+      <div className={classes.container}>
+        {/* <p className="m-4 font-lg font-medium">{title}</p> */}
+        {type !== 'usersList' && (
           <DatePicker
             label={$t({ id: 'Select date' })}
             onAccept={datePickerHandler}
             selectedDate={selectedDate}
           />
-        </div>
-      ) : (
-        ''
-      )}
+        )}
+      </div>
+      {/* <Button>...</Button> */}
     </div>
   );
 };

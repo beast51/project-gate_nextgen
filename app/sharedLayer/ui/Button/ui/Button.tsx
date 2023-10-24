@@ -104,3 +104,48 @@ export const Button: React.FC<
 //     </button>
 //   );
 // };
+
+//2nd var
+
+// 'use client';
+// import { Button as MuiButton } from '@mui/material';
+// import React, { ButtonHTMLAttributes } from 'react';
+// import { ButtonProps } from '../button.type';
+// import cn from 'classnames';
+// import cls from './Button.module.scss';
+
+// export const Button: React.FC<
+//   ButtonProps & ButtonHTMLAttributes<HTMLButtonElement>
+// > = ({
+//   variant = 'contained',
+//   onClick,
+//   size = 'large',
+//   type,
+//   fullWidth,
+//   border,
+//   children,
+//   disabled,
+//   className,
+//   ...otherProps
+// }) => {
+//   return (
+//     <MuiButton fullWidth variant={variant} size={size} className={cls.button}>
+//       {children}
+//     </MuiButton>
+//   );
+//   // <button
+//   //   onClick={onClick}
+//   //   type={type}
+//   //   disabled={disabled}
+//   //   className={cn(
+//   //     cls.button,
+//   //     { 'full-width': fullWidth, border },
+//   //     `size-${size}`,
+//   //     `variant-${variant}`,
+//   //     className,
+//   //   )}
+//   //   {...otherProps}
+//   // >
+//   //   {children}
+//   // </button>
+// };
