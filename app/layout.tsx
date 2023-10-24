@@ -45,10 +45,10 @@ export const metadata: Metadata = {
       color: '#fff',
       media: '(prefers-color-scheme: light)',
     },
-    {
-      color: '#1f1f1f',
-      media: '(prefers-color-scheme: dark)',
-    },
+    // {
+    //   color: '#1f1f1f',
+    //   media: '(prefers-color-scheme: dark)',
+    // },
   ],
 };
 
