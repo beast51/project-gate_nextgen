@@ -15,11 +15,11 @@ export function useTheme(): UseThemeResult {
         setTheme(newTheme)
         localStorage.setItem(LOCAL_STORAGE_THEME_KEY, newTheme)
         const metaThemeColor = document.querySelector("meta[name=theme-color]");
-        if (theme === Theme.DARK) {
-            metaThemeColor?.setAttribute("content", "#fff"); 
-        } else {
-            metaThemeColor?.setAttribute("content", "#1f1f1f"); 
-        }
+
+        metaThemeColor?.setAttribute("content", `${theme === Theme.DARK ? '#1f1f1f' : '#ffffff'}`); 
+        metaThemeColor?.setAttribute("media", `(prefers-color-scheme: ${theme === Theme.DARK ?'light' : 'dark'})`)
+
+
     }
 
     return {
