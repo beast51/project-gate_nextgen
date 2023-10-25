@@ -13,7 +13,7 @@ const meta = {
     layout: 'centered',
   },
   // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/react/writing-docs/autodocs
-  tags: ['autodocs'],
+  // tags: ['autodocs'],
   // More on argTypes: https://storybook.js.org/docs/react/api/argtypes
   argTypes: {
     // backgroundColor: { control: 'color' },
@@ -52,23 +52,3 @@ export const ClearDark: Story = {
     children: 'Button',
   },
 };
-
-// export const Secondary: Story = {
-//   args: {
-//     label: 'Button',
-//   },
-// };
-
-// export const Large: Story = {
-//   args: {
-//     size: 'large',
-//     label: 'Button',
-//   },
-// };
-
-// export const Small: Story = {
-//   args: {
-//     size: 'small',
-//     label: 'Button',
-//   },
-// };

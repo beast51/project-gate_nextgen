@@ -15,7 +15,7 @@ export const SettingsPage = async () => {
   const { $t } = useIntl();
   return (
     <div className={styles.settings}>
-      USER Page
+      Settings
       <Button onClick={() => signOut({ callbackUrl: '/' })}>Exit</Button>
       <Button onClick={toggleTheme}>{$t({ id: 'theme' })}</Button>
       <LangSwitcher />
