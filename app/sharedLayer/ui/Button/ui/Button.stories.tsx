@@ -1,6 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 
 import { Button } from './Button';
+import { ThemeDecorator } from '@/sharedLayer/config/storybook/ThemeDecorator/ThemeDecorator';
+import { Theme } from '@/appLayer/providers/ThemeProvider/lib/ThemeContext';
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 const meta = {
@@ -24,7 +26,29 @@ type Story = StoryObj<typeof meta>;
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Primary: Story = {
   args: {
-    // primary: true,
+    variant: 'primary',
+    children: 'Button',
+  },
+};
+
+export const PrimaryDark: Story = {
+  decorators: [(Story) => ThemeDecorator(Theme.DARK)(Story)],
+  args: {
+    variant: 'primary',
+    children: 'Button',
+  },
+};
+
+export const Clear: Story = {
+  args: {
+    variant: 'clear',
+    children: 'Button',
+  },
+};
+export const ClearDark: Story = {
+  decorators: [(Story) => ThemeDecorator(Theme.DARK)(Story)],
+  args: {
+    variant: 'clear',
     children: 'Button',
   },
 };

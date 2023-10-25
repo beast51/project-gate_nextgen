@@ -10,7 +10,8 @@ export default withAuth(
   {
   pages: {
     signIn: "/"
-  }
+  },
+  
 });
 
 export const config = {

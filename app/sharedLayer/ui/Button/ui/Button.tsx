@@ -1,19 +1,15 @@
 'use client';
 
-import React, { ButtonHTMLAttributes } from 'react';
 import { ButtonProps } from '../button.type';
 import cn from 'classnames';
 import cls from './Button.module.scss';
 
-export const Button: React.FC<
-  ButtonProps & ButtonHTMLAttributes<HTMLButtonElement>
-> = ({
+export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   onClick,
-  size = 'medium',
-  type,
+  // size = 'medium',
+  type = 'button',
   fullWidth,
-  border,
   children,
   disabled,
   className,
@@ -26,9 +22,12 @@ export const Button: React.FC<
       disabled={disabled}
       className={cn(
         cls.button,
-        { 'full-width': fullWidth, border },
-        `size-${size}`,
-        `variant-${variant}`,
+        {
+          'full-width': fullWidth,
+          disabled: disabled,
+        },
+        // `size-${size}`,
+        `${variant}`,
         className,
       )}
       {...otherProps}

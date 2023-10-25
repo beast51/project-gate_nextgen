@@ -1,11 +1,12 @@
+import { ButtonHTMLAttributes } from "react";
+
 export type ButtonProps = {
   type?: 'button' | 'submit' | 'reset'
-  variant?: "text" | "contained" | "outlined";
-  border?: boolean;
+  variant?: "primary" | "outlined" | "clear" ;
   fullWidth?: boolean
   onClick?: () => void
-  size?: "small" | "medium" | "large";
-};
+  // size?: "small" | "medium" | "large";
+} & ButtonHTMLAttributes<HTMLButtonElement>;
 // export type ButtonProps = {
 //   type?: 'button' | 'submit' | 'reset'
 //   variant?: "primary" | "secondary" | "danger";

@@ -3,32 +3,21 @@ import cn from 'classnames';
 import { type FC } from 'react';
 import Link, { LinkProps } from 'next/link';
 import React from 'react';
-
-export enum AppLinkVariant {
-  PRIMARY = 'primary',
-  // SECONDARY = 'secondary',
-  // RED = 'red',
-}
-
-interface AppLinkProps extends LinkProps {
-  className?: string;
-  variant?: AppLinkVariant;
-  children?: React.ReactNode;
-}
+import { AppLinkProps } from '../AppLink.type';
 
 export const AppLink: FC<AppLinkProps> = (props) => {
   const {
     href,
     className,
     children,
-    variant = AppLinkVariant.PRIMARY,
+    variant = 'primary',
     ...otherProps
   } = props;
 
   return (
     <Link
       href={href}
-      className={cn(cls.AppLink, variant, className)}
+      className={cn(cls.appLink, variant, className)}
       {...otherProps}
     >
       {children}

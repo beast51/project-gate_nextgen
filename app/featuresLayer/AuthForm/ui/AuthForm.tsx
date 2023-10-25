@@ -152,7 +152,12 @@ export const AuthForm = () => {
             errors={errors}
             disabled={isLoading}
           />
-          <Button disabled={isLoading} fullWidth type="submit">
+          <Button
+            disabled={isLoading}
+            fullWidth
+            type="submit"
+            variant="primary"
+          >
             {variant === 'LOGIN'
               ? $t({ id: 'Sign in' })
               : $t({ id: 'Register' })}

@@ -1,8 +1,14 @@
 .app.dark {
   --background-color: #00111A;
-  --button-green-bg: #11A694;
-  --button-green-color: rgba(0, 17, 26, .8);
-  --button-green-active-color: #ffffff;
+
+  //buttons
+  --button-primary-bg: #11A694;
+  --button-primary-color: rgba(0, 17, 26, .8);
+  --button-primary-active-color: #ffffff;
+
+  --button-clear-bg: none;
+  --button-clear-color: #11A694;
+
 
   --header-bg: #1f1f1f;
   --footer-bg: #050505;

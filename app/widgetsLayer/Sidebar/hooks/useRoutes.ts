@@ -30,12 +30,12 @@ const useRoutes = () => {
       icon: RxLapTimer, 
       active: pathname === '/violations' || pathname === '/en/violations'
     },
-    {
-      label: 'Logout', 
-      onClick: () => signOut({ callbackUrl: '/' }),
-      href: '/',
-      icon: HiArrowLeftOnRectangle, 
-    }
+    // {
+    //   label: 'Logout', 
+    //   onClick: () => signOut({ callbackUrl: '/' }),
+    //   href: '/',
+    //   icon: HiArrowLeftOnRectangle, 
+    // }
   ], [pathname]);
 
   return routes;

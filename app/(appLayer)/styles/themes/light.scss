@@ -1,8 +1,14 @@
 .app.light {
   --background-color: #F2F1F6;
-  --button-green-bg: #11A694;
-  --button-green-color: #ffffff;
+
+  //buttons
+  --button-primary-bg: #11A694;
+  --button-primary-color: #ffffff;
   --button-green-active-color: rgba(0, 17, 26, .8);
+
+  --button-clear-bg: none;
+  --button-clear-color: #11A694;
+
 
   --header-bg: #ffffff;
   --footer-bg: ##e1e1e1;

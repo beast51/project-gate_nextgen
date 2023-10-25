@@ -5,7 +5,25 @@
   align-items: center;
   padding: 8px 12px;
   border-radius: 23px;
-  background-color: var(--green);
   border: none;
-  color: var(--white);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: 0.25px;
+  cursor: pointer;
+
+  &>svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  &:global(.primary) {
+    background-color: var(--button-primary-bg);
+    color: var(--button-primary-color);
+  }
+
+  &:global(.clear) {
+    background-color: var(--button-clear-bg);
+    color: var(--button-clear-color);
+  }
 }

@@ -10,7 +10,7 @@ interface MobileItemProps {
   href: string;
   icon: any;
   active?: boolean;
-  onClick?: () => void;
+  // onClick?: () => void;
 }
 
 const MobileItem: React.FC<MobileItemProps> = ({
@@ -18,18 +18,18 @@ const MobileItem: React.FC<MobileItemProps> = ({
   href,
   icon: Icon,
   active,
-  onClick,
+  // onClick,
 }) => {
-  const handleClick = () => {
-    if (onClick) {
-      return onClick();
-    }
-    console.log('text');
-  };
+  // const handleClick = () => {
+  //   if (onClick) {
+  //     return onClick();
+  //   }
+  //   console.log('text');
+  // };
 
   return (
     <Link
-      onClick={handleClick}
+      // onClick={handleClick}
       href={href}
       className={cn(cls.mobileItem, { [cls.active]: active })}
       // className={clsx(
