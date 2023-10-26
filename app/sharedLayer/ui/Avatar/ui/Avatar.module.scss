@@ -1,0 +1,71 @@
+.avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.avatarContainer {
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  width: 100px;
+  height: 100px;
+
+  @media (min-width: 768px) {
+    height: 72px;
+    width: 72px;
+  }
+}
+
+.image {
+  // position: relative;
+  display: inline-block;
+  border-radius: 50%;
+  overflow: hidden;
+  min-height: 56px;
+  width: 56px;
+
+  @media (min-width: 768px) {
+    height: 72px;
+    width: 72px;
+  }
+}
+
+// .image-container {
+//   position: relative;
+//   display: flex;
+//   justify-content: center;
+
+
+.status-indicator {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background-color: #fff;
+
+  .status-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+  }
+
+  .status-text {
+    position: absolute;
+    color: #f87171; // text-red-500
+    font-size: 0.25rem; // text-xxs
+    font-weight: bold; // font-bold
+  }
+}
+
+// }

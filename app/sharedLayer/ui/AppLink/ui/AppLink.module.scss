@@ -19,8 +19,8 @@
   }
 
   &:global(.primary) {
-    background-color: var(--button-clear-bg);
-    color: var(--button-clear-color);
+    background-color: var(---appLink-primary-bg);
+    color: var(--appLink-primary-color);
   }
 
 }

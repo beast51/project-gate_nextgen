@@ -1,7 +1,7 @@
-import { UserPage } from 'pagesLayer/UserPage';
+import { GateUsersPage } from '@/app/pagesLayer/GateUsersPage';
 
 const User = () => {
-  return <UserPage />;
+  return <GateUsersPage />;
 };
 
 export default User;

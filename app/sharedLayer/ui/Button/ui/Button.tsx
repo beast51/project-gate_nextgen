@@ -2,7 +2,7 @@
 
 import { ButtonProps } from '../button.type';
 import cn from 'classnames';
-import cls from './Button.module.scss';
+import classes from './Button.module.scss';
 
 export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
@@ -21,7 +21,7 @@ export const Button: React.FC<ButtonProps> = ({
       type={type}
       disabled={disabled}
       className={cn(
-        cls.button,
+        classes.button,
         {
           'full-width': fullWidth,
           disabled: disabled,

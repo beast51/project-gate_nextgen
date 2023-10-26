@@ -3,9 +3,9 @@
   width: 100%;
   padding: 0px 8px 0px 16px;
   border-radius: 23px;
-  border: 1px solid var(--input-border);
-  background-color: var(--input-default);
-  color: var(--primary-color);
+  border: var(--input-primary-border);
+  background-color: var(--input-primary-bg);
+  color: var(--input-primary-color);
   font-size: 16px;
   font-weight: 400;
   line-height: 125%;
@@ -26,12 +26,12 @@
   position: absolute;
   top: -8px;
   left: 12px;
-  padding: 0 4px;
-  background-color: var(--white);
-  color: var(--text-grey);
+  padding: 0 8px;
+  background-color: var(--input-primary-label-bg);
+  color: var(--input-primary-label-color);
   font-size: 12px;
   font-weight: 400;
   line-height: 150%;
   letter-spacing: 0.3px;
-  border-radius: 4px;
+  border-radius: 10px;
 }

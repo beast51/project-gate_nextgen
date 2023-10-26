@@ -9,9 +9,25 @@
   --button-clear-bg: none;
   --button-clear-color: #11A694;
 
+  //applink
+  --appLink-primary-bg: none;
+  --appLink-primary-color: #11A694;
 
-  --header-bg: #ffffff;
-  --footer-bg: ##e1e1e1;
+  //Input
+  --input-primary-color: #264653;
+  --input-primary-bg: none;
+  --input-primary-label-color: rgba(42, 58, 73, 0.64);
+  --input-primary-label-bg: #ffffff;
+  --input-primary-border: 1px solid rgba(5, 6, 17, 0.12);
+
+  //gateUserCard 
+
+  --gate-user-card-bg: #ffffff;
+
+  // --header-bg: #ffffff;
+  // --footer-bg: #e1e1e1;
+  --header-bg: rgba(251, 251, 253, 0.8);
+  --footer-bg: rgba(251, 251, 253, 0.8);
 
 
   // --primary-color: rgba(5, 6, 17, 0.87);

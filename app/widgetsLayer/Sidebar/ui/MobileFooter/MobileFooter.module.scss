@@ -10,6 +10,10 @@
   background-color: var(--footer-bg);
   gap: 8px;
   padding: 8px;
+
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+
   // border-top: 1px solid var(--input-border); // Убедитесь, что у вас есть цвет по умолчанию для границы, или укажите его явно
 
   @media (min-width: 1024px) {

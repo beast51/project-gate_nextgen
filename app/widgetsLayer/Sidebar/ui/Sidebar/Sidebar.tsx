@@ -18,9 +18,9 @@ export async function Sidebar({
   type: 'usersList' | 'callsList' | 'violationsList' | 'settings';
   children: React.ReactNode;
 }) {
-  const currentUser = await getCurrentUser();
-  console.log('type: ', type);
-  console.log('currentUser', currentUser);
+  // const currentUser = await getCurrentUser();
+  // console.log('type: ', type);
+  // console.log('currentUser', currentUser);
 
   return (
     <>
