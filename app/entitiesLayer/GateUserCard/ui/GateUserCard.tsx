@@ -75,7 +75,10 @@ export const GateUserCard: React.FC<GateUserCardProps> = ({
         "
       > */}
       <Avatar image={data.image} />
-      <div className="grid grid-auto gap-x-6 gap-y-2">
+      <div
+        className={classes.info}
+        // className="grid grid-auto gap-x-6 gap-y-2"
+      >
         <p className="text-base font-medium text-gray-900 line-clamp-1">
           {data.name}
         </p>
