@@ -3,7 +3,7 @@
   grid-gap: 12px;
   gap: 12px;
   grid-template-columns: 100px 1fr;
-  margin-bottom: 8px;
+  // margin-bottom: 8px;
   background: var(--gate-user-card-bg);
   padding: 8px 24px 8px 9px;
   border-radius: 20px;
@@ -16,4 +16,34 @@
   // background: var(--gate-user-card-bg);
   // padding: 8px 24px;
   // border-radius: 20px;
+}
+
+.infoContainer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+
+.infoWrapper {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  height: 100%;
+}
+
+.contactsContainer {
+  display: grid;
+  height: 100%;
+}
+
+.info {
+  display: grid;
+  grid-template-rows: 18px 1fr 18px;
+  height: 100%;
+}
+
+.phoneNumber {
+  text-align: right;
+}
+
+.carNumber {
+  padding: 4px 0;
 }

@@ -79,11 +79,15 @@ export const GateUserCard: React.FC<GateUserCardProps> = ({
         className={classes.info}
         // className="grid grid-auto gap-x-6 gap-y-2"
       >
-        <p className="text-base font-medium text-gray-900 line-clamp-1">
-          {data.name}
-        </p>
-        <div className="grid grid-cols-3 gap-4">
-          <div>
+        <div className={classes.infoContainer}>
+          <p>{data.name}</p>
+          <p className="text-sm font-medium text-gray-900 text-end">
+            {data.apartmentNumber && `кв. ${data.apartmentNumber}`}
+          </p>
+        </div>
+
+        <div className={classes.infoWrapper}>
+          <div className={classes.carNumber}>
             {data.carNumber?.map((number) => {
               return (
                 <p key={number} className="text-sm font-medium text-gray-900">
@@ -92,14 +96,8 @@ export const GateUserCard: React.FC<GateUserCardProps> = ({
               );
             })}
           </div>
-
-          <p className="text-sm font-medium text-gray-900">
-            {data.phoneNumber.slice(2)}
-          </p>
-          <p className="text-sm font-medium text-gray-900 text-end">
-            {data.apartmentNumber && `кв. ${data.apartmentNumber}`}
-          </p>
         </div>
+        <p className={classes.phoneNumber}>{data.phoneNumber.slice(2)}</p>
       </div>
       {/* <div className="min-w-0 flex-1">
           <div className="focus:outline-none">
