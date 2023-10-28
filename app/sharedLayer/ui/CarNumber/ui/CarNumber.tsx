@@ -2,9 +2,11 @@ import { CarNumberPropsType } from '../CarNumber.type';
 import classes from './CarNumber.module.scss';
 
 export const CarNumber: React.FC<CarNumberPropsType> = ({ carNumber }) => {
-  const regionCode = carNumber.substring(0, 2);
-  const number = carNumber.substring(2, 6);
-  const vehicleSeries = carNumber.substring(6);
+  const regionCode = carNumber.trim().substring(0, 2);
+  const number = carNumber.trim().substring(2, 6);
+  const vehicleSeries = carNumber.trim().substring(6);
+  console.log(carNumber);
+  console.log(regionCode, number, vehicleSeries);
   return (
     <div className={classes.vehicleNumber}>
       <div className={classes.countryContainer}>
