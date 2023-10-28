@@ -21,6 +21,7 @@
 .infoContainer {
   display: grid;
   grid-template-columns: 1fr auto;
+  font-weight: 500;
 }
 
 .infoWrapper {
@@ -42,6 +43,7 @@
 
 .phoneNumber {
   text-align: right;
+  font-weight: 500;
 }
 
 .carNumber {
