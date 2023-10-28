@@ -1,7 +1,7 @@
 import { GateUsersPage } from '@/app/pagesLayer/GateUsersPage';
 
-const User = () => {
+const Users = () => {
   return <GateUsersPage />;
 };
 
-export default User;
+export default Users;

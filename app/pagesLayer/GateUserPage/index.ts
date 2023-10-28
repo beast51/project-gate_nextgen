@@ -1,0 +1,1 @@
+export { GateUserPage } from './ui/GateUserPage';
