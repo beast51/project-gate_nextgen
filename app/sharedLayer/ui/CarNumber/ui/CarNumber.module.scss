@@ -16,7 +16,7 @@
 .number {
   font-family: var(--font-Mittelschrift);
   font-size: 18px;
-  margin-bottom: 0px;
+  margin-bottom: -1px;
   height: 12px;
   text-align: center;
 }
@@ -31,14 +31,15 @@
 }
 
 .country {
-  font-size: 5px;
+  font-size: 6px;
   text-align: center;
   font-weight: 700;
 }
 
 .countryContainer {
   display: grid;
-  gap: 2px;
+  align-items: center;
+  gap: 0px;
   grid-template-rows: 1fr 1fr;
   border-top-left-radius: 2px;
   border-bottom-left-radius: 2px;
@@ -50,8 +51,8 @@
 
 .flag {
   margin: 0 auto;
-  width: 6px;
-  height: 4px;
+  width: 8px;
+  height: 6px;
   display: grid;
   // align-items: center;
   // justify-content: center;
