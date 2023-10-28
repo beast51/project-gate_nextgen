@@ -10,7 +10,7 @@ export const GateUsersPage = async () => {
     <div className={classes.gateUsersPage}>
       USERS Page
       <ul className={classes.gateUserCardList}>
-        {users.map((user) => {
+        {users.slice(400, 405).map((user) => {
           return <GateUserCard data={user} key={user.phoneNumber[0]} />;
         })}
       </ul>

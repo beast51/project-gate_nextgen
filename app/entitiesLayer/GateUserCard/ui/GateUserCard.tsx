@@ -3,6 +3,7 @@ import cn from 'classnames';
 import classes from './GateUserCard.module.scss';
 import { Avatar } from '@/sharedLayer/ui/Avatar';
 import { GateUserCardProps } from '../GateUserCard.type';
+import { CarNumber } from '@/sharedLayer/ui/CarNumber';
 
 export const GateUserCard: React.FC<GateUserCardProps> = ({
   data,
@@ -54,6 +55,28 @@ export const GateUserCard: React.FC<GateUserCardProps> = ({
 
   //------}
 
+  // console.log(data.carNumber);
+
+  // const renderCarNumber = (carNumber: string) => {
+  //   const regionCode = [];
+  //   const number = [];
+  //   const vehicleSeries = [];
+  //   carNumber.split('').forEach((letter, i) => {
+  //     if (i < 2) {
+  //       regionCode.push(letter);
+  //     }
+  //     if (i > 1 && i < 6) {
+  //       number.push(letter);
+  //     }
+  //     if (i >= 6) {
+  //       vehicleSeries.push(letter);
+  //     }
+  //   });
+  //   return `${regionCode.join('')} ${number.join('')} ${vehicleSeries.join(
+  //     '',
+  //   )}`;
+  // };
+
   return (
     <li className={cn(classes.gateUserCard, 'full-width')}>
       {/* {isLoading && <LoadingModal />} */}
@@ -89,11 +112,7 @@ export const GateUserCard: React.FC<GateUserCardProps> = ({
         <div className={classes.infoWrapper}>
           <div className={classes.carNumber}>
             {data.carNumber?.map((number) => {
-              return (
-                <p key={number} className="text-sm font-medium text-gray-900">
-                  {number}
-                </p>
-              );
+              return <CarNumber carNumber={number} />;
             })}
           </div>
         </div>

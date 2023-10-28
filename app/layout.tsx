@@ -8,6 +8,7 @@ import getIntl from '@/appLayer/providers/ServerIntlProvider/lib/intl';
 import { currentLocale } from 'next-i18n-router';
 import AuthContext from './(appLayer)/context/AuthContext';
 import ToasterContext from './(appLayer)/context/ToasterContext';
+import cn from 'classnames';
 
 export const sfpro = localFont({
   src: [
@@ -35,6 +36,16 @@ export const sfpro = localFont({
   display: 'swap',
 });
 
+export const Mittelschrift = localFont({
+  src: [
+    {
+      path: '../public/fonts/Mittelschrift.woff2',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-Mittelschrift',
+});
+
 export const metadata: Metadata = {
   title: 'Project Gate new version',
   description: 'Made by Beast',
@@ -52,7 +63,7 @@ export default async function RootLayout({
 
   return (
     <html lang={currentLocale()}>
-      <body className={sfpro.className}>
+      <body className={cn(sfpro.className, Mittelschrift.variable)}>
         <AuthContext>
           <ToasterContext />
           <Suspense

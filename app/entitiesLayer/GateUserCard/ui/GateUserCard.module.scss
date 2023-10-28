@@ -36,7 +36,7 @@
 
 .info {
   display: grid;
-  grid-template-rows: 18px 1fr 18px;
+  grid-template-rows: minmax(18px, 36px) 1fr 18px;
   height: 100%;
 }
 
@@ -44,6 +44,7 @@
   text-align: right;
 }
 
-.carNumber {
-  padding: 4px 0;
+.carNumber p {
+  // padding: 4px 0;
+
 }
