@@ -51,3 +51,15 @@
   gap: 4px;
   padding: 6px 0;
 }
+
+.gateUserCardBig {
+  grid-template-columns: 115px 1fr;
+  border-top-left-radius: 70px;
+  border-bottom-left-radius: 70px;
+  padding: 8px 24px 8px 12px;
+}
+
+.avatarBig>div {
+  width: 115px;
+  height: 115px;
+}

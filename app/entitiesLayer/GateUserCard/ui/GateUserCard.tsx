@@ -78,7 +78,13 @@ export const GateUserCard: React.FC<GateUserCardProps> = ({
   // };
 
   return (
-    <li className={cn(classes.gateUserCard, 'full-width')}>
+    <li
+      className={cn(
+        classes.gateUserCard,
+        { [classes.gateUserCardBig]: data.carNumber.length > 4 },
+        'full-width',
+      )}
+    >
       {/* {isLoading && <LoadingModal />} */}
       {/* <div
         // onClick={handleClick}
@@ -97,7 +103,10 @@ export const GateUserCard: React.FC<GateUserCardProps> = ({
           mb-2
         "
       > */}
-      <Avatar image={data.image} />
+      <Avatar
+        image={data.image}
+        className={cn({ [classes.avatarBig]: data.carNumber.length > 4 })}
+      />
       <div
         className={classes.info}
         // className="grid grid-auto gap-x-6 gap-y-2"

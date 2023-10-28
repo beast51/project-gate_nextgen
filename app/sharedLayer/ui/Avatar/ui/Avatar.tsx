@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import cn from 'classnames';
 // import { GateUserType } from '@/services/gateUsers';
 // import { GateUser } from '@prisma/client';
 
@@ -12,6 +13,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   image,
   name,
   isBlackListed,
+  className,
 }) => {
   // const { members } = useActiveList();
   // const isActive = members.indexOf(user?.email!) !== -1;
@@ -26,7 +28,7 @@ export const Avatar: React.FC<AvatarProps> = ({
     // "
     // >
     <div
-      className={classes.avatar}
+      className={cn(classes.avatar, className)}
       //   className="
       // relative
       // flex
