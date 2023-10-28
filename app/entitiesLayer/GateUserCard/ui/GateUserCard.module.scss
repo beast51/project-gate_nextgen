@@ -5,7 +5,7 @@
   grid-template-columns: 100px 1fr;
   // margin-bottom: 8px;
   background: var(--gate-user-card-bg);
-  padding: 8px 24px 8px 9px;
+  padding: 8px 20px 8px 8px;
   border-radius: 20px;
   border-top-left-radius: 55px;
   border-bottom-left-radius: 55px;
@@ -53,13 +53,13 @@
 }
 
 .gateUserCardBig {
-  grid-template-columns: 115px 1fr;
+  grid-template-columns: 110px 1fr;
   border-top-left-radius: 70px;
   border-bottom-left-radius: 70px;
-  padding: 8px 24px 8px 12px;
+  padding: 8px 20px 8px 12px;
 }
 
 .avatarBig>div {
-  width: 115px;
-  height: 115px;
+  width: 112px;
+  height: 112px;
 }
