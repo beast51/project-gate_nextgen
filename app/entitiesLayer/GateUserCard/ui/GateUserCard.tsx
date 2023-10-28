@@ -5,6 +5,10 @@ import { Avatar } from '@/sharedLayer/ui/Avatar';
 import { GateUserCardProps } from '../GateUserCard.type';
 import { CarNumber } from '@/sharedLayer/ui/CarNumber';
 
+export const formatPhoneNumber = (phoneNumber: string): string => {
+  return phoneNumber.slice(2).replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+};
+
 export const GateUserCard: React.FC<GateUserCardProps> = ({
   data,
   searchResult,
@@ -125,7 +129,9 @@ export const GateUserCard: React.FC<GateUserCardProps> = ({
             })}
           </div>
         </div>
-        <p className={classes.phoneNumber}>{data.phoneNumber.slice(2)}</p>
+        <p className={classes.phoneNumber}>
+          {formatPhoneNumber(data.phoneNumber)}
+        </p>
       </div>
       {/* <div className="min-w-0 flex-1">
           <div className="focus:outline-none">
