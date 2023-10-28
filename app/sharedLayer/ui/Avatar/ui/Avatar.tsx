@@ -8,6 +8,7 @@ import cn from 'classnames';
 import Image from 'next/image';
 import { AvatarProps } from '../Avatar.type';
 import classes from './Avatar.module.scss';
+import { useTheme } from '@/appLayer/providers/ThemeProvider';
 
 export const Avatar: React.FC<AvatarProps> = ({
   image,
@@ -18,6 +19,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   // const { members } = useActiveList();
   // const isActive = members.indexOf(user?.email!) !== -1;
   const isActive = false;
+  const { theme } = useTheme();
 
   return (
     // <div

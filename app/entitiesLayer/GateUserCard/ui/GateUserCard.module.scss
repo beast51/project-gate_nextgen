@@ -55,13 +55,5 @@
 }
 
 .gateUserCardBig {
-  grid-template-columns: 110px 1fr;
-  border-top-left-radius: 70px;
-  border-bottom-left-radius: 70px;
-  padding: 8px 20px 8px 12px;
-}
-
-.avatarBig>div {
-  width: 112px;
-  height: 112px;
+  border-bottom-left-radius: 20px;
 }

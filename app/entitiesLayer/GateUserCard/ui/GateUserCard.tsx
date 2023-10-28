@@ -107,10 +107,7 @@ export const GateUserCard: React.FC<GateUserCardProps> = ({
           mb-2
         "
       > */}
-      <Avatar
-        image={data.image}
-        className={cn({ [classes.avatarBig]: data.carNumber.length > 4 })}
-      />
+      <Avatar image={data.image} />
       <div
         className={classes.info}
         // className="grid grid-auto gap-x-6 gap-y-2"
