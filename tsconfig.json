@@ -24,6 +24,7 @@
       "@/appLayer/*": ["app/(appLayer)/*"],
       "@/sharedLayer/*": ["./app/sharedLayer/*"],
       "@/widgetsLayer/*": ["./app/widgetsLayer/*"],
+      "@/featuresLayer/*": ["./app/featuresLayer/*"],
       "@/*": ["./*"],
       "*": ["./app/*"]
       // "*": ["./*"]
