@@ -1,5 +1,5 @@
 export const getData = async () => {
-  const url = `${process.env.UNITALK_URL!}/contacts/get`;
+  const url = `${process.env.UNITALK_URL!}contacts/get`;
   const headers = {
     Authorization: process.env.UNITALK_AUTHORIZATION!,
     Projectid: process.env.UNITALK_PROJECT_ID!,
