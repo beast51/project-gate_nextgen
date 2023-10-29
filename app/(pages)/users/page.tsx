@@ -1,4 +1,4 @@
-import { GateUsersPage } from '@/app/pagesLayer/GateUsersPage';
+import { GateUsersPage } from "@/app/pagesLayer/GateUsersPage";
 
 const Users = () => {
   return <GateUsersPage />;

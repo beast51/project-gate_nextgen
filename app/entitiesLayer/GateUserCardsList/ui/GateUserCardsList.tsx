@@ -4,6 +4,7 @@ import { getGateUserFromDb } from '../model/getGateUserFromDb';
 
 export const GateUserCardsList = async () => {
   const users = await getGateUserFromDb();
+  console.log('ok');
   return (
     <div className={classes.gateUserCardList}>
       {users.map((user) => {
