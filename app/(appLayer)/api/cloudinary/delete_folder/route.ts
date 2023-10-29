@@ -10,9 +10,9 @@ type BodyType = {
 
 const cloudinary = require('cloudinary');
 cloudinary.v2.config({
-cloud_name: 'dcjd6ogdr',
-api_key: '744144639353525',
-api_secret: 'Iscusmz3f18YTmiQsBBd8Eu9QSk',
+cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+api_secret: process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET,
 secure: true
 });
 
