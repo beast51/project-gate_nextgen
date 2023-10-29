@@ -20,7 +20,7 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/styles/*": ["./app/(appLayer)/styles/*"],
+      "@/styles/*": ["app/(appLayer)/styles/*"],
       "@/appLayer/*": ["app/(appLayer)/*"],
       "@/pagesLayer/*": ["./app/(pagesLayer)/*"],
       "@/widgetsLayer/*": ["./app/widgetsLayer/*"],
