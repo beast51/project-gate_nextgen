@@ -1,8 +1,8 @@
 export const getData = async () => {
-  const url = 'https://cstat.nextel.com.ua:8443/tracking/contacts/get';
+  const url = `${process.env.UNITALK_URL!}/contacts/get`;
   const headers = {
-    Authorization: 'kddHSkpUbPSc',
-    Projectid: '6275',
+    Authorization: process.env.UNITALK_AUTHORIZATION!,
+    Projectid: process.env.UNITALK_PROJECT_ID!,
     'Content-Type': 'application/json',
   };
   const payload = { limit: 50, offset: 0 };
