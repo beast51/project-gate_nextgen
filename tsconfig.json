@@ -20,9 +20,9 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/styles/*": ["app/(appLayer)/styles/*"],
-      "@/appLayer/*": ["app/(appLayer)/*"],
-      "@/pagesLayer/*": ["app/(pagesLayer)/*"],
+      "@/styles/*": ["./app/(appLayer)/styles/*"],
+      "@/appLayer/*": ["./app/(appLayer)/*"],
+      "@/pagesLayer/*": ["./app/(pagesLayer)/*"],
       "@/widgetsLayer/*": ["./app/widgetsLayer/*"],
       "@/featuresLayer/*": ["./app/featuresLayer/*"],
       "@/entitiesLayer/*": ["./app/entitiesLayer/*"],
