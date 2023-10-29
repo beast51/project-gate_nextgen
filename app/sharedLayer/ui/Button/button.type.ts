@@ -4,7 +4,8 @@ export type ButtonProps = {
   type?: 'button' | 'submit' | 'reset'
   variant?: "primary" | "outlined" | "clear" ;
   fullWidth?: boolean
-  onClick?: () => void
+  // onClick?: () => void
+  onClick?: any
   // size?: "small" | "medium" | "large";
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 // export type ButtonProps = {
