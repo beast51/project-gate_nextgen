@@ -1,12 +1,12 @@
+import { memo } from 'react';
 import { CarNumberPropsType } from '../CarNumber.type';
 import classes from './CarNumber.module.scss';
 
-export const CarNumber: React.FC<CarNumberPropsType> = ({ carNumber }) => {
+export const CarNumber: React.FC<CarNumberPropsType> = memo(({ carNumber }) => {
   const regionCode = carNumber.trim().substring(0, 2);
   const number = carNumber.trim().substring(2, 6);
   const vehicleSeries = carNumber.trim().substring(6);
-  console.log(carNumber);
-  console.log(regionCode, number, vehicleSeries);
+
   return (
     <div className={classes.vehicleNumber}>
       <div className={classes.countryContainer}>
@@ -23,4 +23,4 @@ export const CarNumber: React.FC<CarNumberPropsType> = ({ carNumber }) => {
       </div>
     </div>
   );
-};
+});

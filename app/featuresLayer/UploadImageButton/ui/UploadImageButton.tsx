@@ -5,7 +5,7 @@ import { HiPhoto } from 'react-icons/hi2';
 import { CldUploadButton } from 'next-cloudinary';
 import { UploadImageButtonProps } from '../UploadImageButton.type';
 import { Button } from '@/sharedLayer/ui/Button';
-import { deleteFolder } from '@/app/pagesLayer/GateUserPage/model/cloudinary';
+// import { deleteFolder } from '@/app/pagesLayer/GateUserPage/model/cloudinary';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -17,9 +17,9 @@ export const UploadImageButton: FC<UploadImageButtonProps> = ({
   console.log('apartmentNumber', apartmentNumber);
   console.log('carNumber', carNumber);
 
-  const deleteFolder = (data: any) => {
+  const deleteFiles = (data: any) => {
     axios
-      .post('/api/cloudinary/delete_folder', data, {
+      .post('/api/cloudinary/delete_files', data, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -44,7 +44,7 @@ export const UploadImageButton: FC<UploadImageButtonProps> = ({
       >
         <HiPhoto />
       </CldUploadButton>
-      <Button onClick={() => deleteFolder('test')}>Удалить фотки</Button>
+      <Button onClick={() => deleteFiles('test')}>Удалить фотки</Button>
     </>
   );
 };

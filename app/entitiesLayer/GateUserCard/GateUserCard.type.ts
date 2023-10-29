@@ -15,7 +15,7 @@ export type GateUserType = {
 
 export type GateUserCardProps = {
   data: GateUserType;
-  searchResult?: GateUserType[];
-  setSearchResult?: Dispatch<SetStateAction<GateUserType[]>>;
-  updateUsersList?: (phoneNumber: string) => void;
+  // searchResult?: GateUserType[];
+  // setSearchResult?: Dispatch<SetStateAction<GateUserType[]>>;
+  // updateUsersList?: (phoneNumber: string) => void;
 }

@@ -1,5 +1,5 @@
+import cloudinary from "@/appLayer/libs/cloudinary";
 import { NextResponse } from "next/server";
-// import { addGateUserToApi, getGateUsersFromApi, setGateUsersToBd} from "@/services/gateUsers";
 
 type BodyType = {
   name: string,
@@ -8,14 +8,6 @@ type BodyType = {
   apartmentNumber: string,
 }
 
-const cloudinary = require('cloudinary');
-cloudinary.v2.config({
-cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-api_secret: process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET,
-secure: true
-});
-
 export async function POST(request: Request) {
 
   const body: BodyType = await request.json()
@@ -23,8 +15,7 @@ export async function POST(request: Request) {
 
   // cloudinary.v2.api.delete_folder('cars/248').then(console.log);
 
-  cloudinary.v2.api
-  .delete_resources(['cars/248/ВН4780ВК'], 
+  cloudinary.v2.api.delete_resources(['cars/248/ВН4780ВК'], 
     { type: 'upload', resource_type: 'image' })
   .then(console.log);
 

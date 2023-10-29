@@ -22,9 +22,13 @@
     "paths": {
       "@/styles/*": ["app/(appLayer)/styles/*"],
       "@/appLayer/*": ["app/(appLayer)/*"],
-      "@/sharedLayer/*": ["./app/sharedLayer/*"],
+      "@/pagesLayer/*": ["app/(pagesLayer)/*"],
       "@/widgetsLayer/*": ["./app/widgetsLayer/*"],
       "@/featuresLayer/*": ["./app/featuresLayer/*"],
+      "@/entitiesLayer/*": ["./app/entitiesLayer/*"],
+      "@/sharedLayer/*": ["./app/sharedLayer/*"],
+      
+      
       "@/*": ["./*"],
       "*": ["./app/*"]
       // "*": ["./*"]
