@@ -5,9 +5,7 @@ import prisma from "../../../(appLayer)/libs/prismadb";
 
 
 export const getGateUserFromDb = async (phoneNumber="") => {
-  console.log('ok-1')
   const session = await getSession();
-  console.log('ok-2')
   if (!session?.user?.email) {
     return [];
   }

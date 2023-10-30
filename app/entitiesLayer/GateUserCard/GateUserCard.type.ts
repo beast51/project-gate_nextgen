@@ -3,11 +3,11 @@ import { Dispatch, SetStateAction } from "react";
 export type GateUserType = {
   id?: string,
   idInApi: string;
-  name: string;
+  name?: string;
   phoneNumber: string;
-  carNumber: string[];
-  apartmentNumber: string;
-  isBlackListed: boolean;
+  carNumber?: string[];
+  apartmentNumber?: string;
+  isBlackListed?: boolean;
   blackListedFrom?: string,
   blackListedTo?: string,
   image?: string

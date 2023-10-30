@@ -10,7 +10,7 @@ export type GateUserPageProps = {
 export const GateUserPage: FC<GateUserPageProps> = async ({ phoneNumber }) => {
   const [user] = await getGateUserFromDb(phoneNumber);
 
-  console.log(user);
+  // console.log(user);
   return (
     <div className={classes.gateUsersPage}>
       USER Page

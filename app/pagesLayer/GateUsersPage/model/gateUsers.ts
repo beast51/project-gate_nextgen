@@ -196,7 +196,7 @@ export const setGateUsersToBd = async (users: GateUserType[]) => {
   }
   let index = 0;
   for (const user of users) {
-    console.log('!!!!!!!!!!!!!!! user', user)
+    // console.log('!!!!!!!!!!!!!!! user', user)
     const existingGateUser = await prisma?.gateUser.findFirst({
       where: {
         phoneNumber: user.phoneNumber,
