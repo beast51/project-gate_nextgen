@@ -30,7 +30,7 @@ export async function Sidebar({
           { [classes.settings]: type === 'settings' },
         )}
       >
-        <MobileHeader title={title} type={type} />
+        {type !== 'usersList' && <MobileHeader title={title} type={type} />}
         {type !== 'settings' && <MobileFooter />}
         {/* <DesktopSidebar currentUser={currentUser!} /> */}
         <div

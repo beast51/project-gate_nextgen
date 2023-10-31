@@ -10,10 +10,11 @@ import { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import classes from './MobileHeader.module.scss';
 import { Button } from '@/sharedLayer/ui/Button';
-import { FaEllipsisV } from 'react-icons/fa';
+import { FaEllipsisV, FaKey, FaUserPlus } from 'react-icons/fa';
 import { FaArrowLeftLong } from 'react-icons/fa6';
 import Link from 'next/link';
 import { AppLink } from '@/sharedLayer/ui/AppLink';
+import { TextField } from '@mui/material';
 
 export const getFromToFromDataPicker = (date: string | null) => {
   const from = moment(date, 'ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (zz)').format(

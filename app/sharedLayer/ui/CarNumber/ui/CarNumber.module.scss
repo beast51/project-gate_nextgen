@@ -1,9 +1,10 @@
 .wrapper {
   display: grid;
   grid-template-columns: 26px 32px 26px;
-  gap: 2px;
+  // gap: 2px;
   padding: 2px 2px 1px 2px;
   align-items: center;
+  justify-content: center;
   background: #ffffff;
   border-top-right-radius: 3px;
   border-bottom-right-radius: 3px;

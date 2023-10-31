@@ -9,7 +9,7 @@ import { usePathname } from 'next/navigation';
 import { formatPhoneNumber } from '@/sharedLayer/utils/formatPhoneNumber';
 import { CarNumbersList } from '@/entitiesLayer/CarNumbersList';
 
-export const GateUserCard: React.FC<GateUserCardProps> = ({ data }) => {
+export const GateUserCard: React.FC<GateUserCardProps> = memo(({ data }) => {
   const pathname = usePathname();
 
   const linkClassName = useMemo(() => {
@@ -39,4 +39,4 @@ export const GateUserCard: React.FC<GateUserCardProps> = ({ data }) => {
       </div>
     </Link>
   );
-};
+});
