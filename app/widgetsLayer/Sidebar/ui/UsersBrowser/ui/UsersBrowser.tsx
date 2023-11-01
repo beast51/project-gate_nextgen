@@ -2,12 +2,14 @@
 import { GateUserCardsList } from '@/entitiesLayer/GateUserCardsList/ui/GateUserCardsList';
 import { Button } from '@/sharedLayer/ui/Button';
 import { Pagination } from '@/sharedLayer/ui/Pagination';
-import { TextField } from '@mui/material';
+// import { TextField } from '@mui/material';
 import { FC } from 'react';
 import { FaUserPlus } from 'react-icons/fa6';
 import { useIntl } from 'react-intl';
 import { UserBrowserType } from '../UserBrowser.type';
 import { useSearchAndPagination } from '../lib/useSearchAndPagination';
+import { Input } from '@/sharedLayer/ui/Input';
+import { TextField } from '@mui/material';
 
 const ITEMS_PER_PAGE = 50;
 
@@ -25,6 +27,15 @@ export const UserBrowser: FC<UserBrowserType> = ({ users }) => {
   return (
     <>
       <div className="flex fixed top-0 left-0 z-10 bg-white w-full p-5 bg">
+        {/* <Input
+          label="Search"
+          id="outlined-size-small"
+          value={searchQuery}
+          // size="small"
+          // fullWidth
+          onChange={handleSearchInput}
+          // className="flex-grow"
+        /> */}
         <TextField
           label="Search"
           id="outlined-size-small"

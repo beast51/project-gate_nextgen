@@ -1,6 +1,7 @@
 .carNumbers {
   display: grid;
   grid-template-columns: min-content min-content;
+  grid-template-rows: 24px;
   gap: 4px;
-  padding: 6px 0;
+  padding: 6px 0 0;
 }

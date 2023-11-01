@@ -25,17 +25,17 @@ export const GateUserCard: React.FC<GateUserCardProps> = memo(({ data }) => {
       <Avatar image={data.image} />
       <div className={classes.info}>
         <div className={classes.infoContainer}>
-          <p>{data.name}</p>
+          <p className={classes.phoneNumber}>
+            {formatPhoneNumber(data.phoneNumber)}
+          </p>
           <p className="text-sm font-medium text-gray-900 text-end">
             {data.apartmentNumber && `кв. ${data.apartmentNumber}`}
           </p>
         </div>
+        <p className={classes.name}>{data.name}</p>
         <div className={classes.infoWrapper}>
           <CarNumbersList carNumber={data.carNumber} />
         </div>
-        <p className={classes.phoneNumber}>
-          {formatPhoneNumber(data.phoneNumber)}
-        </p>
       </div>
     </Link>
   );
