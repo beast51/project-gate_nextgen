@@ -34,7 +34,6 @@ export const UserBrowser: FC<UserBrowserType> = ({ users }) => {
         <div className={classes.container}>
           <Input
             label="Search"
-            id="outlined-size-small"
             value={searchQuery}
             onChange={handleSearchInput}
           />

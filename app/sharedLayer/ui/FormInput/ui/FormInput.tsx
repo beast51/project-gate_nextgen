@@ -1,49 +1,52 @@
 'use client';
 import cn from 'classnames';
-import { FieldErrors } from 'react-hook-form';
-import cls from './Input.module.scss';
-import { ChangeEvent, useId } from 'react';
+import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
+import classes from './FormInput.module.scss';
 
-interface InputProps {
+interface FormInputProps {
   label?: string;
   value?: string;
   placeholder?: string;
+  id: string;
+  type?: string;
   required?: boolean;
+  register: UseFormRegister<FieldValues>;
   errors?: FieldErrors;
   maxLength?: number;
   onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   disabled?: boolean;
-  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const Input: React.FC<InputProps> = ({
+export const FormInput: React.FC<FormInputProps> = ({
   label,
   placeholder,
+  id,
+  type,
   required,
+  register,
   errors,
   maxLength,
   onKeyDown,
-  onChange,
   disabled,
 }) => {
-  const id = useId();
   return (
-    <div className={cn(cls.inputWrapper)}>
+    <div className={cn(classes.inputWrapper)}>
       {label && (
-        <label className={cls.label} htmlFor={id}>
+        <label className={classes.label} htmlFor={id}>
           {label}
         </label>
       )}
       <div>
         <input
           id={id}
+          type={type}
+          autoComplete={id}
           disabled={disabled}
           maxLength={maxLength}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className={cls.input}
-          onChange={onChange}
-          required={required}
+          {...register(id, { required })}
+          className={classes.input}
         />
       </div>
     </div>

@@ -11,6 +11,7 @@ import { useIntl } from 'react-intl';
 import { registerUser } from '../model/registerUser';
 import { loginUser } from '../model/loginUser';
 import { Variant } from '../authForm.type';
+import { FormInput } from '@/sharedLayer/ui/FormInput';
 
 export const AuthForm = () => {
   const { $t } = useIntl();
@@ -64,7 +65,7 @@ export const AuthForm = () => {
   return (
     <div className={classes.formWrapper}>
       <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-        <Input
+        <FormInput
           id="phoneNumber"
           label={$t({ id: 'Phone number' })}
           type="phone"
@@ -74,14 +75,14 @@ export const AuthForm = () => {
         />
         {variant === 'REGISTER' && (
           <>
-            <Input
+            <FormInput
               id="name"
               label="Name"
               register={register}
               errors={errors}
               disabled={isLoading}
             />
-            <Input
+            <FormInput
               id="email"
               label="Email"
               type="email"
@@ -89,7 +90,7 @@ export const AuthForm = () => {
               errors={errors}
               disabled={isLoading}
             />
-            <Input
+            <FormInput
               id="carNumber"
               label="Car number"
               type="text"
@@ -100,7 +101,7 @@ export const AuthForm = () => {
           </>
         )}
 
-        <Input
+        <FormInput
           id="password"
           label={$t({ id: 'Password' })}
           type="password"
