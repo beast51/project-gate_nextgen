@@ -2,7 +2,6 @@
 import { GateUserCardsList } from '@/entitiesLayer/GateUserCardsList/ui/GateUserCardsList';
 import { Button } from '@/sharedLayer/ui/Button';
 import { Pagination } from '@/sharedLayer/ui/Pagination';
-// import { TextField } from '@mui/material';
 import { FC } from 'react';
 import { FaUserPlus } from 'react-icons/fa6';
 import { useIntl } from 'react-intl';
@@ -10,12 +9,16 @@ import { UserBrowserType } from '../UserBrowser.type';
 import { useSearchAndPagination } from '../lib/useSearchAndPagination';
 import { Input } from '@/sharedLayer/ui/Input';
 import classes from './UsersBrowser.module.scss';
-// import { TextField } from '@mui/material';
+import { usePathname } from 'next/navigation';
+import { AppLink } from '@/sharedLayer/ui/AppLink';
+import { FaEllipsisV } from 'react-icons/fa';
 
 const ITEMS_PER_PAGE = 30;
 
 export const UserBrowser: FC<UserBrowserType> = ({ users }) => {
+  const pathname = usePathname();
   const { $t } = useIntl();
+
   const {
     page,
     searchQuery,
@@ -39,19 +42,19 @@ export const UserBrowser: FC<UserBrowserType> = ({ users }) => {
             <FaUserPlus className="w-6 h-6" />
           </Button>
         </div>
+        <AppLink href={`${pathname}/settings`}>
+          <FaEllipsisV />
+        </AppLink>
       </div>
       <GateUserCardsList users={paginatedData} />
-      <div className={classes.pagination}>
-        {paginatedData.length > 0 ? (
-          <Pagination
-            count={Math.ceil(searchResult.length / ITEMS_PER_PAGE)}
-            page={page}
-            onChange={handlePageChange}
-          />
-        ) : (
-          <div>{$t({ id: 'Unfortunately, there are no results...' })}</div>
-        )}
-      </div>
+      <Pagination
+        paginatedDataLength={paginatedData.length}
+        itemsPerPage={ITEMS_PER_PAGE}
+        count={Math.ceil(searchResult.length / ITEMS_PER_PAGE)}
+        page={page}
+        onChange={handlePageChange}
+        error={$t({ id: 'Unfortunately, there are no results...' })}
+      />
     </>
   );
 };
