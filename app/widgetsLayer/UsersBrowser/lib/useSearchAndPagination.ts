@@ -22,7 +22,7 @@ export const useSearchAndPagination = (initialData: GateUserType[], itemsPerPage
   };
 
   const handleSearchInput = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    event: ChangeEvent<HTMLInputElement>,
   ) => {
     const currentValue = event.target.value;
     setSearchQuery(currentValue);

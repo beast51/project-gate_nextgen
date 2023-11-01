@@ -9,7 +9,8 @@ import { useIntl } from 'react-intl';
 import { UserBrowserType } from '../UserBrowser.type';
 import { useSearchAndPagination } from '../lib/useSearchAndPagination';
 import { Input } from '@/sharedLayer/ui/Input';
-import { TextField } from '@mui/material';
+import classes from './UsersBrowser.module.scss';
+// import { TextField } from '@mui/material';
 
 const ITEMS_PER_PAGE = 30;
 
@@ -26,31 +27,21 @@ export const UserBrowser: FC<UserBrowserType> = ({ users }) => {
 
   return (
     <>
-      <div className="flex fixed top-0 left-0 z-10 bg-white w-full p-5 bg">
-        {/* <Input
-          label="Search"
-          id="outlined-size-small"
-          value={searchQuery}
-          // size="small"
-          // fullWidth
-          onChange={handleSearchInput}
-          // className="flex-grow"
-        /> */}
-        <TextField
-          label="Search"
-          id="outlined-size-small"
-          value={searchQuery}
-          size="small"
-          fullWidth
-          onChange={handleSearchInput}
-          className="flex-grow"
-        />
-        <Button className="w-20 ml-2">
-          <FaUserPlus className="w-6 h-6" />
-        </Button>
+      <div className={classes.header}>
+        <div className={classes.container}>
+          <Input
+            label="Search"
+            id="outlined-size-small"
+            value={searchQuery}
+            onChange={handleSearchInput}
+          />
+          <Button className="w-20 ml-2">
+            <FaUserPlus className="w-6 h-6" />
+          </Button>
+        </div>
       </div>
-      <GateUserCardsList users={paginatedData} />;
-      <div className=" w-full flex justify-center py-5">
+      <GateUserCardsList users={paginatedData} />
+      <div className={classes.pagination}>
         {paginatedData.length > 0 ? (
           <Pagination
             count={Math.ceil(searchResult.length / ITEMS_PER_PAGE)}
