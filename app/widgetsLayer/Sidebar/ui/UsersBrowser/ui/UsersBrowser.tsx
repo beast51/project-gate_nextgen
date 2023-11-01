@@ -11,7 +11,7 @@ import { useSearchAndPagination } from '../lib/useSearchAndPagination';
 import { Input } from '@/sharedLayer/ui/Input';
 import { TextField } from '@mui/material';
 
-const ITEMS_PER_PAGE = 50;
+const ITEMS_PER_PAGE = 30;
 
 export const UserBrowser: FC<UserBrowserType> = ({ users }) => {
   const { $t } = useIntl();
