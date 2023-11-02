@@ -33,7 +33,8 @@ export type GateUserType = {
   isBlackListed: boolean;
   blackListedFrom?: string,
   blackListedTo?: string,
-  image?: string
+  image?: string,
+  additionalImages?: string[]
 }
 
 const serialize = (data: Contact) => ({

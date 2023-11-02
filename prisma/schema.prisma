@@ -43,16 +43,17 @@ model Account {
 }
 
 model GateUser {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  idInApi         String?
-  name            String?
-  phoneNumber     String
-  carNumber       String[]
-  apartmentNumber String?
-  image           String?
-  isBlackListed   Boolean?
-  blackListedFrom String?
-  blackListedTo   String?
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  idInApi          String?
+  name             String?
+  phoneNumber      String
+  carNumber        String[]
+  apartmentNumber  String?
+  image            String?
+  additionalImages String[]
+  isBlackListed    Boolean?
+  blackListedFrom  String?
+  blackListedTo    String?
 
   calls Call[]
 
