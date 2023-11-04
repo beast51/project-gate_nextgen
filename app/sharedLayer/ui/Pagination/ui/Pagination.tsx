@@ -11,18 +11,17 @@ export const Pagination: FC<PaginationProps> = ({
   error,
   onChange,
 }) => {
-  console.log(paginatedDataLength);
   const isVisiblePagination =
-    paginatedDataLength < itemsPerPage && paginatedDataLength > 0;
+    paginatedDataLength === itemsPerPage ||
+    (paginatedDataLength !== itemsPerPage && page > 1);
+  const isVisibleError = paginatedDataLength === 0;
+
   return (
-    !isVisiblePagination && (
-      <div className={classes.pagination}>
-        {paginatedDataLength > 0 ? (
-          <MuiPagination count={count} page={page} onChange={onChange} />
-        ) : (
-          <div>{error}</div>
-        )}
-      </div>
-    )
+    <div className={classes.pagination}>
+      {isVisiblePagination && (
+        <MuiPagination count={count} page={page} onChange={onChange} />
+      )}
+      {isVisibleError && <div>{error}</div>}
+    </div>
   );
 };
