@@ -51,6 +51,9 @@ export const metadata: Metadata = {
   description: 'Made by Beast',
   manifest: '/manifest.json',
   icons: { apple: '/icon.png' },
+};
+
+export const viewport = {
   themeColor: '#fff',
 };
 

@@ -22,9 +22,12 @@ export const Slider: FC<SliderPropsType> = ({ user }) => {
           <Image
             src={user.image}
             alt="additional photo"
-            // fill
-            objectFit="cover"
-            layout="responsive"
+            sizes="100vw"
+            style={{
+              width: '100%',
+              height: 'auto',
+            }}
+            priority
             width={888}
             height={592}
           />
@@ -36,9 +39,11 @@ export const Slider: FC<SliderPropsType> = ({ user }) => {
             <Image
               src={image}
               alt="additional photo"
-              // fill
-              objectFit="cover"
-              layout="responsive"
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
               width={888}
               height={592}
             />
