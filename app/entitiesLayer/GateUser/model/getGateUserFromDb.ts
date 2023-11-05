@@ -1,6 +1,7 @@
-import { GateUserType } from "@/entitiesLayer/GateUser/ui/GateUserCard/GateUserCard.type";
+
 import getSession from "@/widgetsLayer/Sidebar/actions/getSession";
 import prisma from "../../../(appLayer)/libs/prismadb";
+import { GateUserType } from "./types/GateUser.type";
 
 
 
