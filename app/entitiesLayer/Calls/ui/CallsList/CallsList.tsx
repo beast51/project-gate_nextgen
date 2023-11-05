@@ -44,6 +44,10 @@ export const CallsList: FC<CallsListPropsType> = () => {
 
   console.log(calls);
 
+  if (isLoading) {
+    return <p className="m-4">Звонки загружаются...</p>;
+  }
+
   return (
     <ul className={classes.callsList}>
       {calls !== undefined &&
