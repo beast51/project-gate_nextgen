@@ -3,11 +3,11 @@ import React, { memo, useMemo } from 'react';
 import cn from 'classnames';
 import classes from './GateUserCard.module.scss';
 import { Avatar } from '@/sharedLayer/ui/Avatar';
-import { GateUserCardProps } from '../GateUserCard.type';
+import { GateUserCardProps } from '../../model/types/GateUser.type';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { formatPhoneNumber } from '@/sharedLayer/utils/formatPhoneNumber';
-import { CarNumbersList } from '@/entitiesLayer/CarNumbersList';
+import { CarNumbersList } from '../CarNumbersList/CarNumbersList';
 
 export const GateUserCard: React.FC<GateUserCardProps> = memo(({ data }) => {
   const pathname = usePathname();

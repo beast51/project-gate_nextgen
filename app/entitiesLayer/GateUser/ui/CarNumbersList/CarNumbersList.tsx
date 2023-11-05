@@ -1,3 +1,4 @@
+import React from 'react';
 import { FC, memo } from 'react';
 import classes from './CarNumbersList.module.scss';
 import { CarNumber } from '@/sharedLayer/ui/CarNumber';

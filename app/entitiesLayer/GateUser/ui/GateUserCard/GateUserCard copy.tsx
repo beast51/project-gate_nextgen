@@ -3,7 +3,7 @@ import React from 'react';
 import cn from 'classnames';
 import classes from './GateUserCard.module.scss';
 import { Avatar } from '@/sharedLayer/ui/Avatar';
-import { GateUserCardProps } from '../GateUserCard.type';
+import { GateUserCardProps } from '../../model/types/GateUser.type';
 import { CarNumber } from '@/sharedLayer/ui/CarNumber';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';

@@ -1,5 +1,5 @@
 'use client';
-import { GateUserCardsList } from '@/entitiesLayer/GateUserCardsList/ui/GateUserCardsList';
+
 import { Button } from '@/sharedLayer/ui/Button';
 import { Pagination } from '@/sharedLayer/ui/Pagination';
 import { FC } from 'react';
@@ -12,6 +12,7 @@ import classes from './UsersBrowser.module.scss';
 import { usePathname } from 'next/navigation';
 import { AppLink } from '@/sharedLayer/ui/AppLink';
 import { FaEllipsisV } from 'react-icons/fa';
+import { GateUserCardsList } from '@/entitiesLayer/GateUser/ui/GateUserCardsList/GateUserCardsList';
 
 const ITEMS_PER_PAGE = 30;
 

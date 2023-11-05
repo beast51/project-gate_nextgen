@@ -1,4 +1,4 @@
-import { GateUserType } from "@/entitiesLayer/GateUserCard/GateUserCard.type";
+import { GateUserType } from "@/entitiesLayer/GateUser/model/types/GateUser.type";
 
 export type UserBrowserType = {
   users: GateUserType[];

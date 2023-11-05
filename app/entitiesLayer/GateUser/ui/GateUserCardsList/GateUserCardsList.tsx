@@ -1,10 +1,10 @@
 import classes from './GateUserCardsList.module.scss';
-import { GateUserCard } from '@/entitiesLayer/GateUserCard';
+
 import { FC, memo, useEffect, useState } from 'react';
-import { GateUserType } from '@/entitiesLayer/GateUserCard/GateUserCard.type';
-import { GateUserCardsListType } from '../GateUserCards.type';
-import { Pagination } from '@/sharedLayer/ui/Pagination';
-import { useIntl } from 'react-intl';
+
+import React from 'react';
+import { GateUserCard } from '../GateUserCard/GateUserCard';
+import { GateUserCardsListType } from '../../model/types/GateUser.type';
 
 export const GateUserCardsList: FC<GateUserCardsListType> = memo(
   ({ users }) => {

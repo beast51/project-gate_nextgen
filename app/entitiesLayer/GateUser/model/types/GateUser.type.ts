@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction } from "react";
-
 export type GateUserType = {
   id?: string,
   idInApi: string;
@@ -19,4 +17,8 @@ export type GateUserCardProps = {
   // searchResult?: GateUserType[];
   // setSearchResult?: Dispatch<SetStateAction<GateUserType[]>>;
   // updateUsersList?: (phoneNumber: string) => void;
+}
+
+export type GateUserCardsListType = {
+  users: GateUserType[]
 }

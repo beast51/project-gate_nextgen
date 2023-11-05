@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { ChangeEvent } from "react";
-import { GateUserType } from '@/entitiesLayer/GateUserCard/GateUserCard.type';
+import { GateUserType } from '@/entitiesLayer/GateUser/model/types/GateUser.type';
 
 export const useSearchAndPagination = (initialData: GateUserType[], itemsPerPage: number) => {
   const [page, setPage] = useState(1);

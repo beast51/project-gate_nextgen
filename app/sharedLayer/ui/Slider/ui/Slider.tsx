@@ -1,7 +1,7 @@
 'use client';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
-import { GateUserType } from '@/entitiesLayer/GateUserCard/GateUserCard.type';
+import { GateUserType } from '@/entitiesLayer/GateUser/model/types/GateUser.type';
 import { FC } from 'react';
 import Image from 'next/image';
 
