@@ -35,6 +35,8 @@ export const CallsList: FC<CallsListPropsType> = () => {
   const from = paramsToString(searchParams.get('from')) || START_OF_THE_DAY;
   const to = paramsToString(searchParams.get('to')) || DATE_AND_TIME_NOW;
 
+  console.log(pathname);
+
   const { data: calls, isLoading } = useSWR<CallType[]>(
     `api${pathname}/?from=${from}&to=${to}`,
     getCalls,
