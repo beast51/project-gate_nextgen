@@ -14,6 +14,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   image,
   name,
   isBlackListed,
+  isSmall,
   className,
 }) => {
   // const { members } = useActiveList();
@@ -38,7 +39,7 @@ export const Avatar: React.FC<AvatarProps> = ({
       // "
     >
       <div
-        className={classes.avatarContainer}
+        className={cn(classes.avatarContainer, { [classes.small]: isSmall })}
         //   className="
         //   relative
         //   inline-block

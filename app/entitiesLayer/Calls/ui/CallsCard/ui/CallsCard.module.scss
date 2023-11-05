@@ -1,0 +1,60 @@
+.gateUserCard {
+
+  background: var(--gate-user-card-bg);
+  padding: 8px 16px 8px 8px;
+  border-radius: 20px;
+  border-top-left-radius: 36px;
+  // border-bottom-left-radius: 55px;
+}
+
+.wrapper {
+  display: grid;
+  grid-gap: 12px;
+  gap: 12px;
+  grid-template-columns: 60px 1fr;
+}
+
+.infoContainer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  font-size: 18px;
+  font-weight: 500;
+
+}
+
+.infoWrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  // height: 100%;
+}
+
+.contactsContainer {
+  display: grid;
+  height: 100%;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--gate-user-card-name);
+}
+
+.info {
+  display: grid;
+  grid-template-rows: 20px 1fr;
+  gap: 6px;
+  height: 100%;
+}
+
+.phoneNumber {
+  font-weight: 500;
+}
+
+.gateUserCardBig {
+  border-bottom-left-radius: 20px;
+}
+
+.callsCarNumberList {
+  grid-template-columns: min-content min-content min-content;
+  grid-template-rows: auto;
+}
