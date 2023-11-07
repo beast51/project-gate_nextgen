@@ -57,9 +57,9 @@ export const getInfoFromPhoneNumber =  async (phoneNumber: string): Promise<getI
 }
 
 export const getCallsFromApi = async (from: any, to: any, phoneNumber = '') => {
-  const url = 'https://cstat.nextel.com.ua:8443/tracking/api/history/get';
+  const url = `${process.env.UNITALK_URL}/api/history/get`;
   const headers: Record<string, string> = {
-    Authorization: 'GzcSkJkMHE11',
+    Authorization: process.env.UNITALK_INTERNAL_API_AUTHORIZATION!,
     'Content-Type': 'application/json',
   };
   const payload = { 
@@ -78,17 +78,14 @@ export const getCallsFromApi = async (from: any, to: any, phoneNumber = '') => {
     body: JSON.stringify(payload),
   })
   const data = await response.json()
-  // console.log('data', data.calls)
-  // console.log('serialize', data.calls.map(serialize))
-
 
   const calls = data.calls.reverse().map(serialize)
   return calls
 }
 export const getAllCallsFromApi = async () => {
-  const url = 'https://cstat.nextel.com.ua:8443/tracking/api/history/get';
+  const url = `${process.env.UNITALK_URL}/api/history/get`;
   const headers: Record<string, string> = {
-    Authorization: 'GzcSkJkMHE11',
+    Authorization: process.env.UNITALK_INTERNAL_API_AUTHORIZATION!,
     'Content-Type': 'application/json',
   };
   const START_DATE = "2023-05-01 00:00:00"

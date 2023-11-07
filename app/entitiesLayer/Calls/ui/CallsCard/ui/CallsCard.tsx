@@ -5,22 +5,7 @@ import React, { FC } from 'react';
 import cn from 'classnames';
 import classes from './CallsCard.module.scss';
 import moment from 'moment';
-
-export type CallType = {
-  number: string;
-  time: string;
-  callerName: string;
-  image?: string;
-  carNumber?: string[];
-  apartmentNumber?: string;
-  isBlackListed: boolean;
-  blackListedFrom: string;
-  blackListedTo: string;
-};
-
-export type CallsCardPropsType = {
-  call: CallType;
-};
+import { CallsCardPropsType } from '../../../model/types/Calls.type';
 
 export const CallsCard: FC<CallsCardPropsType> = ({ call }) => {
   return (

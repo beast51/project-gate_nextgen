@@ -49,43 +49,13 @@ const serialize = (data: Contact) => ({
 
 export type getGateUsersFromApiType = (phoneNumber?: string, name?: string) => Promise<GateUserType[]>
 
-// export const getGateUsersFromApi: getGateUsersFromApiType = async ( phoneNumber = "", name = "") => {
-//   const url = 'https://cstat.nextel.com.ua:8443/tracking/contacts/get';
-//   const headers: Record<string, string> = {
-//     Authorization: 'kddHSkpUbPSc',
-//     ProjectId: '6275',
-//     'Content-Type': 'application/json',
-//   };
-//   const payload = { 
-//     "limit": 100,  
-//     "offset": 0,  
-//     "filter": {  
-//       "name": name,
-//       "phone": phoneNumber
-//     }   
-//   };
-//   const response = await fetch(url, {
-//     method: 'POST',
-//     headers: headers,
-//     body: JSON.stringify(payload),
-//   })
-//   const data: GateUsersFromApiType = await response.json()
-//   console.log('!!data!!', data)
-
-//   const users = data.contacts.map(serialize)
-//   const count = data.count;
-
-
-
-//   console.log('!!users!!', users)
-//   return users
-// }
 
 export const getGateUsersFromApi: getGateUsersFromApiType = async (phoneNumber = "", name = "") => {
-  const url = 'https://cstat.nextel.com.ua:8443/tracking/contacts/get';
+
+  const url = `${process.env.UNITALK_URL}/contacts/get`;
   const headers: Record<string, string> = {
-    Authorization: 'kddHSkpUbPSc',
-    ProjectId: '6275',
+    Authorization: process.env.UNITALK_AUTHORIZATION!,
+    ProjectId: process.env.UNITALK_PROJECT_ID!,
     'Content-Type': 'application/json',
   };
 
@@ -137,51 +107,6 @@ export const getGateUsersFromApi: getGateUsersFromApiType = async (phoneNumber =
 
   return results.flat();
 }
-
-// const createFetchPromise = async (offset: number, limit: number, url: string, headers: Record<string, string>): Promise<any> => {
-//   const payload = {
-//     "limit": limit,
-//     "offset": offset,
-//     "filter": {
-//     }
-//   };
-
-//   return fetch(url, {
-//     method: 'POST',
-//     headers: headers,
-//     body: JSON.stringify(payload),
-//   })
-//   .then(response => response.json())
-//   .then(data => data.contacts.map(serialize));
-// }
-
-// export const getGateUsersFromApi: getGateUsersFromApiType = async () => {
-//   const url = 'https://cstat.nextel.com.ua:8443/tracking/contacts/get';
-//   const headers: Record<string, string> = {
-//     Authorization: 'kddHSkpUbPSc',
-//     ProjectId: '6275',
-//     'Content-Type': 'application/json',
-//   };
-
-//   const limit = 100;
-//   const initialOffset = 0;
-
-//   const initialData = await createFetchPromise(initialOffset, limit, url, headers);
-//   const totalRecords = initialData.count;
-
-//   const totalPages = Math.ceil(totalRecords / limit);
-
-
-//   const promises = [];
-//   for (let i = 0; i < totalPages; i++) {
-//     const offset = i * limit;
-//     promises.push(createFetchPromise(offset, limit, url, headers));
-//   }
-
-//   const results = await Promise.all(promises);
-
-//   return results.flat();
-// }
 
 
 export const getNewUserIdFromApi = async (phoneNumber: string) => {
@@ -315,12 +240,14 @@ export const addGateUserToApi = async (body: {
   apartmentNumber: string
 }) => {
   const CAN_OPEN_GATES = "20879";
-  const url = 'https://cstat.nextel.com.ua:8443/tracking/contacts/set';
+
+  const url = `${process.env.UNITALK_URL}/contacts/set`;
   const headers: Record<string, string> = {
-    Authorization: 'kddHSkpUbPSc',
-    ProjectId: '6275',
+    Authorization: process.env.UNITALK_AUTHORIZATION!,
+    ProjectId: process.env.UNITALK_PROJECT_ID!,
     'Content-Type': 'application/json',
   };
+
   const payload = { 
     "address": body.apartmentNumber,  
     "email": '',  
@@ -348,12 +275,14 @@ export const editGateUserOnApi = async (body: {
   isBlackListed?: boolean
 }) => {
   const CAN_OPEN_GATES = "20879";
-  const url = 'https://cstat.nextel.com.ua:8443/tracking/contacts/set';
+
+  const url = `${process.env.UNITALK_URL}/contacts/set`;
   const headers: Record<string, string> = {
-    Authorization: 'kddHSkpUbPSc',
-    ProjectId: '6275',
+    Authorization: process.env.UNITALK_AUTHORIZATION!,
+    ProjectId: process.env.UNITALK_PROJECT_ID!,
     'Content-Type': 'application/json',
   };
+
   const payload = { 
     "address": body.apartmentNumber,  
     "email": '', 
@@ -429,10 +358,12 @@ export const getAllInfoForDeleteAllUsers = async () => {
 }
 
 export const deleteGateUserFromApi = async (id: string) => {
-  const url = 'https://cstat.nextel.com.ua:8443/tracking/contacts/remove';
+
+  const url = `${process.env.UNITALK_URL}/contacts/remove`;
   const headers: Record<string, string> = {
-    Authorization: 'kddHSkpUbPSc',
-    ProjectId: '6275',
+    Authorization: process.env.UNITALK_AUTHORIZATION!,
+    ProjectId: process.env.UNITALK_PROJECT_ID!,
+    'Content-Type': 'application/json',
   };
 
   const formData = new FormData();

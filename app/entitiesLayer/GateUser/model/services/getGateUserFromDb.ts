@@ -1,7 +1,7 @@
 
 import getSession from "@/widgetsLayer/Sidebar/actions/getSession";
-import prisma from "../../../(appLayer)/libs/prismadb";
-import { GateUserType } from "./types/GateUser.type";
+import prisma from "../../../../(appLayer)/libs/prismadb";
+import { GateUserType } from "../types/GateUser.type";
 
 
 

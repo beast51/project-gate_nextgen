@@ -5,7 +5,6 @@ import { CallsList } from '@/entitiesLayer/Calls';
 export const CallsPage = async () => {
   return (
     <div className={styles.user}>
-      Calls Page
       <CallsList />
     </div>
   );
