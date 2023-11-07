@@ -79,7 +79,7 @@ export const getCallsFromApi = async (from: any, to: any, phoneNumber = '') => {
   })
   const data = await response.json()
 
-  const calls = data.calls.reverse().map(serialize)
+  const calls = data?.calls?.reverse()?.map(serialize)
   return calls
 }
 export const getAllCallsFromApi = async () => {
