@@ -44,7 +44,7 @@ export const CallsList: FC<CallsListPropsType> = () => {
         : setFilteredCalls(calls);
       setIsFilteredCalls(!isFilteredCalls);
     },
-    [calls, isFilteredCalls],
+    [calls, isFilteredCalls, filteredCalls],
   );
 
   if (isLoading) {
