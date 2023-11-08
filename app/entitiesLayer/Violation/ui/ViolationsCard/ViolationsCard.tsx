@@ -26,10 +26,7 @@ export const ViolationsCard: React.FC<ViolationsCardPropsType> = ({
     visits,
   },
 }) => {
-  const pathname = usePathname();
-  console.log(phoneNumberOrApartment);
   return (
-    // <Link href={`${pathname}/${data.phoneNumber}`} className={linkClassName}>
     <Link
       href={`/users/${number && number[0]}`}
       className={cn(classes.card, { [classes.withViolation]: violationCount })}
@@ -40,7 +37,7 @@ export const ViolationsCard: React.FC<ViolationsCardPropsType> = ({
           <div className={classes.infoContainer}>
             <div className={classes.phoneNumber}>
               {apartmentNumber === null
-                ? phoneNumberOrApartment
+                ? formatPhoneNumber(phoneNumberOrApartment)
                 : number?.map((num) => {
                     return <p>{formatPhoneNumber(num)}</p>;
                   })}
