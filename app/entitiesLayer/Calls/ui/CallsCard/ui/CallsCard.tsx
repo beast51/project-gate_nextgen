@@ -8,13 +8,19 @@ import moment from 'moment';
 import { CallsCardPropsType } from '../../../model/types/Calls.type';
 
 export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
+  console.log(call);
   return (
     <li
       onDoubleClick={() => onDoubleClick(call.number)}
       className={cn(classes.gateUserCard, 'full-width')}
     >
       <div className={classes.wrapper}>
-        <Avatar image={call.image} isSmall />
+        <Avatar
+          image={call.image}
+          isSmall
+          name={call.callerName}
+          isBlackListed={call.isBlackListed}
+        />
         <div className={classes.info}>
           <div className={classes.infoContainer}>
             <p className="text-sm font-medium text-gray-900 text-end">
@@ -32,14 +38,25 @@ export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
           </div>
         </div>
       </div>
-      <div className={classes.infoWrapper}>
-        {call.carNumber && (
+      {call.isBlackListed && (
+        <div className={classes.blackListed}>
+          <p>Заблокирован:</p>
+          {call.blackListedFrom && call.blackListedTo && (
+            <p>
+              c {moment(call.blackListedFrom).format('DD-MM-YYYY HH:mm')} по{' '}
+              {moment(call.blackListedTo).format('DD-MM-YYYY HH:mm')}
+            </p>
+          )}
+        </div>
+      )}
+      {call.carNumber && (
+        <div className={classes.infoWrapper}>
           <CarNumbersList
             carNumber={call.carNumber}
             className={classes.callsCarNumberList}
           />
-        )}
-      </div>
+        </div>
+      )}
     </li>
   );
 };

@@ -9,6 +9,8 @@ import Image from 'next/image';
 import { AvatarProps } from '../Avatar.type';
 import classes from './Avatar.module.scss';
 import { useTheme } from '@/appLayer/providers/ThemeProvider';
+import { FaTimes } from 'react-icons/fa';
+import { MdOutlineQuestionMark } from 'react-icons/md';
 
 export const Avatar: React.FC<AvatarProps> = ({
   image,
@@ -39,7 +41,10 @@ export const Avatar: React.FC<AvatarProps> = ({
       // "
     >
       <div
-        className={cn(classes.avatarContainer, { [classes.small]: isSmall })}
+        className={cn(classes.avatarContainer, {
+          [classes.small]: isSmall,
+          [classes.blackListed]: isBlackListed || name === 'Not registered',
+        })}
         //   className="
         //   relative
         //   inline-block
@@ -93,19 +98,30 @@ export const Avatar: React.FC<AvatarProps> = ({
           </div>
         ) : null} */}
       {name === 'Not registered' ? (
-        <div className="absolute top-0 right-0 w-3 h-3 rounded-full bg-white">
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  w-2 h-2 rounded-full flex items-center justify-center">
-            <span className="absolute text-red-500 text-xxs font-bold">?</span>
+        <div className={classes.statusIndicator}>
+          <div className={classes.statusIcon}>
+            <span className={classes.statusText}>
+              <MdOutlineQuestionMark />
+            </span>
           </div>
         </div>
       ) : null}
       {isBlackListed ? (
+        <div className={classes.statusIndicator}>
+          <div className={classes.statusIcon}>
+            <span className={classes.statusText}>
+              <FaTimes />
+            </span>
+          </div>
+        </div>
+      ) : null}
+      {/* {isBlackListed ? (
         <div className="absolute top-0 right-0 w-3 h-3 rounded-full bg-white">
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  w-2 h-2 rounded-full flex items-center justify-center">
             <span className="absolute text-red-500 text-xxs font-bold">x</span>
           </div>
         </div>
-      ) : null}
+      ) : null} */}
     </div>
     // </div>
   );

@@ -17,6 +17,7 @@ export const StayTimerCardList: FC<StayTimerCardListProps> = memo(
             <StayTimerCard
               visit={visit}
               isOverstay={isOverstay(visit, visitCount)}
+              key={visit.timeIn}
             />
           );
         })}

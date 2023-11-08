@@ -38,7 +38,7 @@ export const ViolationsList = () => {
             Object.entries(violations).map(([key, violation]) => {
               return (
                 <ViolationsCard
-                  key={key}
+                  key={violation.visits[0].timeIn}
                   phoneNumberOrApartment={key}
                   violation={violation}
                 />
