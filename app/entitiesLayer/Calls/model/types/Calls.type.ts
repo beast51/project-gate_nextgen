@@ -12,4 +12,5 @@ export type CallType = {
 
 export type CallsCardPropsType = {
   call: CallType;
+  onDoubleClick: (phoneNumber: string) => void
 };

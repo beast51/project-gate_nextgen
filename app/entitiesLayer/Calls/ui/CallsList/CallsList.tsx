@@ -2,7 +2,7 @@
 import { formatTime } from '@/sharedLayer/utils/date';
 import { paramsToString } from '@/sharedLayer/utils/paramsToString';
 import { usePathname, useSearchParams } from 'next/navigation';
-import React, { FC } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { CallsCard } from '../CallsCard';
 import classes from './CallsList.module.scss';
@@ -28,7 +28,24 @@ export const CallsList: FC<CallsListPropsType> = () => {
     getCalls,
   );
 
-  console.log(calls);
+  const [filteredCalls, setFilteredCalls] = useState(calls);
+  const [isFilteredCalls, setIsFilteredCalls] = useState(false);
+
+  useEffect(() => {
+    setFilteredCalls(calls);
+  }, [calls]);
+
+  const showCallsFromPhonenumber = useCallback(
+    (phoneNumber: string) => {
+      !isFilteredCalls
+        ? setFilteredCalls(
+            filteredCalls?.filter((call) => call.number === phoneNumber),
+          )
+        : setFilteredCalls(calls);
+      setIsFilteredCalls(!isFilteredCalls);
+    },
+    [calls, isFilteredCalls],
+  );
 
   if (isLoading) {
     return <p className="m-4">Звонки загружаются...</p>;
@@ -36,9 +53,15 @@ export const CallsList: FC<CallsListPropsType> = () => {
 
   return (
     <ul className={classes.callsList}>
-      {calls !== undefined &&
-        calls.map((call) => {
-          return <CallsCard call={call} key={call.time} />;
+      {filteredCalls !== undefined &&
+        filteredCalls.map((call) => {
+          return (
+            <CallsCard
+              call={call}
+              onDoubleClick={showCallsFromPhonenumber}
+              key={call.time}
+            />
+          );
         })}
     </ul>
   );

@@ -7,9 +7,12 @@ import classes from './CallsCard.module.scss';
 import moment from 'moment';
 import { CallsCardPropsType } from '../../../model/types/Calls.type';
 
-export const CallsCard: FC<CallsCardPropsType> = ({ call }) => {
+export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
   return (
-    <li className={cn(classes.gateUserCard, 'full-width')}>
+    <li
+      onDoubleClick={() => onDoubleClick(call.number)}
+      className={cn(classes.gateUserCard, 'full-width')}
+    >
       <div className={classes.wrapper}>
         <Avatar image={call.image} isSmall />
         <div className={classes.info}>
