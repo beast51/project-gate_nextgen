@@ -3,7 +3,7 @@ export type CallType = {
   time: string;
   callerName: string;
   image?: string;
-  carNumber?: string[];
+  carNumber: string[];
   apartmentNumber?: string;
   isBlackListed: boolean;
   blackListedFrom: string;

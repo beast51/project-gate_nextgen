@@ -49,7 +49,7 @@ export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
           )}
         </div>
       )}
-      {call.carNumber && (
+      {call.carNumber.length > 0 && (
         <div className={classes.infoWrapper}>
           <CarNumbersList
             carNumber={call.carNumber}
