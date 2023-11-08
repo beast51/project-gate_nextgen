@@ -1,0 +1,22 @@
+.time {
+  display: grid;
+  gap: 4px;
+  padding: 8px 20px;
+  text-align: center;
+  border-radius: 12px;
+  background-color: #fff;
+  color: green;
+  font-weight: 500;
+}
+
+.overstay {
+  color: red;
+}
+
+.wrapper {
+  display: grid;
+  gap: 2px;
+  font-family: sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+}

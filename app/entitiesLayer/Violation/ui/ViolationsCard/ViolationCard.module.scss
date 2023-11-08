@@ -11,27 +11,10 @@
   border-bottom-left-radius: 20px;
 }
 
-.time {
-  display: flex;
-  flex-wrap: wrap;
-  overflow: hidden;
-  padding: 8px 20px;
-  text-align: center;
-  border-radius: 12px;
-  background-color: #fff;
-  color: green;
-}
 
-.timesList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  overflow: hidden;
-}
 
-.timeWithViolation {
-  color: red;
-}
+
+
 
 .withViolation {
   background: rgba(254, 205, 211, .5);

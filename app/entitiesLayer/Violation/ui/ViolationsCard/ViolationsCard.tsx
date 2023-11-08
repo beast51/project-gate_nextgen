@@ -10,6 +10,7 @@ import cn from 'classnames';
 import { usePathname } from 'next/navigation';
 import { formatPhoneNumber } from '@/sharedLayer/utils/formatPhoneNumber';
 import { CarNumbersList } from '@/entitiesLayer/GateUser';
+import { StayTimerCardList } from '../StayTimerCardList';
 
 export type ViolationsCardPropsType = {
   phoneNumberOrApartment: string;
@@ -61,46 +62,8 @@ export const ViolationsCard: React.FC<ViolationsCardPropsType> = ({
           </div>
         </div>
       </div>
-      <div className={classes.timesList}>
-        {visits.map((visit: VisitsType['visits'][0]) => {
-          const IS_VIOLATION =
-            (visit.violationTime >= 45 && visitCount > 0) ||
-            !visit.violationTime;
-          return (
-            <div
-              className={cn(classes.time, {
-                [classes.timeWithViolation]: IS_VIOLATION,
-              })}
-              key={visit.violationTime}
-            >
-              {visit.timeIn ? (
-                <div>
-                  <div>
-                    {' '}
-                    {visit.violationTime
-                      ? `${visit.violationTime} мин.`
-                      : '[?]'}{' '}
-                  </div>
-                  <div
-                    className="
-                            grid
-                            grid-cols-1
-                            gap-y-1
-                            text-xs
-                            grid-rows-auto
-                "
-                  >
-                    <div>{visit.timeIn.split(' ')[1]}</div>
-                    <div>{visit.timeOut?.split(' ')[1]}</div>
-                  </div>
-                </div>
-              ) : (
-                <div>[ ? ]</div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+
+      <StayTimerCardList visits={visits} visitCount={visitCount} />
     </Link>
     // <li
     //   className={clsx(

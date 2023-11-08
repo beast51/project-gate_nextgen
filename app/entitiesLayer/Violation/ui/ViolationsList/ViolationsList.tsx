@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 import { paramsToString } from '@/sharedLayer/utils/paramsToString';
 import { ViolationsResponseType } from '../../model/types/ViolationList.types';
-import { ViolationsCard } from '../ViolationsItem/ViolationsCard';
+import { ViolationsCard } from '../ViolationsCard/ViolationsCard';
 import classes from './ViolationsList.module.scss';
 
 const START_OF_THE_DAY = formatTime(Date.now(), true);
