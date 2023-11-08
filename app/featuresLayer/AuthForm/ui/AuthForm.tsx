@@ -64,7 +64,7 @@ export const AuthForm = () => {
 
   return (
     <div className={classes.formWrapper}>
-      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <FormInput
           id="phoneNumber"
           label={$t({ id: 'Phone number' })}

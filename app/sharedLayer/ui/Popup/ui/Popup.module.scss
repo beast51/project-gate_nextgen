@@ -1,0 +1,23 @@
+.fullWidth {
+  width: 100%;
+}
+
+.fullHeight {
+  height: 100vh;
+}
+
+.popup {
+  // display: flex;
+  background-color: #fff;
+  position: relative;
+}
+
+.icon {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  z-index: 50;
+}

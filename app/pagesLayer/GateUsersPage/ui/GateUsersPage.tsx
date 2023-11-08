@@ -8,6 +8,7 @@ import { UserBrowser } from '@/widgetsLayer/UsersBrowser/ui/UsersBrowser';
 export const GateUsersPage = async () => {
   const { $t } = await getIntl();
   const users = await getGateUserFromDb();
+
   return (
     <Sidebar type="usersList" title="Список пользователей:">
       <div className="full-height pt64">

@@ -1,7 +1,7 @@
 'use client';
 import cn from 'classnames';
 import { FieldErrors } from 'react-hook-form';
-import cls from './Input.module.scss';
+import classes from './Input.module.scss';
 import { ChangeEvent, useId } from 'react';
 
 interface InputProps {
@@ -28,9 +28,9 @@ export const Input: React.FC<InputProps> = ({
 }) => {
   const id = useId();
   return (
-    <div className={cn(cls.inputWrapper)}>
+    <div className={cn(classes.inputWrapper)}>
       {label && (
-        <label className={cls.label} htmlFor={id}>
+        <label className={classes.label} htmlFor={id}>
           {label}
         </label>
       )}
@@ -41,7 +41,7 @@ export const Input: React.FC<InputProps> = ({
           maxLength={maxLength}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className={cls.input}
+          className={classes.input}
           onChange={onChange}
           required={required}
         />
