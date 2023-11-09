@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
-import {addGateUserToApi} from '@/featuresLayer/AddGateUserForm/model/services/addGateUserToApi'
-import {getGateUsersFromApi} from '@/featuresLayer/AddGateUserForm/model/services/getGateUsersFromApi'
-import {setGateUsersToBd} from '@/featuresLayer/AddGateUserForm/model/services/setGateUsersToBd'
+import {addGateUserToApi} from '@/entitiesLayer/GateUser/model/services/addGateUserToApi'
+import {getGateUsersFromApi} from '@/entitiesLayer/GateUser/model/services/getGateUsersFromApi'
+import {setGateUsersToBd} from '@/entitiesLayer/GateUser/model/services/setGateUsersToBd'
 
 type BodyType = {
   name: string,

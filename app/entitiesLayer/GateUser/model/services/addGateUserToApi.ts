@@ -4,11 +4,11 @@ export const addGateUserToApi = async (body: {
   carNumber: string
   apartmentNumber: string
 }) => {
-  const CAN_OPEN_GATES = "20879";
-  const url = 'https://cstat.nextel.com.ua:8443/tracking/contacts/set';
+  const CAN_OPEN_GATES = process.env.UNITALK_CAN_OPEN_GATES;
+  const url = `${process.env.UNITALK_URL}/contacts/set`;
   const headers: Record<string, string> = {
-    Authorization: 'kddHSkpUbPSc',
-    ProjectId: '6275',
+    Authorization: process.env.UNITALK_AUTHORIZATION!,
+    ProjectId: process.env.UNITALK_PROJECT_ID!,
     'Content-Type': 'application/json',
   };
   const payload = { 
@@ -19,7 +19,7 @@ export const addGateUserToApi = async (body: {
     'phones': [body.phoneNumber],
     "responsible": CAN_OPEN_GATES, 
   };
-console.log(payload)
+console.log('add user with data: ', payload)
 
   const response = await fetch(url, {
     method: 'POST',

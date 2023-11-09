@@ -5,6 +5,7 @@ import { ModalProps } from '../Popup.type';
 import React from 'react';
 import cn from 'classnames';
 import classes from './Popup.module.scss';
+import { useTheme } from '@/appLayer/providers/ThemeProvider';
 
 const Popup: React.FC<ModalProps> = ({
   className,
@@ -14,12 +15,14 @@ const Popup: React.FC<ModalProps> = ({
   fullHeight,
   children,
 }) => {
+  const { theme } = useTheme();
   return (
     <Modal
       open={isOpen}
       onClose={onClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
+      className={`app ${theme}`}
     >
       <div
         className={cn(

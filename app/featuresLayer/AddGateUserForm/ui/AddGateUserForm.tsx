@@ -5,20 +5,16 @@ import classes from './AddGateUserForm.module.scss';
 import { useEffect, useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-
 import { Button } from '@/sharedLayer/ui/Button';
 import { FormInput } from '@/sharedLayer/ui/FormInput';
-import { Input } from '@/sharedLayer/ui/Input';
-
-type Variant = 'LOGIN' | 'REGISTER';
 
 export const AddGateUserForm = () => {
-  // const [variant, setVariant] = useState<Variant>('LOGIN');
   const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
     handleSubmit,
+    reset,
     watch,
     setValue,
     formState: { errors },
@@ -31,8 +27,8 @@ export const AddGateUserForm = () => {
     },
   });
 
-  // const phoneNumber = watch('phoneNumber');
   const phoneNumber = watch('phoneNumber', '');
+
   useEffect(() => {
     if (
       phoneNumber.length > 0 &&
@@ -57,7 +53,11 @@ export const AddGateUserForm = () => {
       })
       .then(() => console.log('data', data))
       .catch(() => toast.error('Something went wrong'))
-      .finally(() => setIsLoading(false));
+      .finally(() => {
+        setIsLoading(false);
+        toast.success('User added successful');
+        reset();
+      });
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -81,51 +81,47 @@ export const AddGateUserForm = () => {
   return (
     <div className={classes.formWrapper}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="pb-4">
-          <FormInput
-            id="name"
-            label="Name"
-            placeholder="Enter name"
-            register={register}
-            errors={errors}
-            disabled={isLoading}
-            required
-          />
-          <FormInput
-            id="phoneNumber"
-            label="Phone number"
-            placeholder="Enter phone number"
-            type="phone"
-            register={register}
-            errors={errors}
-            disabled={isLoading}
-            maxLength={12}
-            onKeyDown={handleKeyDown}
-            required
-          />
-          <FormInput
-            id="carNumber"
-            label="Car number"
-            placeholder="Enter car number"
-            type="text"
-            register={register}
-            errors={errors}
-            disabled={isLoading}
-          />
-          <FormInput
-            id="apartmentNumber"
-            label="Apartment"
-            placeholder="Enter apartment number"
-            type="text"
-            register={register}
-            errors={errors}
-            disabled={isLoading}
-            required
-          />
-          <Input />
-        </div>
-
-        <Button disabled={isLoading} fullWidth type="submit" className="mt-4">
+        <FormInput
+          id="name"
+          label="Name"
+          placeholder="Enter name"
+          register={register}
+          errors={errors}
+          disabled={isLoading}
+          required
+        />
+        <FormInput
+          id="phoneNumber"
+          label="Phone number"
+          placeholder="Enter phone number"
+          type="phone"
+          register={register}
+          errors={errors}
+          disabled={isLoading}
+          maxLength={12}
+          onKeyDown={handleKeyDown}
+          required
+        />
+        <FormInput
+          id="carNumber"
+          label="Car number"
+          placeholder="Enter car number"
+          type="text"
+          register={register}
+          errors={errors}
+          disabled={isLoading}
+        />
+        <FormInput
+          id="apartmentNumber"
+          label="Apartment"
+          placeholder="Enter apartment number"
+          type="text"
+          register={register}
+          errors={errors}
+          disabled={isLoading}
+          required
+        />
+        <Button disabled={isLoading} fullWidth type="submit">
           Add user
         </Button>
       </form>
