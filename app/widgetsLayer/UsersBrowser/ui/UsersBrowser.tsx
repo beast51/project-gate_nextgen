@@ -2,14 +2,14 @@
 
 import { Button } from '@/sharedLayer/ui/Button';
 import { Pagination } from '@/sharedLayer/ui/Pagination';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { FaUserPlus } from 'react-icons/fa6';
 import { useIntl } from 'react-intl';
 import { UserBrowserType } from '../UserBrowser.type';
 import { useSearchAndPagination } from '../lib/useSearchAndPagination';
 import { Input } from '@/sharedLayer/ui/Input';
 import classes from './UsersBrowser.module.scss';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { AppLink } from '@/sharedLayer/ui/AppLink';
 import { FaEllipsisV } from 'react-icons/fa';
 import { GateUserCardsList } from '@/entitiesLayer/GateUser/ui/GateUserCardsList/GateUserCardsList';
@@ -20,11 +20,24 @@ const ITEMS_PER_PAGE = 30;
 
 export const UserBrowser: FC<UserBrowserType> = ({ users }) => {
   const pathname = usePathname();
+  const router = useRouter();
   const { $t } = useIntl();
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    router.prefetch('/users');
+    router.push('/users?add=new');
+    router.refresh();
+  };
+
+  // useEffect(() => {
+  //   if (!open) {
+  //     router.prefetch('/users')
+  //     console.log('reload');
+  //   }
+  // }, [open]);
 
   const {
     page,

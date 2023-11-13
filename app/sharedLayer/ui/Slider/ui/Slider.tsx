@@ -28,8 +28,8 @@ export const Slider: FC<SliderPropsType> = ({ user }) => {
               height: 'auto',
             }}
             priority
-            width={888}
-            height={592}
+            width={1366}
+            height={911}
           />
         </SwiperSlide>
       )}
@@ -44,8 +44,8 @@ export const Slider: FC<SliderPropsType> = ({ user }) => {
                 width: '100%',
                 height: 'auto',
               }}
-              width={888}
-              height={592}
+              width={1366}
+              height={911}
             />
           </SwiperSlide>
         );

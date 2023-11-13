@@ -24,7 +24,7 @@ export const Avatar: React.FC<AvatarProps> = ({
         <Image
           priority
           fill
-          sizes="56px, (min-width: 768px) 72px"
+          sizes="200px, (min-width: 768px) 72px"
           src={image || '/images/placeholder.jpg'}
           alt="Avatar"
           className={classes.image}

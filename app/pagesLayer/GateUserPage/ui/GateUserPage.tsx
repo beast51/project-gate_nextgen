@@ -1,8 +1,9 @@
 import { FC } from 'react';
 import classes from './GateUserPage.module.scss';
 import { getGateUserFromDb } from '../model/gateUsers';
-import { UploadImageButton } from '@/featuresLayer/UploadImageButton';
+import { ImageControlPanel } from '@/featuresLayer/ImageControlPanel';
 import { Slider } from '@/sharedLayer/ui/Slider';
+import { GateUserControlPanel } from '@/featuresLayer/GateUserControlPanel';
 
 export type GateUserPageProps = {
   phoneNumber: string;
@@ -16,12 +17,14 @@ export const GateUserPage: FC<GateUserPageProps> = async ({ phoneNumber }) => {
     <div className={classes.gateUsersPage}>
       <Slider user={user} />
       <div className={classes.container}>
-        USER Page
         <p>{user.name}</p>
-        <UploadImageButton
+        <p>кв.{user.apartmentNumber}</p>
+
+        <ImageControlPanel
           apartmentNumber={user.apartmentNumber}
           carNumber={user.carNumber[0]}
         />
+        <GateUserControlPanel user={user} />
       </div>
     </div>
   );

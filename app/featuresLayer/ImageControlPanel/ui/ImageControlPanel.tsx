@@ -3,13 +3,14 @@
 import React, { FC } from 'react';
 import { HiPhoto } from 'react-icons/hi2';
 import { CldUploadButton } from 'next-cloudinary';
-import { UploadImageButtonProps } from '../UploadImageButton.type';
+import { ImageControlPanelProps } from '../UploadImageButton.type';
 import { Button } from '@/sharedLayer/ui/Button';
 // import { deleteFolder } from '@/app/pagesLayer/GateUserPage/model/cloudinary';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import classes from './ImageControlPanel.module.scss';
 
-export const UploadImageButton: FC<UploadImageButtonProps> = ({
+export const ImageControlPanel: FC<ImageControlPanelProps> = ({
   mainImage,
   apartmentNumber,
   carNumber,
@@ -30,7 +31,7 @@ export const UploadImageButton: FC<UploadImageButtonProps> = ({
   };
 
   return (
-    <>
+    <div className={classes.imageControlWrapper}>
       <CldUploadButton
         options={{
           multiple: true,
@@ -41,10 +42,12 @@ export const UploadImageButton: FC<UploadImageButtonProps> = ({
           console.log('done uploading', result?.info?.secure_url)
         }
         uploadPreset="gateUser"
+        className={classes.button}
       >
-        <HiPhoto />
+        Загрузить фото
+        {/* <HiPhoto className={classes.icon} /> */}
       </CldUploadButton>
-      <Button onClick={() => deleteFiles('test')}>Удалить фотки</Button>
-    </>
+      <Button onClick={() => deleteFiles('test')}>Удалить фото</Button>
+    </div>
   );
 };

@@ -42,9 +42,6 @@ export const AddGateUserForm = () => {
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
-
-    // console.log(data);
-    // setIsLoading(false);
     axios
       .post('/api/users/add_user', data, {
         headers: {
