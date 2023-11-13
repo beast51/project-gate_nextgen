@@ -1,8 +1,8 @@
 export const deleteGateUserFromApi = async (id: string) => {
-  const url = 'https://cstat.nextel.com.ua:8443/tracking/contacts/remove';
+  const url = `${process.env.UNITALK_URL}/contacts/remove`;
   const headers: Record<string, string> = {
-    Authorization: 'kddHSkpUbPSc',
-    ProjectId: '6275',
+    Authorization: `${process.env.UNITALK_AUTHORIZATION}`,
+    ProjectId: `${process.env.UNITALK_PROJECT_ID}`,
   };
 
   const formData = new FormData();

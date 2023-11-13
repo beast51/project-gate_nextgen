@@ -1,4 +1,5 @@
 import getSession from "@/widgetsLayer/Sidebar/actions/getSession";
+import prisma from '@/appLayer/libs/prismadb'
 
 export const deleteGateUserFromDb = async (phoneNumber: string) => {
   const session = await getSession();
