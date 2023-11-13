@@ -40,13 +40,15 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
           },
         },
       )
-      .then(() => console.log('data', phoneNumber))
+      .then(() => {
+        console.log('data', phoneNumber);
+        router.push('/users');
+        router.refresh();
+      })
       .catch(() => toast.error('Something went wrong'))
       .finally(() => {
         setIsLoading(false);
         // setIsOpenPopup(false);
-        router.push('/users');
-        router.refresh();
       });
   };
 
