@@ -15,7 +15,7 @@ export type GateUserControlPanelPropsType = {
 
 export type ActionType = 'delete' | 'block' | 'unblock' | 'edit' | null;
 
-const DATE_AND_TIME_NOW = formatTime(Date.now(), false);
+// const DATE_AND_TIME_NOW = formatTime(Date.now(), false);
 
 const getTimestampForOneWeekViolation = () => {
   const now = Date.now();
@@ -84,7 +84,7 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
           ...data,
           blackListedFrom: user.isBlackListed
             ? user.blackListedFrom
-            : DATE_AND_TIME_NOW,
+            : formatTime(Date.now(), false),
           blackListedTo: user.isBlackListed
             ? user.blackListedTo
             : DATE_AND_TIME_ONE_WEEK_VIOLATION,
