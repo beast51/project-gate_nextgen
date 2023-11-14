@@ -26,4 +26,9 @@
     background-color: var(--button-clear-bg);
     color: var(--button-clear-color);
   }
+
+  &:global(.warning) {
+    background-color: var(--button-warning-bg);
+    color: var(--button-warning-color);
+  }
 }

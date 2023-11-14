@@ -2,7 +2,7 @@ import { ButtonHTMLAttributes } from "react";
 
 export type ButtonProps = {
   type?: 'button' | 'submit' | 'reset'
-  variant?: "primary" | "outlined" | "clear" ;
+  variant?: "primary" | "warning" | "outlined" | "clear" ;
   fullWidth?: boolean
   // onClick?: () => void
   onClick?: any

@@ -7,6 +7,7 @@ import { paramsToString } from '@/sharedLayer/utils/paramsToString';
 import { ViolationsResponseType } from '../../model/types/ViolationList.types';
 import { ViolationsCard } from '../ViolationsCard/ViolationsCard';
 import classes from './ViolationsList.module.scss';
+import { useIntl } from 'react-intl';
 
 const START_OF_THE_DAY = formatTime(Date.now(), true);
 const DATE_AND_TIME_NOW = formatTime(Date.now(), false);
@@ -17,6 +18,7 @@ const getViolations = async (url: string): Promise<ViolationsResponseType> => {
 };
 
 export const ViolationsList = () => {
+  const { $t } = useIntl();
   const searchParams = useSearchParams();
   const from = paramsToString(searchParams.get('from')) || START_OF_THE_DAY;
   const to = paramsToString(searchParams.get('to')) || DATE_AND_TIME_NOW;
@@ -27,7 +29,7 @@ export const ViolationsList = () => {
   );
 
   if (isLoading) {
-    return <p className="m-4">Список посетителей загружается...</p>;
+    return <p className="m-4">{$t({ id: 'the visitor list is loading' })}</p>;
   }
 
   return (
@@ -46,7 +48,9 @@ export const ViolationsList = () => {
             })}
         </div>
       ) : (
-        <p className="m-4">На эту дату не было посетителей</p>
+        <p className="m-4">
+          {$t({ id: 'there were no visitors on this date' })}
+        </p>
       )}
     </>
   );

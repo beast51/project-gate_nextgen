@@ -7,6 +7,7 @@ import useSWR from 'swr';
 import { CallsCard } from '../CallsCard';
 import classes from './CallsList.module.scss';
 import { CallType } from '../../model/types/Calls.type';
+import { useIntl } from 'react-intl';
 
 export type CallsListPropsType = {};
 
@@ -19,6 +20,7 @@ const getCalls = async (url: string) => {
 };
 
 export const CallsList: FC<CallsListPropsType> = () => {
+  const { $t } = useIntl();
   const searchParams = useSearchParams();
   const from = paramsToString(searchParams.get('from')) || START_OF_THE_DAY;
   const to = paramsToString(searchParams.get('to')) || DATE_AND_TIME_NOW;
@@ -48,7 +50,7 @@ export const CallsList: FC<CallsListPropsType> = () => {
   );
 
   if (isLoading) {
-    return <p className="m-4">Звонки загружаются...</p>;
+    return <p className="m-4">{$t({ id: 'calls are loading' })}</p>;
   }
 
   return (

@@ -7,8 +7,10 @@ import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Button } from '@/sharedLayer/ui/Button';
 import { FormInput } from '@/sharedLayer/ui/FormInput';
+import { useIntl } from 'react-intl';
 
 export const AddGateUserForm = () => {
+  const { $t } = useIntl();
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -49,10 +51,10 @@ export const AddGateUserForm = () => {
         },
       })
       .then(() => console.log('data', data))
-      .catch(() => toast.error('Something went wrong'))
+      .catch(() => toast.error($t({ id: 'something went wrong' })))
       .finally(() => {
         setIsLoading(false);
-        toast.success('User added successful');
+        toast.success($t({ id: 'user added successful' }));
         reset();
       });
   };
@@ -80,8 +82,8 @@ export const AddGateUserForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormInput
           id="name"
-          label="Name"
-          placeholder="Enter name"
+          label={$t({ id: 'name' })}
+          placeholder={$t({ id: 'enter name' })}
           register={register}
           errors={errors}
           disabled={isLoading}
@@ -89,8 +91,8 @@ export const AddGateUserForm = () => {
         />
         <FormInput
           id="phoneNumber"
-          label="Phone number"
-          placeholder="Enter phone number"
+          label={$t({ id: 'phonenumber' })}
+          placeholder={$t({ id: 'enter phonenumber' })}
           type="phone"
           register={register}
           errors={errors}
@@ -101,8 +103,8 @@ export const AddGateUserForm = () => {
         />
         <FormInput
           id="carNumber"
-          label="Car number"
-          placeholder="Enter car number"
+          label={$t({ id: 'vehicle number' })}
+          placeholder={$t({ id: 'enter vehicle number' })}
           type="text"
           register={register}
           errors={errors}
@@ -110,8 +112,8 @@ export const AddGateUserForm = () => {
         />
         <FormInput
           id="apartmentNumber"
-          label="Apartment"
-          placeholder="Enter apartment number"
+          label={$t({ id: 'apartment' })}
+          placeholder={$t({ id: 'enter apartment number' })}
           type="text"
           register={register}
           errors={errors}
@@ -119,7 +121,7 @@ export const AddGateUserForm = () => {
           required
         />
         <Button disabled={isLoading} fullWidth type="submit">
-          Add user
+          {$t({ id: 'add user' })}
         </Button>
       </form>
     </div>

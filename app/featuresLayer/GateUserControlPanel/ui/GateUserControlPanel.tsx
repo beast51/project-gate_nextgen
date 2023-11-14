@@ -1,6 +1,6 @@
 'use client';
 import { Button } from '@/sharedLayer/ui/Button';
-import { FC, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import classes from './GateUserControlPanel.module.scss';
 import { GateUserType } from '@/entitiesLayer/GateUser/model/types/GateUser.type';
 import axios from 'axios';
@@ -8,27 +8,23 @@ import toast from 'react-hot-toast';
 import Popup from '@/sharedLayer/ui/Popup/ui/Popup';
 import { useRouter } from 'next/navigation';
 import { formatTime } from '@/sharedLayer/utils/date';
+import { BlockButtons } from './BlockButtons/BlockButtons';
+import { ConfirmButtons } from './ConfirmButtons/ConfirmButtons';
+import {
+  ActionType,
+  GateUserControlPanelPropsType,
+} from '../GateUserControlPanel.type';
+import { useIntl } from 'react-intl';
 
-export type GateUserControlPanelPropsType = {
-  user: GateUserType;
-};
-
-export type ActionType = 'delete' | 'block' | 'unblock' | 'edit' | null;
-
-// const DATE_AND_TIME_NOW = formatTime(Date.now(), false);
-
-const getTimestampForOneWeekViolation = () => {
+const getTimestampInDays = (days: number) => {
   const now = Date.now();
-  const inOneWeek = now + 7 * 24 * 60 * 60 * 1000;
+  const inOneWeek = now + days * 24 * 60 * 60 * 1000;
   let futureDate = new Date(inOneWeek);
   futureDate.setHours(23, 50, 0, 0);
   return futureDate.getTime();
 };
 
-const DATE_AND_TIME_ONE_WEEK_VIOLATION = formatTime(
-  getTimestampForOneWeekViolation(),
-  false,
-);
+const ONE_WEEK = 7;
 
 export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
   user,
@@ -37,13 +33,16 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
   const [isOpenPopup, setIsOpenPopup] = useState(false);
   const [action, setAction] = useState<ActionType>(null);
   const router = useRouter();
+  const { $t } = useIntl();
 
   const handleOpen = (actionType: ActionType) => {
     console.log('click');
     setAction(actionType);
     setIsOpenPopup(true);
   };
-  const handleClose = () => setIsOpenPopup(false);
+  const handleClose = useCallback(() => {
+    setIsOpenPopup(false);
+  }, [setIsOpenPopup]);
 
   const deleteUserHandler = (phoneNumber: string, id: string) => {
     setIsLoading(true);
@@ -71,7 +70,7 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
       });
   };
 
-  const changeStatusHandler = async (data: GateUserType) => {
+  const changeStatusHandler = async (data: GateUserType, days: number) => {
     // console.log(action + '' + phoneNumber);
     setIsLoading(true);
 
@@ -87,7 +86,7 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
             : formatTime(Date.now(), false),
           blackListedTo: user.isBlackListed
             ? user.blackListedTo
-            : DATE_AND_TIME_ONE_WEEK_VIOLATION,
+            : formatTime(getTimestampInDays(days), false),
           isBlackListed: !user.isBlackListed,
         },
         {
@@ -107,24 +106,30 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
       });
   };
 
-  const confirmAction = (action: ActionType) => {
-    if (action === 'delete') {
-      deleteUserHandler(user.phoneNumber, user.idInApi);
-    }
-    if (action === 'block' || 'unblock)') changeStatusHandler(user);
-    // if (action === 'edit') editUserHandler(data);
-  };
+  const confirmAction = useCallback(
+    (action: ActionType, time = ONE_WEEK) => {
+      if (action === 'delete') {
+        deleteUserHandler(user.phoneNumber, user.idInApi);
+      }
+      if (action === 'block' || 'unblock)') changeStatusHandler(user, time);
+      // if (action === 'edit') editUserHandler(data);
+    },
+    [deleteUserHandler, user.phoneNumber, user.idInApi, changeStatusHandler],
+  );
 
   return (
     <>
       <div className={classes.wrapper}>
         <Button
           onClick={() => handleOpen(user.isBlackListed ? 'unblock' : 'block')}
+          variant={user.isBlackListed ? 'primary' : 'warning'}
         >
-          {user.isBlackListed ? 'Разблокировать' : 'Заблокировать'}
+          {$t({ id: user.isBlackListed ? 'unblock' : 'block' })}
         </Button>
-        <Button>Редактировать</Button>
-        <Button onClick={() => handleOpen('delete')}>Удалить</Button>
+        <Button>{$t({ id: 'edit' })}</Button>
+        <Button onClick={() => handleOpen('delete')} variant="warning">
+          {$t({ id: 'delete' })}
+        </Button>
       </div>
       <Popup
         onClose={handleClose}
@@ -136,15 +141,21 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
           <>Редактирование</>
         ) : (
           <>
-            <div>Are you sure?</div>
-            <div className="flex justify-center items-center">
-              <Button onClick={() => confirmAction(action)} className="w-20">
-                Yes
-              </Button>
-              <Button onClick={handleClose} className="w-20 ml-5">
-                No
-              </Button>
-            </div>
+            {user.isBlackListed ? (
+              <ConfirmButtons
+                confirmAction={confirmAction}
+                handleClose={handleClose}
+                action={action}
+                isLoading={isLoading}
+              />
+            ) : (
+              <BlockButtons
+                confirmAction={confirmAction}
+                handleClose={handleClose}
+                action={action}
+                isLoading={isLoading}
+              />
+            )}
           </>
         )}
       </Popup>

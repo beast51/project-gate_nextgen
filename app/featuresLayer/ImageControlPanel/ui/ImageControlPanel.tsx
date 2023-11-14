@@ -9,12 +9,14 @@ import { Button } from '@/sharedLayer/ui/Button';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import classes from './ImageControlPanel.module.scss';
+import { useIntl } from 'react-intl';
 
 export const ImageControlPanel: FC<ImageControlPanelProps> = ({
   mainImage,
   apartmentNumber,
   carNumber,
 }) => {
+  const { $t } = useIntl();
   console.log('apartmentNumber', apartmentNumber);
   console.log('carNumber', carNumber);
 
@@ -44,10 +46,12 @@ export const ImageControlPanel: FC<ImageControlPanelProps> = ({
         uploadPreset="gateUser"
         className={classes.button}
       >
-        Загрузить фото
+        {$t({ id: 'upload a photo' })}
         {/* <HiPhoto className={classes.icon} /> */}
       </CldUploadButton>
-      <Button onClick={() => deleteFiles('test')}>Удалить фото</Button>
+      <Button onClick={() => deleteFiles('test')}>
+        {$t({ id: 'delete a photo' })}
+      </Button>
     </div>
   );
 };
