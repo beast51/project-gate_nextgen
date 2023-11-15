@@ -5,11 +5,11 @@ import classes from './ConfirmButtons.module.scss';
 import { useIntl } from 'react-intl';
 
 export const ConfirmButtons: FC<ConfirmButtonsPropsType> = memo(
-  ({ confirmAction, handleClose, isLoading, action }) => {
+  ({ confirmAction, handleClose, isLoading, action, title }) => {
     const { $t } = useIntl();
     return (
       <div className={classes.container}>
-        <div>{$t({ id: 'unblock a user?' })}</div>
+        <div>{title}</div>
         <div className={classes.wrapper}>
           <Button
             onClick={() => confirmAction(action)}

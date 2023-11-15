@@ -53,7 +53,7 @@ export const UserBrowser: FC<UserBrowserType> = ({ users }) => {
       <div className={classes.header}>
         <div className={classes.container}>
           <Input
-            label="Search"
+            label={$t({ id: 'search' })}
             value={searchQuery}
             onChange={handleSearchInput}
           />

@@ -34,6 +34,8 @@
   "add user": "Add user",
   "there were no visitors on this date": "There were no visitors on this date",
   "the visitor list is loading": "The visitor list is loading",
-  "calls are loading": "Calls are loading..."
+  "calls are loading": "Calls are loading...",
+  "search": "Search",
+  "delete a user?": "Delete a user?"
 
 } 

@@ -5,4 +5,5 @@ export type ConfirmButtonsPropsType = {
   handleClose: () => void
   action: ActionType
   isLoading: boolean
+  title: string
 }

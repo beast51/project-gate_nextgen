@@ -5,4 +5,5 @@ export type BlockButtonsPropsType = {
   handleClose: () => void
   action: ActionType
   isLoading: boolean
+  title: string
 }

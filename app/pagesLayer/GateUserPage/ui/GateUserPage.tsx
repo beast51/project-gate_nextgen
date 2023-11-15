@@ -1,9 +1,10 @@
 import { FC } from 'react';
 import classes from './GateUserPage.module.scss';
 import { getGateUserFromDb } from '../model/gateUsers';
-import { ImageControlPanel } from '@/featuresLayer/ImageControlPanel';
+
 import { Slider } from '@/sharedLayer/ui/Slider';
 import { GateUserControlPanel } from '@/featuresLayer/GateUserControlPanel';
+import { ImageControlPanel } from '@/featuresLayer/ImageControlPanel';
 
 export type GateUserPageProps = {
   phoneNumber: string;

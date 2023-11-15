@@ -137,9 +137,8 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
         className={classes.popup}
         // className="flex flex-col w-3/4 h-32 max-w-xs justify-between items-center p-5"
       >
-        {action === 'edit' ? (
-          <>Редактирование</>
-        ) : (
+        {action === 'edit' && <>Редактирование</>}
+        {(action === 'block' || action === 'unblock') && (
           <>
             {user.isBlackListed ? (
               <ConfirmButtons
@@ -147,6 +146,7 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
                 handleClose={handleClose}
                 action={action}
                 isLoading={isLoading}
+                title={$t({ id: 'unblock a user?' })}
               />
             ) : (
               <BlockButtons
@@ -154,9 +154,19 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
                 handleClose={handleClose}
                 action={action}
                 isLoading={isLoading}
+                title={$t({ id: 'block a user for:' })}
               />
             )}
           </>
+        )}
+        {action === 'delete' && (
+          <ConfirmButtons
+            confirmAction={confirmAction}
+            handleClose={handleClose}
+            action={action}
+            isLoading={isLoading}
+            title={$t({ id: 'delete a user?' })}
+          />
         )}
       </Popup>
     </>

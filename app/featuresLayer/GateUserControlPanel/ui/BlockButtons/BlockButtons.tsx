@@ -9,11 +9,11 @@ const ONE_WEEK = 7;
 const TWO_WEEK = 14;
 
 export const BlockButtons: FC<BlockButtonsPropsType> = memo(
-  ({ confirmAction, handleClose, isLoading, action }) => {
+  ({ confirmAction, handleClose, isLoading, action, title }) => {
     const { $t } = useIntl();
     return (
       <div className={classes.container}>
-        <p>{$t({ id: 'block a user for:' })}</p>
+        <p>{title}</p>
         <div className={cn(classes.wrapper, 'full-width')}>
           <Button
             onClick={() => confirmAction(action, ONE_WEEK)}

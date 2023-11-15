@@ -1,1 +1,1 @@
-export {ImageControlPanel} from './ui/ImageControlPanel'
+export { ImageControlPanel } from './ui/ImageControlPanel'
