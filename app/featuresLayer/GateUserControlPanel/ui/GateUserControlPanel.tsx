@@ -24,7 +24,7 @@ const getTimestampInDays = (days: number) => {
   return futureDate.getTime();
 };
 
-const ONE_WEEK = 7;
+const ONE_WEEK = 8;
 
 export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
   user,
