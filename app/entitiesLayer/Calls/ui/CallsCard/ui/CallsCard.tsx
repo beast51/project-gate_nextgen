@@ -6,9 +6,11 @@ import cn from 'classnames';
 import classes from './CallsCard.module.scss';
 import moment from 'moment';
 import { CallsCardPropsType } from '../../../model/types/Calls.type';
+import { useIntl } from 'react-intl';
 
 export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
   console.log(call);
+  const { $t } = useIntl();
   return (
     <li
       onDoubleClick={() => onDoubleClick(call.number)}
@@ -40,10 +42,12 @@ export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
       </div>
       {call.isBlackListed && (
         <div className={classes.blackListed}>
-          <p>Заблокирован:</p>
+          <p>{$t({ id: 'Blocked' })}</p>
           {call.blackListedFrom && call.blackListedTo && (
             <p>
-              c {moment(call.blackListedFrom).format('DD-MM-YYYY HH:mm')} по{' '}
+              {$t({ id: 'from' })}{' '}
+              {moment(call.blackListedFrom).format('DD-MM-YYYY HH:mm')}{' '}
+              {$t({ id: 'to' })}{' '}
               {moment(call.blackListedTo).format('DD-MM-YYYY HH:mm')}
             </p>
           )}

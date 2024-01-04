@@ -14,6 +14,7 @@ const Popup: React.FC<ModalProps> = ({
   fullWidth,
   fullHeight,
   children,
+  isSpectator,
 }) => {
   const { theme } = useTheme();
   return (

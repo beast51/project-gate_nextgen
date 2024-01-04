@@ -49,7 +49,7 @@ export const ImageControlPanel: FC<ImageControlPanelProps> = ({
         {$t({ id: 'upload a photo' })}
         {/* <HiPhoto className={classes.icon} /> */}
       </CldUploadButton>
-      <Button onClick={() => deleteFiles('test')}>
+      <Button onClick={() => deleteFiles('test')} disabled>
         {$t({ id: 'delete a photo' })}
       </Button>
     </div>

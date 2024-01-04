@@ -5,7 +5,7 @@ import classes from './ConfirmButtons.module.scss';
 import { useIntl } from 'react-intl';
 
 export const ConfirmButtons: FC<ConfirmButtonsPropsType> = memo(
-  ({ confirmAction, handleClose, isLoading, action, title }) => {
+  ({ confirmAction, handleClose, isLoading, action, title, isSpectator }) => {
     const { $t } = useIntl();
     return (
       <div className={classes.container}>
@@ -13,7 +13,7 @@ export const ConfirmButtons: FC<ConfirmButtonsPropsType> = memo(
         <div className={classes.wrapper}>
           <Button
             onClick={() => confirmAction(action)}
-            disabled={isLoading}
+            disabled={isLoading || isSpectator}
             fullWidth
           >
             {$t({ id: 'yes' })}

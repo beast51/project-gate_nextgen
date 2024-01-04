@@ -2,7 +2,7 @@
 
 import { Button } from '@/sharedLayer/ui/Button';
 import { Pagination } from '@/sharedLayer/ui/Pagination';
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { FaUserPlus } from 'react-icons/fa6';
 import { useIntl } from 'react-intl';
 import { UserBrowserType } from '../UserBrowser.type';
@@ -20,7 +20,7 @@ import { ToggleTheme } from '@/sharedLayer/ui/Toggle';
 
 const ITEMS_PER_PAGE = 30;
 
-export const UserBrowser: FC<UserBrowserType> = ({ users }) => {
+export const UserBrowser: FC<UserBrowserType> = ({ users, isSpectator }) => {
   const pathname = usePathname();
   const router = useRouter();
   const { $t } = useIntl();
@@ -50,7 +50,11 @@ export const UserBrowser: FC<UserBrowserType> = ({ users }) => {
           <Input
             label={$t({ id: 'search' })}
             value={searchQuery}
-            onChange={handleSearchInput}
+            onChange={
+              isSpectator
+                ? () => alert('sorry, not for spectators')
+                : handleSearchInput
+            }
           />
           <Button className="w-20 ml-2" onClick={handleOpen}>
             <FaUserPlus className="w-6 h-6" />
@@ -72,17 +76,15 @@ export const UserBrowser: FC<UserBrowserType> = ({ users }) => {
         itemsPerPage={ITEMS_PER_PAGE}
         count={Math.ceil(searchResult.length / ITEMS_PER_PAGE)}
         page={page}
-        onChange={handlePageChange}
+        onChange={
+          isSpectator
+            ? () => alert('sorry, not for spectators')
+            : handlePageChange
+        }
         error={$t({ id: 'Unfortunately, there are no results...' })}
       />
-      <Popup
-        onClose={handleClose}
-        isOpen={open}
-        fullHeight
-        fullWidth
-        // className="flex items-center justify-center"
-      >
-        <AddGateUserForm />
+      <Popup onClose={handleClose} isOpen={open} fullHeight fullWidth>
+        <AddGateUserForm isSpectator={isSpectator} />
       </Popup>
     </>
   );

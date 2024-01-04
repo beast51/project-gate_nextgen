@@ -6,4 +6,5 @@ export type BlockButtonsPropsType = {
   action: ActionType
   isLoading: boolean
   title: string
+  isSpectator: boolean
 }

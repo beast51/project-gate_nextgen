@@ -39,7 +39,7 @@ export default async function UsersLayout({
 
   // const users = await getGateUserFromDb();
   return (
-    <Sidebar type="usersList" title="Список пользователей:">
+    <Sidebar type="usersList" title="">
       <div className="full-height pt64">
         {/* <UserList users={users} /> */}
         {children}

@@ -7,4 +7,5 @@ export type ModalProps = {
   children: ReactNode;
   fullWidth?: boolean;
   fullHeight?: boolean;
+  isSpectator?: boolean
 }

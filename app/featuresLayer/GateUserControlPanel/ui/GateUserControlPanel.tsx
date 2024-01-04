@@ -28,6 +28,7 @@ const ONE_WEEK = 8;
 
 export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
   user,
+  isSpectator,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpenPopup, setIsOpenPopup] = useState(false);
@@ -126,8 +127,12 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
         >
           {$t({ id: user.isBlackListed ? 'unblock' : 'block' })}
         </Button>
-        <Button>{$t({ id: 'edit' })}</Button>
-        <Button onClick={() => handleOpen('delete')} variant="warning">
+        <Button disabled={isSpectator}>{$t({ id: 'edit' })}</Button>
+        <Button
+          onClick={() => handleOpen('delete')}
+          variant="warning"
+          // disabled={isSpectator}
+        >
           {$t({ id: 'delete' })}
         </Button>
       </div>
@@ -147,6 +152,7 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
                 action={action}
                 isLoading={isLoading}
                 title={$t({ id: 'unblock a user?' })}
+                isSpectator={isSpectator}
               />
             ) : (
               <BlockButtons
@@ -155,6 +161,7 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
                 action={action}
                 isLoading={isLoading}
                 title={$t({ id: 'block a user for:' })}
+                isSpectator={isSpectator}
               />
             )}
           </>
@@ -166,6 +173,7 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
             action={action}
             isLoading={isLoading}
             title={$t({ id: 'delete a user?' })}
+            isSpectator={isSpectator}
           />
         )}
       </Popup>

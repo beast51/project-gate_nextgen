@@ -38,5 +38,8 @@
   "calls are loading": "Calls are loading...",
   "search": "Search",
   "delete a user?": "Delete a user?",
-  "Exit": "Exit"
+  "Exit": "Exit",
+  "Blocked": "Blocked:",
+  "from": "from",
+  "to": "to"
 } 

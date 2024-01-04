@@ -6,4 +6,5 @@ export type ConfirmButtonsPropsType = {
   action: ActionType
   isLoading: boolean
   title: string
+  isSpectator: boolean
 }
