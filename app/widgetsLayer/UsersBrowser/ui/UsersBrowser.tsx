@@ -15,6 +15,8 @@ import { FaEllipsisV } from 'react-icons/fa';
 import { GateUserCardsList } from '@/entitiesLayer/GateUser/ui/GateUserCardsList/GateUserCardsList';
 import Popup from '@/sharedLayer/ui/Popup/ui/Popup';
 import { AddGateUserForm } from '@/featuresLayer/AddGateUserForm';
+import LangSwitcher from '@/sharedLayer/ui/LangSwitcher/LangSwitcher';
+import { ToggleTheme } from '@/sharedLayer/ui/Toggle';
 
 const ITEMS_PER_PAGE = 30;
 
@@ -31,13 +33,6 @@ export const UserBrowser: FC<UserBrowserType> = ({ users }) => {
     router.push('/users?add=new');
     router.refresh();
   };
-
-  // useEffect(() => {
-  //   if (!open) {
-  //     router.prefetch('/users')
-  //     console.log('reload');
-  //   }
-  // }, [open]);
 
   const {
     page,
@@ -61,9 +56,15 @@ export const UserBrowser: FC<UserBrowserType> = ({ users }) => {
             <FaUserPlus className="w-6 h-6" />
           </Button>
         </div>
-        <AppLink href={`${pathname}/settings`}>
-          <FaEllipsisV />
-        </AppLink>
+        <div className={classes.settingsWrapper}>
+          <AppLink href={`${pathname}/settings`}>
+            <FaEllipsisV />
+          </AppLink>
+        </div>
+        <div className={classes.wrapper}>
+          <LangSwitcher />
+          <ToggleTheme />
+        </div>
       </div>
       <GateUserCardsList users={paginatedData} />
       <Pagination

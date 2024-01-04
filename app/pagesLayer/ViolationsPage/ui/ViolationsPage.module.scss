@@ -1,3 +1,9 @@
 .violations {
   padding: 8px 8px 72px;
 }
+
+@media (min-width: 1024px) {
+  .violations {
+    padding: 16px 16px 16px 96px;
+  }
+}

@@ -5,6 +5,7 @@
   "Phone number": "Phone number",
   "Password": "Password",
   "Select date": "Select date",
+  "Language": "Language",
   "All users:": "All users:",
   "Unfortunately, there are no results...": "Unfortunately, there are no results...",
   "unblock a user?": "Unblock a user?",
@@ -36,6 +37,6 @@
   "the visitor list is loading": "The visitor list is loading",
   "calls are loading": "Calls are loading...",
   "search": "Search",
-  "delete a user?": "Delete a user?"
-
+  "delete a user?": "Delete a user?",
+  "Exit": "Exit"
 } 

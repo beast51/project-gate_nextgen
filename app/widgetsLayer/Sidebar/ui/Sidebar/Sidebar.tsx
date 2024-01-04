@@ -1,9 +1,3 @@
-// import getCurrentUser from '@/app/actions/getCurrentUser';
-// import DesktopSidebar from './DesktopSidebar';
-// import MobileFooter from './MobileFooter';
-// import MobileHeader from './MobileHeader';
-// import clsx from 'clsx';
-import getCurrentUser from '../../actions/getCurrentUser';
 import MobileFooter from '../MobileFooter/MobileFooter';
 import MobileHeader from '../MobileHeader/MobileHeader';
 import cn from 'classnames';
@@ -18,10 +12,6 @@ export async function Sidebar({
   type: 'usersList' | 'callsList' | 'violationsList' | 'settings';
   children: React.ReactNode;
 }) {
-  // const currentUser = await getCurrentUser();
-  // console.log('type: ', type);
-  // console.log('currentUser', currentUser);
-
   return (
     <>
       <div
@@ -33,14 +23,7 @@ export async function Sidebar({
         {type !== 'usersList' && <MobileHeader title={title} type={type} />}
         {type !== 'settings' && <MobileFooter />}
         {/* <DesktopSidebar currentUser={currentUser!} /> */}
-        <div
-        // className={clsx(
-        //   type !== 'usersList' ? 'pt-32' : 'pt-15',
-        //   'lg:pl-20 h-full',
-        // )}
-        >
-          {children}
-        </div>
+        <>{children}</>
       </div>
     </>
   );

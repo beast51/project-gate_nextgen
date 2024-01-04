@@ -8,3 +8,11 @@
 }
 
 .gateUsersPage {}
+
+@media (min-width: 1024px) {
+  .gateUsersPage {
+    display: grid;
+    grid-template-columns: 600px 400px;
+    gap: 24px;
+  }
+}

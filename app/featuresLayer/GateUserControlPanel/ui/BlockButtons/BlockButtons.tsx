@@ -5,8 +5,8 @@ import classes from './BlockButtons.module.scss';
 import cn from 'classnames';
 import { useIntl } from 'react-intl';
 
-const ONE_WEEK = 7;
-const TWO_WEEK = 14;
+const ONE_WEEK = 8;
+const TWO_WEEK = 15;
 
 export const BlockButtons: FC<BlockButtonsPropsType> = memo(
   ({ confirmAction, handleClose, isLoading, action, title }) => {

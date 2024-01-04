@@ -1,22 +1,29 @@
-'use client';
-
-import React from 'react';
-import { useTheme } from '(appLayer)/providers/ThemeProvider';
-import { MobileDatePicker } from '@mui/x-date-pickers';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider/LocalizationProvider';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
 import { ukUA } from '@mui/x-date-pickers/locales';
 import { enUS } from '@mui/x-date-pickers/locales';
-import 'moment/locale/uk';
+import {
+  Select as MuiSelect,
+  SelectChangeEvent,
+  ThemeProvider,
+  createTheme,
+} from '@mui/material/';
 import { useCurrentLocale } from 'next-i18n-router/client';
+import { useTheme } from '@/appLayer/providers/ThemeProvider';
 import i18nConfig from '@/sharedLayer/config/i18n/i18nConfig';
-import { DatePickerTypeProps } from '../DatePicker.type';
 
-export const DatePicker: React.FC<DatePickerTypeProps> = ({
+type SelectPropsType = {
+  label: string;
+  value: string;
+  onChange: (e: SelectChangeEvent<string>) => void;
+  children: React.ReactNode;
+};
+
+export const Select: React.FC<SelectPropsType> = ({
   label,
-  selectedDate,
-  onAccept,
+  value,
+  onChange,
+  children,
 }) => {
   const currentLocale = useCurrentLocale(i18nConfig);
   const { theme: THEME } = useTheme();
@@ -27,7 +34,9 @@ export const DatePicker: React.FC<DatePickerTypeProps> = ({
         MuiPaper: {
           styleOverrides: {
             root: {
-              borderRadius: '32px',
+              // left: '8px',
+              borderRadius: '24px',
+              marginTop: '8px',
             },
           },
         },
@@ -35,6 +44,20 @@ export const DatePicker: React.FC<DatePickerTypeProps> = ({
           styleOverrides: {
             root: {
               color: '#11A694',
+            },
+          },
+        },
+        MuiList: {
+          styleOverrides: {
+            root: {
+              padding: '0',
+            },
+          },
+        },
+        MuiSvgIcon: {
+          styleOverrides: {
+            root: {
+              color: '#11A694!important',
             },
           },
         },
@@ -61,7 +84,7 @@ export const DatePicker: React.FC<DatePickerTypeProps> = ({
             input: {
               cursor: 'pointer',
               padding: '6px 18px',
-              width: '90px',
+              // width: '90px',
             },
             notchedOutline: {
               borderColor: '#11A694 !important',
@@ -79,17 +102,12 @@ export const DatePicker: React.FC<DatePickerTypeProps> = ({
 
   return (
     <ThemeProvider theme={newTheme}>
-      <LocalizationProvider
-        dateAdapter={AdapterMoment}
-        adapterLocale={currentLocale}
-      >
-        <MobileDatePicker
-          label={label}
-          format="DD-MM-YYYY"
-          value={selectedDate}
-          onAccept={onAccept}
-        />
-      </LocalizationProvider>
+      <FormControl fullWidth>
+        <InputLabel>{label}</InputLabel>
+        <MuiSelect value={value} label={label} onChange={onChange}>
+          {children}
+        </MuiSelect>
+      </FormControl>
     </ThemeProvider>
   );
 };

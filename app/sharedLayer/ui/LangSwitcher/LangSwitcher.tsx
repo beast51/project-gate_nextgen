@@ -4,14 +4,17 @@ import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import { useCurrentLocale } from 'next-i18n-router/client';
 import i18nConfig from '../../config/i18n/i18nConfig';
-import { ChangeEvent } from 'react';
+import { Select } from '../Select';
+import { MenuItem, SelectChangeEvent } from '@mui/material';
+import { useIntl } from 'react-intl';
 
 export default function LanguageChanger() {
   const router = useRouter();
   const currentPathname = usePathname();
   const currentLocale = useCurrentLocale(i18nConfig);
+  const { $t } = useIntl();
 
-  const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
+  const handleChange = (e: SelectChangeEvent<string>) => {
     const newLocale = e.target.value;
 
     // set cookie for next-i18n-router
@@ -37,9 +40,13 @@ export default function LanguageChanger() {
   };
 
   return (
-    <select onChange={handleChange} value={currentLocale}>
-      <option value="uk">Ukrainian</option>
-      <option value="en">English</option>
-    </select>
+    <Select
+      label={$t({ id: 'Language' })}
+      value={currentLocale!}
+      onChange={handleChange}
+    >
+      <MenuItem value="uk">Українська</MenuItem>
+      <MenuItem value="en">English</MenuItem>
+    </Select>
   );
 }

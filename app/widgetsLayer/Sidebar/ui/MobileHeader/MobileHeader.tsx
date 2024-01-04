@@ -9,12 +9,11 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import classes from './MobileHeader.module.scss';
-import { Button } from '@/sharedLayer/ui/Button';
-import { FaEllipsisV, FaKey, FaUserPlus } from 'react-icons/fa';
+import { FaEllipsisV } from 'react-icons/fa';
 import { FaArrowLeftLong } from 'react-icons/fa6';
-import Link from 'next/link';
 import { AppLink } from '@/sharedLayer/ui/AppLink';
-import { TextField } from '@mui/material';
+import LangSwitcher from '@/sharedLayer/ui/LangSwitcher/LangSwitcher';
+import { ToggleTheme } from '@/sharedLayer/ui/Toggle';
 
 export const getFromToFromDataPicker = (date: string | null) => {
   const from = moment(date, 'ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (zz)').format(
@@ -38,15 +37,11 @@ const MobileHeader = ({
 }) => {
   const { $t } = useIntl();
   const router = useRouter();
-  console.log();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const from = paramsToString(searchParams.get('from')) || START_OF_THE_DAY;
   const TIME_FROM_URL = useMemo(() => moment(from), [from]);
   const [selectedDate, setSelectedDate] = useState(TIME_FROM_URL || TIME_NOW);
-
-  console.log('pathname', pathname);
-  console.log('searchParams', searchParams);
 
   const datePickerHandler = (value: string | null) => {
     const { from, to } = getFromToFromDataPicker(value);
@@ -60,7 +55,6 @@ const MobileHeader = ({
   return (
     <div className={classes.header}>
       <div className={classes.container}>
-        {/* <p className="m-4 font-lg font-medium">{title}</p> */}
         {(type === 'callsList' || type === 'violationsList') && (
           <DatePicker
             label={$t({ id: 'Select date' })}
@@ -68,11 +62,18 @@ const MobileHeader = ({
             selectedDate={selectedDate}
           />
         )}
+        <div className={classes.wrapper}>
+          <LangSwitcher />
+          <ToggleTheme />
+        </div>
       </div>
+
       {type !== 'settings' ? (
-        <AppLink href={`${pathname}/settings`}>
-          <FaEllipsisV />
-        </AppLink>
+        <div className={classes.settingsWrapper}>
+          <AppLink href={`${pathname}/settings`}>
+            <FaEllipsisV />
+          </AppLink>
+        </div>
       ) : (
         <AppLink href={`${pathname.replace(/\/settings$/, '')}`}>
           <FaArrowLeftLong />

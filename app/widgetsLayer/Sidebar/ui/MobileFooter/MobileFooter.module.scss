@@ -14,10 +14,21 @@
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   backdrop-filter: saturate(180%) blur(20px);
 
-  // border-top: 1px solid var(--input-border); // Убедитесь, что у вас есть цвет по умолчанию для границы, или укажите его явно
+  // border-top: 1px solid var(--input-border); 
 
-  @media (min-width: 1024px) {
-    // lg в Tailwind соответствует минимальной ширине экрана в 1024px
-    display: none;
+
+}
+
+@media (min-width: 1024px) {
+  .mobileFooter {
+    padding: 24px 16px 0;
+    bottom: initial;
+    left: 0;
+    top: 64px;
+    width: 80px;
+    height: calc(100% - 64px);
+    grid-template-columns: 1fr;
+    grid-template-rows: 48px 48px 48px;
+    gap: 24px;
   }
 }

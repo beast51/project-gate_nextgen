@@ -5,6 +5,7 @@
   "Phone number": "Номер телефону",
   "Password": "Пароль",
   "Select date": "Оберіть дату",
+  "Language": "Мова",
   "All users:": "Усі користувачи:",
   "Unfortunately, there are no results...": "Нажаль, результатів не має...",
   "unblock a user?": "Розблокувати користувача?",
@@ -36,5 +37,6 @@
   "the visitor list is loading": "Список відвідувачів завантажується...",
   "calls are loading": "Дзвінки завантажуються...",
   "search": "Пошук",
-  "delete a user?": "Видалити користувача?"
+  "delete a user?": "Видалити користувача?",
+  "Exit": "Вихід"
 } 

@@ -7,3 +7,9 @@
   font-size: 18px;
   font-weight: 500;
 }
+
+@media (min-width: 1024px) {
+  .gateUsersPage {
+    padding: 16px 16px 16px 96px;
+  }
+}

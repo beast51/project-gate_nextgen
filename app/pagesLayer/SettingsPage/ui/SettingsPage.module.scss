@@ -1,3 +1,39 @@
 .settings {
-  padding: 80px 8px;
+  display: grid;
+  padding: 16px 16px 24px;
+  height: calc(100vh - 64px);
+  align-items: space-between;
+  width: 100%;
+  max-width: 912px;
+}
+
+.button {
+  align-self: flex-end;
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: 1fr 60px;
+  gap: 24px;
+  align-items: center;
+  align-content: flex-start;
+}
+
+@media (min-width: 768px) {
+  .wrapper {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .button {
+    width: 50%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .settings {
+    padding: 16px 16px 24px;
+    height: calc(100vh - 64px);
+
+  }
 }
