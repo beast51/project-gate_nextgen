@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { formatPhoneNumber } from '@/sharedLayer/utils/formatPhoneNumber';
 import { CarNumbersList } from '../CarNumbersList/CarNumbersList';
+import { rename } from '@/sharedLayer/utils/rename';
 
 export const GateUserCard: React.FC<GateUserCardProps> = memo(({ data }) => {
   const pathname = usePathname();
@@ -32,7 +33,7 @@ export const GateUserCard: React.FC<GateUserCardProps> = memo(({ data }) => {
             {data.apartmentNumber && `кв. ${data.apartmentNumber}`}
           </p>
         </div>
-        <p className={classes.name}>{data.name}</p>
+        <p className={classes.name}>{rename(data.name)}</p>
         <div className={classes.infoWrapper}>
           <CarNumbersList carNumber={data.carNumber} />
         </div>

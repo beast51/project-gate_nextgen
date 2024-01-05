@@ -5,6 +5,7 @@ import { Slider } from '@/sharedLayer/ui/Slider';
 import { GateUserControlPanel } from '@/featuresLayer/GateUserControlPanel';
 import { ImageControlPanel } from '@/featuresLayer/ImageControlPanel';
 import getSession from '@/widgetsLayer/Sidebar/actions/getSession';
+import { rename } from '@/sharedLayer/utils/rename';
 
 export type GateUserPageProps = {
   phoneNumber: string;
@@ -24,7 +25,7 @@ export const GateUserPage: FC<GateUserPageProps> = async ({ phoneNumber }) => {
         <Slider user={user} />
       </div>
       <div className={classes.container}>
-        <p>{user.name}</p>
+        <p>{rename(user.name)}</p>
         <p>кв.{user.apartmentNumber}</p>
 
         <ImageControlPanel

@@ -7,9 +7,11 @@ import classes from './CallsCard.module.scss';
 import moment from 'moment';
 import { CallsCardPropsType } from '../../../model/types/Calls.type';
 import { useIntl } from 'react-intl';
+import { rename } from '@/sharedLayer/utils/rename';
 
 export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
   console.log(call);
+  console.log('111111111111', rename(call.callerName));
   const { $t } = useIntl();
   return (
     <li
@@ -36,7 +38,7 @@ export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
             <p className={classes.phoneNumber}>
               {formatPhoneNumber(call.number)}
             </p>
-            <p className={classes.name}>{call.callerName}</p>
+            <p className={classes.name}>{rename(call.callerName)}</p>
           </div>
         </div>
       </div>
@@ -53,7 +55,7 @@ export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
           )}
         </div>
       )}
-      {call.carNumber.length > 0 && (
+      {call.carNumber.length > 0 && call.carNumber[0].length > 0 && (
         <div className={classes.infoWrapper}>
           <CarNumbersList
             carNumber={call.carNumber}
