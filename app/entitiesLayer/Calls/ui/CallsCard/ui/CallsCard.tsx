@@ -11,7 +11,7 @@ import { rename } from '@/sharedLayer/utils/rename';
 
 export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
   console.log(call);
-  console.log('111111111111', rename(call.callerName));
+
   const { $t } = useIntl();
   return (
     <li

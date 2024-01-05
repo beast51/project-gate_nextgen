@@ -34,9 +34,11 @@ export const GateUserCard: React.FC<GateUserCardProps> = memo(({ data }) => {
           </p>
         </div>
         <p className={classes.name}>{rename(data.name)}</p>
-        <div className={classes.infoWrapper}>
-          <CarNumbersList carNumber={data.carNumber} />
-        </div>
+        {data.carNumber.length > 0 && data.carNumber[0].length > 0 && (
+          <div className={classes.infoWrapper}>
+            <CarNumbersList carNumber={data.carNumber} />
+          </div>
+        )}
       </div>
     </Link>
   );

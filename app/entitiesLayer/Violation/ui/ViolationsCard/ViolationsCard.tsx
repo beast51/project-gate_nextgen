@@ -50,9 +50,11 @@ export const ViolationsCard: React.FC<ViolationsCardPropsType> = ({
               )}
             </div>
           </div>
-          <div className={classes.infoWrapper}>
-            <CarNumbersList carNumber={carNumber} />
-          </div>
+          {carNumber.length > 0 && carNumber[0].length > 0 && (
+            <div className={classes.infoWrapper}>
+              <CarNumbersList carNumber={carNumber} />
+            </div>
+          )}
         </div>
       </div>
 
