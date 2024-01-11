@@ -4,8 +4,10 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import GithubProvider from 'next-auth/providers/github'
 import GoogleProvider from 'next-auth/providers/google'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
+import { getPrismaClient } from '@/appLayer/libs/prismadb'
 
-import prisma from '@/appLayer/libs/prismadb'
+// import prisma from '@/appLayer/libs/prismadb'
+const prisma = getPrismaClient("DATABASE_URL");
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),

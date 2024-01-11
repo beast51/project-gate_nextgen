@@ -5,24 +5,27 @@ import {
   setCalls, 
   setTimeOfLastUpdateCalls 
 } from '@/entitiesLayer/Calls/model/services/calls';
+import getSession from '@/widgetsLayer/Sidebar/actions/getSession';
 
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
+  const session = await getSession();
+  const isDemo = session?.user?.name === 'spectator'
   const { searchParams } = new URL(req.url)
 
   const from = searchParams.get('from')?.toString()
   const to = searchParams.get('to')?.toString()
   const phoneNumber = searchParams.get('phoneNumber') || ''
 
-  const isTimeToUpdate = await isTimeToUpdateCalls()
+  const isTimeToUpdate = isDemo ? false :  await isTimeToUpdateCalls()
 
   if (isTimeToUpdate) {
     console.log('calls update started')
     const calls = await getCallsFromApi(from, to, phoneNumber)
     console.log('calls', calls)
     console.log('calls from api received')
-    await setCalls(calls)
+    !isDemo && await setCalls(calls)
     console.log('calls setted to bd')
     await setTimeOfLastUpdateCalls()
     console.log('calls update complete')

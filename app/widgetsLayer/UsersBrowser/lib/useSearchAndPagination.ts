@@ -8,7 +8,7 @@ export const useSearchAndPagination = (initialData: GateUserType[], itemsPerPage
   const [searchResult, setSearchResult] = useState(initialData);
 
   const paginatedData = useMemo(() => {
-    return searchResult.slice(
+    return searchResult?.slice(
       (page - 1) * itemsPerPage,
       page * itemsPerPage,
     );

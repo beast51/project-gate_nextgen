@@ -1,5 +1,6 @@
+import { getPrismaClient } from "@/appLayer/libs/prismadb";
 import getSession from "@/widgetsLayer/Sidebar/actions/getSession";
-import prisma from '@/appLayer/libs/prismadb'
+// import prisma from '@/appLayer/libs/prismadb'
 
 export const editGateUserInDb = async (data: {
   idInApi?: string,
@@ -13,6 +14,7 @@ export const editGateUserInDb = async (data: {
   blackListedTo?: string,
 }) => {
   const session = await getSession();
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
 
   if (!session?.user?.email) {
     return null

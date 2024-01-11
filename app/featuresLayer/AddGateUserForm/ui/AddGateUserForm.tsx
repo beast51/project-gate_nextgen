@@ -9,7 +9,7 @@ import { Button } from '@/sharedLayer/ui/Button';
 import { FormInput } from '@/sharedLayer/ui/FormInput';
 import { useIntl } from 'react-intl';
 
-export const AddGateUserForm = ({ isSpectator }: { isSpectator?: boolean }) => {
+export const AddGateUserForm = () => {
   const { $t } = useIntl();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -120,7 +120,7 @@ export const AddGateUserForm = ({ isSpectator }: { isSpectator?: boolean }) => {
           disabled={isLoading}
           required
         />
-        <Button disabled={isLoading || isSpectator} fullWidth type="submit">
+        <Button disabled={isLoading} fullWidth type="submit">
           {$t({ id: 'add user' })}
         </Button>
       </form>

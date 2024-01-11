@@ -1,8 +1,12 @@
+import getSession from "@/widgetsLayer/Sidebar/actions/getSession";
+
 export const deleteGateUserFromApi = async (id: string) => {
+  const session = await getSession();
+  const isDemo = session?.user?.name === 'spectator'
   const url = `${process.env.UNITALK_URL}/contacts/remove`;
   const headers: Record<string, string> = {
     Authorization: `${process.env.UNITALK_AUTHORIZATION}`,
-    ProjectId: `${process.env.UNITALK_PROJECT_ID}`,
+    ProjectId: isDemo ? process.env.DEMO_UNITALK_PROJECT_ID! : process.env.UNITALK_PROJECT_ID!,
   };
 
   const formData = new FormData();

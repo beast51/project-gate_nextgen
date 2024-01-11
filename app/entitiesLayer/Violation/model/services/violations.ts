@@ -3,6 +3,7 @@
 import { parseTime } from '@/sharedLayer/utils/date'
 import { getCallsByTimeRangeWithoutBlocked, getCallsFromApi, isTimeToUpdateCalls, setCalls, setTimeOfLastUpdateCalls } from '../../../Calls/model/services/calls'
 import moment from "moment"
+import getSession from '@/widgetsLayer/Sidebar/actions/getSession'
 
 
 
@@ -29,8 +30,9 @@ export const findViolations: any = async (from: string, to: string, phoneNumber=
   const violations: ViolationType[] = []
 
   // const calls = await getCallsFromApi(from, to)
-
-    const isTimeToUpdate = await isTimeToUpdateCalls()
+  const session = await getSession();
+  const isDemo = session?.user?.name === 'spectator'
+    const isTimeToUpdate = isDemo ? false : await isTimeToUpdateCalls()
 
   if (isTimeToUpdate) {
     console.log('violations update started')

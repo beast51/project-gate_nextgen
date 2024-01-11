@@ -1,9 +1,10 @@
+import { getPrismaClient } from "@/appLayer/libs/prismadb"
 import { formatTime } from "@/sharedLayer/utils/date"
 import { paramsToString } from "@/sharedLayer/utils/paramsToString"
 import getSession from "@/widgetsLayer/Sidebar/actions/getSession"
 import moment from 'moment-timezone'
 
-import prisma from '@/appLayer/libs/prismadb'
+// import prisma from '@/appLayer/libs/prismadb'
 
 type SerializeType = (data: any) => {
   number: string
@@ -28,11 +29,9 @@ export type getInfoFromPhoneNumberType = {
 } | null
 
 export const getInfoFromPhoneNumber =  async (phoneNumber: string): Promise<getInfoFromPhoneNumberType> => {
-  const session = await getSession();
+  
+  const prisma = getPrismaClient("DATABASE_URL");
 
-  if (!session?.user?.email) {
-    return null;
-  }
   try {
     const info = await prisma?.gateUser.findUnique({
       where: {
@@ -57,9 +56,13 @@ export const getInfoFromPhoneNumber =  async (phoneNumber: string): Promise<getI
 }
 
 export const getCallsFromApi = async (from: any, to: any, phoneNumber = '') => {
+  // const session = await getSession();
+  // const isDemo = session?.user?.name === 'spectator'
+
   const url = `${process.env.UNITALK_URL}/api/history/get`;
   const headers: Record<string, string> = {
     Authorization: process.env.UNITALK_INTERNAL_API_AUTHORIZATION!,
+    ProjectId: process.env.UNITALK_PROJECT_ID!,
     'Content-Type': 'application/json',
   };
   const payload = { 
@@ -83,9 +86,13 @@ export const getCallsFromApi = async (from: any, to: any, phoneNumber = '') => {
   return calls
 }
 export const getAllCallsFromApi = async () => {
+  const session = await getSession();
+  const isDemo = session?.user?.name === 'spectator'
+
   const url = `${process.env.UNITALK_URL}/api/history/get`;
   const headers: Record<string, string> = {
     Authorization: process.env.UNITALK_INTERNAL_API_AUTHORIZATION!,
+    ProjectId: isDemo ? process.env.DEMO_UNITALK_PROJECT_ID! : process.env.UNITALK_PROJECT_ID!,
     'Content-Type': 'application/json',
   };
   const START_DATE = "2023-05-01 00:00:00"
@@ -116,7 +123,7 @@ export const getAllCallsFromApi = async () => {
 
 export const getTimeOfLastUpdateCalls = async () => {
   const session = await getSession();
-
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
   if (!session?.user?.email) {
     return [];
   }
@@ -132,7 +139,7 @@ export const getTimeOfLastUpdateCalls = async () => {
 
 export const createTimeOfLastUpdateCalls = async () => {
   const session = await getSession();
-
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
   if (!session?.user?.email) {
     return [];
   }
@@ -147,8 +154,9 @@ export const createTimeOfLastUpdateCalls = async () => {
 }
 export const setTimeOfLastUpdateCalls = async () => {
   const ID_OF_LAST_CALLS_UPDATE_IN_API = '647b516f5176fab7f7310a63'
+  const DEMO_ID_OF_LAST_CALLS_UPDATE_IN_API = '6599d747845141d32637978d'
   const session = await getSession();
-
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
   if (!session?.user?.email) {
     return [];
   }
@@ -157,7 +165,7 @@ export const setTimeOfLastUpdateCalls = async () => {
   try {
     const timeOfLastUpdateCalls = await prisma?.lastCallsRequestFromApi.update({
       where: {
-        id: ID_OF_LAST_CALLS_UPDATE_IN_API,
+        id: session?.user?.name === 'spectator' ? DEMO_ID_OF_LAST_CALLS_UPDATE_IN_API : ID_OF_LAST_CALLS_UPDATE_IN_API,
       },
      data: {
       time: DATE_AND_TIME_NOW
@@ -187,7 +195,7 @@ export const isTimeToUpdateCalls = async () => {
 export const getCallsByTimeRange = async (from: any, to: any) => {
   console.log('Try to get calls by time range', from, to)
   const session = await getSession();
-
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
   if (!session?.user?.email) {
     return [];
   }
@@ -221,7 +229,7 @@ export const getCallsByTimeRange = async (from: any, to: any) => {
 export const getCallsByTimeRangeWithoutBlocked = async (from: any, to: any) => {
   console.log('Try to get calls by time range', from, to)
   const session = await getSession();
-
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
   if (!session?.user?.email) {
     return [];
   }
@@ -271,25 +279,18 @@ type CallsType = CallType[]
 
 export const setCalls = async (arrayCalls: CallsType) => {
   const session = await getSession();
-
+  
   if (!session?.user?.email) {
     return null
   }
-
+  const prisma = getPrismaClient("DATABASE_URL");
   for (const call of arrayCalls) {
-    // console.log('call', call)
- 
-    // console.log('info', info)
-    // console.log('here works')
-    // console.log('call', call)
     const existingCall = await prisma?.call.findFirst({
       where: {
         number: call.number,
         time: call.time
       },
     });
-
-
     if (!existingCall) {
     const info = await getInfoFromPhoneNumber(call.number);
     await prisma?.call.create({

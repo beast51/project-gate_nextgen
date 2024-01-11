@@ -152,7 +152,6 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
                 action={action}
                 isLoading={isLoading}
                 title={$t({ id: 'unblock a user?' })}
-                isSpectator={isSpectator}
               />
             ) : (
               <BlockButtons
@@ -161,7 +160,6 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
                 action={action}
                 isLoading={isLoading}
                 title={$t({ id: 'block a user for:' })}
-                isSpectator={isSpectator}
               />
             )}
           </>
@@ -173,7 +171,6 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
             action={action}
             isLoading={isLoading}
             title={$t({ id: 'delete a user?' })}
-            isSpectator={isSpectator}
           />
         )}
       </Popup>

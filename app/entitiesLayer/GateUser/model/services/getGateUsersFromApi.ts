@@ -29,7 +29,7 @@ export type GateUserType = {
   blackListedTo?: string,
   image?: string
 }
-export type getGateUsersFromApiType = (phoneNumber?: string, name?: string) => Promise<GateUserType[]>
+export type getGateUsersFromApiType = (phoneNumber?: string, name?: string, isDemo?: boolean) => Promise<GateUserType[]>
 
 const serialize = (data: Contact) => ({
   idInApi: data.id.toString(),
@@ -42,11 +42,11 @@ const serialize = (data: Contact) => ({
   isBlackListed: data.responsible ? false : true
 })
 
-export const getGateUsersFromApi: getGateUsersFromApiType = async (phoneNumber = "", name = "") => {
+export const getGateUsersFromApi: getGateUsersFromApiType = async (phoneNumber = "", name = "", isDemo = false) => {
   const url = `${process.env.UNITALK_URL}/contacts/get`;
   const headers: Record<string, string> = {
     Authorization: process.env.UNITALK_AUTHORIZATION!,
-    ProjectId: process.env.UNITALK_PROJECT_ID!,
+    ProjectId: isDemo ? process.env.DEMO_UNITALK_PROJECT_ID! : process.env.UNITALK_PROJECT_ID!,
     'Content-Type': 'application/json',
   };
 
@@ -61,6 +61,9 @@ export const getGateUsersFromApi: getGateUsersFromApiType = async (phoneNumber =
       "phone": phoneNumber
     }
   };
+
+  console.log('getGateUsersFromApi - initialPayload', initialPayload)
+  console.log('getGateUsersFromApi - headers', headers)
 
   const initialResponse = await fetch(url, {
     method: 'POST',

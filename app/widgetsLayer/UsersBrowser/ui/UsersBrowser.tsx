@@ -20,7 +20,7 @@ import { ToggleTheme } from '@/sharedLayer/ui/Toggle';
 
 const ITEMS_PER_PAGE = 30;
 
-export const UserBrowser: FC<UserBrowserType> = ({ users, isSpectator }) => {
+export const UserBrowser: FC<UserBrowserType> = ({ users }) => {
   const pathname = usePathname();
   const router = useRouter();
   const { $t } = useIntl();
@@ -50,11 +50,7 @@ export const UserBrowser: FC<UserBrowserType> = ({ users, isSpectator }) => {
           <Input
             label={$t({ id: 'search' })}
             value={searchQuery}
-            onChange={
-              isSpectator
-                ? () => alert('sorry, not for spectators')
-                : handleSearchInput
-            }
+            onChange={handleSearchInput}
           />
           <Button className="w-20 ml-2" onClick={handleOpen}>
             <FaUserPlus className="w-6 h-6" />
@@ -72,19 +68,15 @@ export const UserBrowser: FC<UserBrowserType> = ({ users, isSpectator }) => {
       </div>
       <GateUserCardsList users={paginatedData} />
       <Pagination
-        paginatedDataLength={paginatedData.length}
+        paginatedDataLength={paginatedData?.length}
         itemsPerPage={ITEMS_PER_PAGE}
         count={Math.ceil(searchResult.length / ITEMS_PER_PAGE)}
         page={page}
-        onChange={
-          isSpectator
-            ? () => alert('sorry, not for spectators')
-            : handlePageChange
-        }
+        onChange={handlePageChange}
         error={$t({ id: 'Unfortunately, there are no results...' })}
       />
       <Popup onClose={handleClose} isOpen={open} fullHeight fullWidth>
-        <AddGateUserForm isSpectator={isSpectator} />
+        <AddGateUserForm />
       </Popup>
     </>
   );

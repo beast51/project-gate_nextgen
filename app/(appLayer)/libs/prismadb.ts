@@ -1,10 +1,33 @@
-import { PrismaClient } from '@prisma/client'
+// import { PrismaClient } from '@prisma/client'
+
+// declare global {
+//   var prisma: PrismaClient | undefined
+// }
+
+// const client = globalThis.prisma || new PrismaClient()
+// if (process.env.NODE_ENV !== 'production' ) globalThis.prisma = client
+
+// export default client
+
+
+import { PrismaClient } from '@prisma/client';
 
 declare global {
-  var prisma: PrismaClient | undefined
+  var prismaClients: { [key: string]: PrismaClient } | undefined;
 }
 
-const client = globalThis.prisma || new PrismaClient()
-if (process.env.NODE_ENV !== 'production' ) globalThis.prisma = client
+function getPrismaClient(databaseKey: string): PrismaClient {
 
-export default client
+  globalThis.prismaClients = globalThis.prismaClients ?? {};
+
+  if (!globalThis.prismaClients[databaseKey]) {
+    const databaseUrl = process.env[databaseKey];
+    globalThis.prismaClients[databaseKey] = new PrismaClient({
+      datasources: { db: { url: databaseUrl } },
+    });
+  }
+
+  return globalThis.prismaClients[databaseKey];
+}
+
+export { getPrismaClient };

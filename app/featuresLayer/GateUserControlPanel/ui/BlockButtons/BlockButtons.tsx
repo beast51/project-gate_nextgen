@@ -9,7 +9,7 @@ const ONE_WEEK = 8;
 const TWO_WEEK = 15;
 
 export const BlockButtons: FC<BlockButtonsPropsType> = memo(
-  ({ confirmAction, handleClose, isLoading, action, title, isSpectator }) => {
+  ({ confirmAction, handleClose, isLoading, action, title }) => {
     const { $t } = useIntl();
     return (
       <div className={classes.container}>
@@ -17,7 +17,7 @@ export const BlockButtons: FC<BlockButtonsPropsType> = memo(
         <div className={cn(classes.wrapper, 'full-width')}>
           <Button
             onClick={() => confirmAction(action, ONE_WEEK)}
-            disabled={isLoading || isSpectator}
+            disabled={isLoading}
             fullWidth
             variant="warning"
           >
@@ -25,7 +25,7 @@ export const BlockButtons: FC<BlockButtonsPropsType> = memo(
           </Button>
           <Button
             onClick={() => confirmAction(action, TWO_WEEK)}
-            disabled={isLoading || isSpectator}
+            disabled={isLoading}
             fullWidth
             variant="warning"
           >
