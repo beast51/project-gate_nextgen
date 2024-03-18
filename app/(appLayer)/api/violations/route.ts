@@ -12,6 +12,7 @@ export async function GET(req: Request) {
   const phoneNumber = searchParams.get('phoneNumber') || ''
 
   const violations = await findViolations(from, to)  
+  // const violations = await findExtendedViolations(from, to)  
 
   return NextResponse.json(violations)
 }

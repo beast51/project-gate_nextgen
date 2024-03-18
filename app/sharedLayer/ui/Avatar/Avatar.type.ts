@@ -3,5 +3,6 @@ export type AvatarProps = {
   name?: string;
   isBlackListed?: boolean;
   isSmall?: boolean
+  isCauseError?: boolean
   className?: string
 }

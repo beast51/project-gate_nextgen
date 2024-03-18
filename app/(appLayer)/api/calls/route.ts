@@ -1,8 +1,11 @@
 import { 
   getCallsByTimeRange, 
   getCallsFromApi, 
+  getExtendedCallsByTimeRange, 
+  getExtendedCallsFromApi, 
   isTimeToUpdateCalls, 
   setCalls, 
+  setExtendedCalls, 
   setTimeOfLastUpdateCalls 
 } from '@/entitiesLayer/Calls/model/services/calls';
 import getSession from '@/widgetsLayer/Sidebar/actions/getSession';
@@ -22,16 +25,19 @@ export async function GET(req: Request) {
 
   if (isTimeToUpdate) {
     console.log('calls update started')
-    const calls = await getCallsFromApi(from, to, phoneNumber)
+    // const calls = await getCallsFromApi(from, to, phoneNumber)
+    const calls = await getExtendedCallsFromApi(from, to, phoneNumber)
     console.log('calls', calls)
     console.log('calls from api received')
-    !isDemo && await setCalls(calls)
+    // !isDemo && await setCalls(calls)
+    !isDemo && await setExtendedCalls(calls)
     console.log('calls setted to bd')
     await setTimeOfLastUpdateCalls()
     console.log('calls update complete')
   }
   console.log('get calls from mongodb')
-  const calls = await getCallsByTimeRange(from, to)
+  // const calls = await getCallsByTimeRange(from, to)
+  const calls = await getExtendedCallsByTimeRange(from, to)
   
   const sortCalls = calls && calls.sort((a, b) => {
     return new Date(b.time).getTime() - new Date(a.time).getTime()
@@ -40,3 +46,4 @@ export async function GET(req: Request) {
 
   return NextResponse.json(sortCalls)
 }
+

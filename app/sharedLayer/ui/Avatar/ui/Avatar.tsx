@@ -11,6 +11,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   name,
   isBlackListed,
   isSmall,
+  isCauseError,
   className,
 }) => {
   return (
@@ -19,6 +20,7 @@ export const Avatar: React.FC<AvatarProps> = ({
         className={cn(classes.avatarContainer, {
           [classes.small]: isSmall,
           [classes.blackListed]: isBlackListed || name === 'Not registered',
+          [classes.cause]: isCauseError && !isBlackListed,
         })}
       >
         <Image
@@ -40,6 +42,13 @@ export const Avatar: React.FC<AvatarProps> = ({
       {isBlackListed ? (
         <div className={classes.statusIndicator}>
           <div className={classes.statusIcon}>
+            <FaTimes />
+          </div>
+        </div>
+      ) : null}
+      {isCauseError && !isBlackListed ? (
+        <div className={classes.statusIndicator}>
+          <div className={classes.causeStatusIcon}>
             <FaTimes />
           </div>
         </div>

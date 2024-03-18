@@ -8,6 +8,9 @@ export type CallType = {
   isBlackListed: boolean;
   blackListedFrom: string;
   blackListedTo: string;
+  secondsFullTime: number,
+  cause: number,
+  state: string
 };
 
 export type CallsCardPropsType = {

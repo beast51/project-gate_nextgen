@@ -3,6 +3,7 @@ import { formatTime } from "@/sharedLayer/utils/date"
 import { paramsToString } from "@/sharedLayer/utils/paramsToString"
 import getSession from "@/widgetsLayer/Sidebar/actions/getSession"
 import moment from 'moment-timezone'
+import { causeErrorsMap } from "../../ui/CallsCard/ui/CallsCard"
 
 // import prisma from '@/appLayer/libs/prismadb'
 
@@ -15,6 +16,13 @@ type SerializeType = (data: any) => {
 const serialize: SerializeType = (data: any) => ({
   number: data.from,
   time: data.date,
+})
+const ExtendedSerialize: SerializeType = (data: any) => ({
+  number: data.from,
+  time: data.date,
+  secondsFullTime: data?.secondsFullTime,
+  cause: data?.cause,
+  state: data?.state
 })
 
 export type getInfoFromPhoneNumberType = {
@@ -81,10 +89,41 @@ export const getCallsFromApi = async (from: any, to: any, phoneNumber = '') => {
     body: JSON.stringify(payload),
   })
   const data = await response.json()
-
+  console.log(data)
   const calls = data?.calls?.reverse()?.map(serialize)
   return calls
 }
+export const getExtendedCallsFromApi = async (from: any, to: any, phoneNumber = '') => {
+
+  const url = `${process.env.UNITALK_URL}/api/history/get`;
+  const headers: Record<string, string> = {
+    Authorization: process.env.UNITALK_INTERNAL_API_AUTHORIZATION!,
+    ProjectId: process.env.UNITALK_PROJECT_ID!,
+    'Content-Type': 'application/json',
+  };
+  const payload = { 
+    "dateFrom": paramsToString(from),  
+    "dateTo": paramsToString(to),  
+    "limit": 1000,  
+    "offset": 0,  
+    "filter": {  
+      "direction": "IN",
+      // "calledFrom": [phoneNumber],
+    }   
+  };
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(payload),
+  })
+  const data = await response.json()
+
+  const calls = data?.calls?.reverse()?.map(ExtendedSerialize)
+  // console.log(calls)
+  return calls
+}
+
+
 export const getAllCallsFromApi = async () => {
   const session = await getSession();
   const isDemo = session?.user?.name === 'spectator'
@@ -225,6 +264,42 @@ export const getCallsByTimeRange = async (from: any, to: any) => {
     throw new Error('Error receiving data from Call');
   }
 }
+export const getExtendedCallsByTimeRange = async (from: any, to: any) => {
+  console.log('Try to get calls by time range', from, to)
+  const session = await getSession();
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  if (!session?.user?.email) {
+    return [];
+  }
+  try {
+    const calls = await prisma?.call.findMany({
+      where: {
+        time: {
+          gte: from,
+          lte: to
+        }
+      },
+      select: {
+        number: true,
+        time: true,
+        callerName: true,
+        carNumber: true,
+        apartmentNumber: true,
+        image: true,
+        isBlackListed: true,
+        blackListedFrom: true,
+        blackListedTo: true,
+        secondsFullTime: true,
+        cause: true,
+        state: true
+      }
+    });
+    return calls
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error receiving data from Call');
+  }
+}
 
 export const getCallsByTimeRangeWithoutBlocked = async (from: any, to: any) => {
   console.log('Try to get calls by time range', from, to)
@@ -263,6 +338,57 @@ export const getCallsByTimeRangeWithoutBlocked = async (from: any, to: any) => {
     throw new Error('Error receiving data from Call');
   }
 }
+export const getCallsByTimeRangeWithoutBlockedAndWithCause = async (from: any, to: any) => {
+  // const excludedCausesNumbers = Array.from(causeErrorsMap.keys())
+  // const excludedCausesNumbers = [...causeErrorsMap.keys()];
+  console.log('Try to get calls by time range', from, to)
+  const session = await getSession();
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  if (!session?.user?.email) {
+    return [];
+  }
+  try {
+    const calls = await prisma?.call.findMany({
+      where: {
+        time: {
+          gte: from,
+          lte: to
+        },
+        callerName: {
+          not: "Not registered",
+        },
+        isBlackListed: false,
+        // OR: [
+        //   {
+        //     cause: {
+        //       not: {
+        //         notIn: excludedCausesNumbers,
+        //       },
+        //     },
+        //   },
+        //   {
+        //     cause: null, 
+        //   },
+        // ],
+      },
+      select: {
+        number: true,
+        time: true,
+        callerName: true,
+        carNumber: true,
+        apartmentNumber: true,
+        image: true,
+        isBlackListed: true,
+        blackListedFrom: true,
+        blackListedTo: true
+      }
+    });
+    return calls
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error receiving data from Call');
+  }
+}
 
 type CallType = {
   number: string
@@ -273,6 +399,9 @@ type CallType = {
   isBlackListed?: boolean | null
   blackListedFrom: string | null
   blackListedTo: string | null
+  secondsFullTime: number | null
+  cause: number | null
+  state: string | null
 }
 
 type CallsType = CallType[]
@@ -304,6 +433,47 @@ export const setCalls = async (arrayCalls: CallsType) => {
         isBlackListed: info?.isBlackListed || false,
         blackListedFrom: info?.blackListedFrom || '',
         blackListedTo: info?.blackListedTo || '',
+        gateUser: info?.id ? {
+          connect: {
+            id: info?.id, 
+          },
+        } : undefined
+      },
+    });
+    }
+  }
+
+}
+export const setExtendedCalls = async (arrayCalls: CallsType) => {
+  const session = await getSession();
+  
+  if (!session?.user?.email) {
+    return null
+  }
+  const prisma = getPrismaClient("DATABASE_URL");
+  for (const call of arrayCalls) {
+    const existingCall = await prisma?.call.findFirst({
+      where: {
+        number: call.number,
+        time: call.time
+      },
+    });
+    if (!existingCall) {
+    const info = await getInfoFromPhoneNumber(call.number);
+    await prisma?.call.create({
+      data: {
+        number: call.number,
+        time: call.time,
+        callerName: info?.name || 'Not registered',
+        carNumber: info?.carNumber,
+        apartmentNumber: info?.apartmentNumber,
+        image: info?.image,
+        isBlackListed: info?.isBlackListed || false,
+        blackListedFrom: info?.blackListedFrom || '',
+        blackListedTo: info?.blackListedTo || '',
+        secondsFullTime: call?.secondsFullTime,
+        cause: call?.cause,
+        state: call?.state,
         gateUser: info?.id ? {
           connect: {
             id: info?.id, 
