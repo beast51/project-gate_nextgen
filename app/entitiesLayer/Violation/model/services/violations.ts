@@ -543,6 +543,9 @@ const groupByNumberAndApartment = (groupedCalls: Record<string, violationsListTy
 
   // return violations
 }
+
+
+
 export const findExtendedViolations: any = async (from: string, to: string, phoneNumber="") => {
   const violations: ViolationType[] = []
 

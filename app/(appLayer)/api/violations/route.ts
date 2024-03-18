@@ -1,4 +1,4 @@
-import { findViolations } from "@/entitiesLayer/Violation/model/services/violations";
+import { findExtendedViolations, findViolations } from "@/entitiesLayer/Violation/model/services/violations";
 
 import { NextResponse } from "next/server";
 
@@ -11,8 +11,8 @@ export async function GET(req: Request) {
   const to = searchParams.get('to')?.toString()
   const phoneNumber = searchParams.get('phoneNumber') || ''
 
-  const violations = await findViolations(from, to)  
-  // const violations = await findExtendedViolations(from, to)  
+  // const violations = await findViolations(from, to)  
+  const violations = await findExtendedViolations(from, to)  
 
   return NextResponse.json(violations)
 }

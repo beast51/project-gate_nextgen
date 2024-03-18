@@ -3,7 +3,7 @@ import { formatTime } from "@/sharedLayer/utils/date"
 import { paramsToString } from "@/sharedLayer/utils/paramsToString"
 import getSession from "@/widgetsLayer/Sidebar/actions/getSession"
 import moment from 'moment-timezone'
-import { causeErrorsMap } from "../../ui/CallsCard/ui/CallsCard"
+
 
 // import prisma from '@/appLayer/libs/prismadb'
 
@@ -338,8 +338,30 @@ export const getCallsByTimeRangeWithoutBlocked = async (from: any, to: any) => {
     throw new Error('Error receiving data from Call');
   }
 }
+
+
+// const causeList = {
+//   '16': 'Довге очикування, але відкрив',
+//   '17': 'Відкрив',
+//   '18': 'Довге очикування, але відкрив',
+//   '19': 'Тимчасово недоступний напрямок алу відкрив',
+// };
+
+const causeErrorsList = {
+  '31': "Невдале з'єднання",
+  '38': 'Помилка зі сторони оператора',
+};
+
+export const causeErrorsMap = new Map(
+  Object.entries(causeErrorsList).map(([key, value]) => [Number(key), value]),
+);
+// export const causeMap = new Map(
+//   Object.entries(causeList).map(([key, value]) => [Number(key), value]),
+// );
+ const excludedCausesNumbers = Array.from(causeErrorsMap.keys())
+
 export const getCallsByTimeRangeWithoutBlockedAndWithCause = async (from: any, to: any) => {
-  // const excludedCausesNumbers = Array.from(causeErrorsMap.keys())
+ 
   // const excludedCausesNumbers = [...causeErrorsMap.keys()];
   console.log('Try to get calls by time range', from, to)
   const session = await getSession();
@@ -358,18 +380,18 @@ export const getCallsByTimeRangeWithoutBlockedAndWithCause = async (from: any, t
           not: "Not registered",
         },
         isBlackListed: false,
-        // OR: [
-        //   {
-        //     cause: {
-        //       not: {
-        //         notIn: excludedCausesNumbers,
-        //       },
-        //     },
-        //   },
-        //   {
-        //     cause: null, 
-        //   },
-        // ],
+        OR: [
+          {
+            cause: {
+              not: {
+                in: excludedCausesNumbers,
+              },
+            },
+          },
+          {
+            cause: null, 
+          },
+        ],
       },
       select: {
         number: true,
