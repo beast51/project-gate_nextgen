@@ -57,9 +57,11 @@ export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
               <p className={classes.phoneNumber}>
                 {moment(call.time).format('HH:mm:ss')}
               </p>
-              <div
-                className={classes.state}
-              >{`${call.cause}: ${call.state}: calltime: ${call.secondsFullTime}`}</div>
+              {call.cause && (
+                <div
+                  className={classes.state}
+                >{`${call.cause}: ${call.state}: calltime: ${call.secondsFullTime}`}</div>
+              )}
             </div>
           </div>
           <div className={classes.owner}>
