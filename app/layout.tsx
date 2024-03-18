@@ -10,7 +10,7 @@ import AuthContext from './(appLayer)/context/AuthContext';
 import ToasterContext from './(appLayer)/context/ToasterContext';
 import cn from 'classnames';
 
-export const sfpro = localFont({
+const sfpro = localFont({
   src: [
     {
       path: '../public/fonts/SFPRODISPLAYLIGHTITALIC.woff2',
@@ -36,7 +36,7 @@ export const sfpro = localFont({
   display: 'swap',
 });
 
-export const Mittelschrift = localFont({
+const Mittelschrift = localFont({
   src: [
     {
       path: '../public/fonts/Mittelschrift.woff2',
