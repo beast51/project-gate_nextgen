@@ -389,7 +389,7 @@ export const getCallsByTimeRangeWithoutBlockedAndWithCause = async (from: any, t
             },
           },
           {
-            cause: null, 
+            cause: {isSet: false}, 
           },
         ],
       },
