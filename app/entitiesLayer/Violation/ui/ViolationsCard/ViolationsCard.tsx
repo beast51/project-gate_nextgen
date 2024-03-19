@@ -32,7 +32,7 @@ export const ViolationsCard: React.FC<ViolationsCardPropsType> = ({
       className={cn(classes.card, { [classes.withViolation]: violationCount })}
     >
       <div className={classes.container}>
-        <Avatar image={image} />
+        <Avatar image={image} isSquare />
         <div className={classes.info}>
           <div className={classes.infoContainer}>
             <div className={classes.phoneNumber}>

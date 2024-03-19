@@ -12,6 +12,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   isBlackListed,
   isSmall,
   isCauseError,
+  isSquare,
   className,
 }) => {
   return (
@@ -21,6 +22,7 @@ export const Avatar: React.FC<AvatarProps> = ({
           [classes.small]: isSmall,
           [classes.blackListed]: isBlackListed || name === 'Not registered',
           [classes.cause]: isCauseError && !isBlackListed,
+          [classes.square]: isSquare,
         })}
       >
         <Image
@@ -29,7 +31,9 @@ export const Avatar: React.FC<AvatarProps> = ({
           sizes="200px, (min-width: 768px) 72px"
           src={image || '/images/placeholder.jpg'}
           alt="Avatar"
-          className={classes.image}
+          className={cn(classes.image, {
+            [classes.squareImage]: isSquare,
+          })}
         />
       </div>
       {name === 'Not registered' ? (

@@ -3,21 +3,25 @@
   align-items: center;
   justify-content: center;
   padding: 12px;
-  color: var(--button-primary-color);
-  background-color: var(--button-primary-bg);
+  color: var(--button-primary-bg);
+  // background-color: var(--button-primary-bg);
+  background-color: transparent;
+
   border-radius: 60px;
   // box-shadow: var(--shadow-1dp);
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 
   &:hover {
-    color: var(--button-primary-active-color);
+    // color: var(--button-primary-active-color);
     // background-color: var(--button-green-hover);
     // box-shadow: var(--shadow-8dp);
   }
 }
 
 .active {
-  color: var(--button-primary-active-color);
+  color: var(--button-primary-bg);
+  border: 1px solid var(--button-primary-bg);
+
   // background-color: var(--button-green-hover);
   // box-shadow: var(--shadow-8dp);
 
