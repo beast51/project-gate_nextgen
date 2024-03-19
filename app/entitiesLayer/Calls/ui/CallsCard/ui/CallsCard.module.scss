@@ -55,8 +55,12 @@
 }
 
 .callsCarNumberList {
-  grid-template-columns: min-content min-content min-content;
+  grid-template-columns: min-content min-content;
   grid-template-rows: auto;
+
+  @media (min-width: 400px) {
+    grid-template-columns: min-content min-content min-content;
+  }
 }
 
 .blackListed {

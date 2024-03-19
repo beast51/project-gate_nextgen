@@ -48,3 +48,11 @@
 .gateUserCardBig {
   border-bottom-left-radius: 20px;
 }
+
+.carNumberList {
+  gap: 4px;
+
+  @media (min-width: 400px) {
+    gap: 8px;
+  }
+}

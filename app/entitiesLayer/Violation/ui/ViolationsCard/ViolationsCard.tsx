@@ -52,7 +52,10 @@ export const ViolationsCard: React.FC<ViolationsCardPropsType> = ({
           </div>
           {carNumber.length > 0 && carNumber[0].length > 0 && (
             <div className={classes.infoWrapper}>
-              <CarNumbersList carNumber={carNumber} />
+              <CarNumbersList
+                carNumber={carNumber}
+                className={classes.carNumberList}
+              />
             </div>
           )}
         </div>

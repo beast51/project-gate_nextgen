@@ -1,5 +1,9 @@
 .user {
-  padding: 8px 16px 72px;
+  padding: 8px 8px 72px;
+
+  @media (min-width: 400px) {
+    padding: 8px 16px 72px;
+  }
 }
 
 @media (min-width: 1024px) {
