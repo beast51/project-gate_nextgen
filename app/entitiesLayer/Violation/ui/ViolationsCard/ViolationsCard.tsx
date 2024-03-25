@@ -41,12 +41,15 @@ export const ViolationsCard: React.FC<ViolationsCardPropsType> = ({
                 : number?.map((num) => {
                     return <p>{formatPhoneNumber(num)}</p>;
                   })}
+              {apartmentNumber === null && name && (
+                <p className={classes.name}>{name}</p>
+              )}
             </div>
             <div className="pr-3">
               {apartmentNumber === null ? (
-                <p>{name}</p>
+                <p>{null}</p>
               ) : (
-                <p>кв.{phoneNumberOrApartment}</p>
+                <p>{`кв. ${phoneNumberOrApartment}`}</p>
               )}
             </div>
           </div>
