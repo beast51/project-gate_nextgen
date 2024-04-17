@@ -28,6 +28,22 @@ const isTimeToRemoveFromBlackList = (time: string) => {
   return diffMinutes > 1;
 };
 
+const getTimeToUnblock = (time: string) => {
+  if (!time) return null;
+
+  const DATE_AND_TIME_NOW = formatTime(Date.now(), false).toString();
+  const date1 = moment(time, 'YYYY-MM-DD HH:mm:ss');
+  const date2 = moment(DATE_AND_TIME_NOW, 'YYYY-MM-DD HH:mm:ss');
+  const diffMinutes = date2.diff(date1, 'minutes');
+  const diffHours = date2.diff(date1, 'hours');
+  const diffDays = date2.diff(date1, 'days');
+
+  if (diffMinutes > 1) return null;
+  if (-diffMinutes > 1440) return `${-diffDays} д.`;
+  if (-diffMinutes < 1440 && -diffMinutes > 60) return `${-diffHours} ч.`;
+  return `${-diffMinutes} хв.`;
+};
+
 export const BlackListedCard: React.FC<BlackListedCardType> = (user) => {
   const {
     carNumber,
@@ -41,6 +57,7 @@ export const BlackListedCard: React.FC<BlackListedCardType> = (user) => {
 
   const { $t } = useIntl();
   const isTimeToUnblock = isTimeToRemoveFromBlackList(blackListedTo!);
+  const timeToUnblock = getTimeToUnblock(blackListedTo!);
 
   return (
     <Link
@@ -66,18 +83,27 @@ export const BlackListedCard: React.FC<BlackListedCardType> = (user) => {
           )}
         </div>
       </div>
+      <div className={classes.time}>
+        <div className={classes.fromTo}>
+          <p>
+            {isTimeToUnblock
+              ? $t({ id: 'needToUnblock' })
+              : $t({ id: 'Blocked' })}
+          </p>
+          {blackListedTo ? (
+            <>
+              <p>{`${$t({ id: 'from' })} ${blackListedFrom}`}</p>
+              <p>{`${$t({ id: 'to' })} ${blackListedTo}`}</p>
+            </>
+          ) : (
+            'назавжди'
+          )}
+        </div>
 
-      <p>
-        {isTimeToUnblock ? $t({ id: 'needToUnblock' }) : $t({ id: 'Blocked' })}
-      </p>
-      {blackListedTo ? (
-        <>
-          <p>{`${$t({ id: 'from' })} ${blackListedFrom}`}</p>
-          <p>{`${$t({ id: 'to' })} ${blackListedTo}`}</p>
-        </>
-      ) : (
-        'назавжди'
-      )}
+        {timeToUnblock && (
+          <p className={classes.timeToUnblock}>{timeToUnblock}</p>
+        )}
+      </div>
     </Link>
   );
 };

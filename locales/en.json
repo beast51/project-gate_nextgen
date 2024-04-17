@@ -44,5 +44,7 @@
   "from": "from",
   "to": "to",
   "min.": "min.",
+  "hours": "h.",
+  "days": "d.",
   "apt": "apt. "
 } 

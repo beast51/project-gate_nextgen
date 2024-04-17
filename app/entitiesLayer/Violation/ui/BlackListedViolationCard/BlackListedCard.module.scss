@@ -13,6 +13,22 @@
   }
 }
 
+.time {
+  display: grid;
+  grid-template-columns: 1fr 62px;
+  gap: 24px;
+  align-items: flex-end;
+}
+
+.timeToUnblock {
+  display: flex;
+  padding: 8px;
+  border-radius: 10px;
+  background-color: rgba(187, 247, 208, 0.5);
+  border: 1px solid #11A694;
+  justify-content: center;
+}
+
 
 
 

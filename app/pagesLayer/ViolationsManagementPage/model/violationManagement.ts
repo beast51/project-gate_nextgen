@@ -10,7 +10,10 @@ export const getBlackListedGateUserFromDb = async () => {
   }
   try {
     const gateUsers = await prisma?.gateUser.findMany({
-      where: {isBlackListed: true}
+      where: {isBlackListed: true},
+      orderBy: {
+        apartmentNumber: 'asc' 
+      }
     }) as GateUserType[]
     console.log(gateUsers)
     return gateUsers

@@ -14,7 +14,11 @@ export const ViolationsManagementPage = async () => {
     <main className={styles.violations}>
       <div className={styles.blackListedList}>
         {blackListedUsers.map((user) => {
-          return <BlackListedCard key={user.phoneNumber} user={user} />;
+          return (
+            user.blackListedTo && (
+              <BlackListedCard key={user.phoneNumber} user={user} />
+            )
+          );
         })}
       </div>
     </main>
