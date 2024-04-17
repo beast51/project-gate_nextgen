@@ -9,11 +9,13 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import classes from './MobileHeader.module.scss';
-import { FaEllipsisV } from 'react-icons/fa';
+import { FaEllipsisV, FaUserPlus } from 'react-icons/fa';
 import { FaArrowLeftLong } from 'react-icons/fa6';
 import { AppLink } from '@/sharedLayer/ui/AppLink';
 import LangSwitcher from '@/sharedLayer/ui/LangSwitcher/LangSwitcher';
 import { ToggleTheme } from '@/sharedLayer/ui/Toggle';
+import { Button } from '@/sharedLayer/ui/Button';
+import { MdOutlineManageAccounts } from 'react-icons/md';
 
 export const getFromToFromDataPicker = (date: string | null) => {
   const from = moment(date, 'ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (zz)').format(
@@ -33,7 +35,12 @@ const MobileHeader = ({
   type,
 }: {
   title?: string;
-  type: 'usersList' | 'callsList' | 'violationsList' | 'settings';
+  type:
+    | 'usersList'
+    | 'callsList'
+    | 'violationsList'
+    | 'settings'
+    | 'violationsManagement';
 }) => {
   const { $t } = useIntl();
   const router = useRouter();
@@ -55,13 +62,23 @@ const MobileHeader = ({
   return (
     <div className={classes.header}>
       <div className={classes.container}>
-        {(type === 'callsList' || type === 'violationsList') && (
-          <DatePicker
-            label={$t({ id: 'Select date' })}
-            onAccept={datePickerHandler}
-            selectedDate={selectedDate}
-          />
-        )}
+        <div className={classes.headerWrapper}>
+          {(type === 'callsList' || type === 'violationsList') && (
+            <DatePicker
+              label={$t({ id: 'Select date' })}
+              onAccept={datePickerHandler}
+              selectedDate={selectedDate}
+            />
+          )}
+          {type === 'violationsList' && (
+            <AppLink href="/violations/management">
+              <Button>
+                <MdOutlineManageAccounts />
+              </Button>
+            </AppLink>
+          )}
+        </div>
+
         <div className={classes.wrapper}>
           <LangSwitcher />
           <ToggleTheme />

@@ -1,0 +1,21 @@
+.violations {
+  padding: 8px 8px 72px;
+  background-color: var(--violation-background-color);
+  min-height: calc(100dvh - 64px);
+  min-height: calc(100vh - 64px);
+
+  @media (min-width: 400px) {
+    padding: 8px 16px 72px;
+  }
+}
+
+.blackListedList {
+  display: grid;
+  gap: 8px;
+}
+
+@media (min-width: 1024px) {
+  .violations {
+    padding: 16px 16px 16px 96px;
+  }
+}

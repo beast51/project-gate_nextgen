@@ -13,10 +13,18 @@
 
 .wrapper {
   display: grid;
-  grid-template-columns: 1fr 60px;
+
   gap: 24px;
   align-items: center;
   align-content: flex-start;
+}
+
+.switchers {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr 60px;
+  align-items: center;
+  width: 100%;
 }
 
 @media (min-width: 768px) {

@@ -9,7 +9,12 @@ export async function Sidebar({
   type,
 }: {
   title?: string;
-  type: 'usersList' | 'callsList' | 'violationsList' | 'settings';
+  type:
+    | 'usersList'
+    | 'callsList'
+    | 'violationsList'
+    | 'settings'
+    | 'violationsManagement';
   children: React.ReactNode;
 }) {
   return (

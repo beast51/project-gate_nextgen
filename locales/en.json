@@ -40,7 +40,9 @@
   "delete a user?": "Delete a user?",
   "Exit": "Exit",
   "Blocked": "Blocked:",
+  "needToUnblock": "Need to unblock:",
   "from": "from",
   "to": "to",
-  "min.": "min."
+  "min.": "min.",
+  "apt": "apt. "
 } 

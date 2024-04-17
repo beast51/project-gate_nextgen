@@ -12,8 +12,11 @@ export const SettingsPage = async () => {
   return (
     <div className={styles.settings}>
       <div className={styles.wrapper}>
-        <LangSwitcher />
-        <ToggleTheme />
+        <div className={styles.switchers}>
+          <LangSwitcher />
+          <ToggleTheme />
+        </div>
+        <div></div>
       </div>
       <Button
         className={styles.button}

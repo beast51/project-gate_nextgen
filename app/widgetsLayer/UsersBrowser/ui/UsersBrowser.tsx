@@ -52,8 +52,8 @@ export const UserBrowser: FC<UserBrowserType> = ({ users }) => {
             value={searchQuery}
             onChange={handleSearchInput}
           />
-          <Button className="w-20 ml-2" onClick={handleOpen}>
-            <FaUserPlus className="w-6 h-6" />
+          <Button onClick={handleOpen}>
+            <FaUserPlus />
           </Button>
         </div>
         <div className={classes.settingsWrapper}>
