@@ -44,6 +44,10 @@ const getTimeToUnblock = (time: string) => {
   return `${-diffMinutes} хв.`;
 };
 
+const changeFormatTime = (time: string) => {
+  return moment(time).format('DD-MM-YYYY HH:mm:ss');
+};
+
 export const BlackListedCard: React.FC<BlackListedCardType> = (user) => {
   const {
     carNumber,
@@ -70,7 +74,9 @@ export const BlackListedCard: React.FC<BlackListedCardType> = (user) => {
         <Avatar image={image} isSquare />
         <div className={classes.info}>
           <div className={classes.infoContainer}>
-            <div className={classes.phoneNumber}>{phoneNumber}</div>
+            <div className={classes.phoneNumber}>
+              {formatPhoneNumber(phoneNumber)}
+            </div>
             {apartmentNumber && `${$t({ id: 'apt' })}${apartmentNumber}`}
           </div>
           {carNumber.length > 0 && carNumber[0].length > 0 && (
@@ -92,8 +98,10 @@ export const BlackListedCard: React.FC<BlackListedCardType> = (user) => {
           </p>
           {blackListedTo ? (
             <>
-              <p>{`${$t({ id: 'from' })} ${blackListedFrom}`}</p>
-              <p>{`${$t({ id: 'to' })} ${blackListedTo}`}</p>
+              <div className={classes.fromToWrapper}>
+                <p>{changeFormatTime(blackListedFrom!)}</p>
+                <p>{changeFormatTime(blackListedTo)}</p>
+              </div>
             </>
           ) : (
             'назавжди'
