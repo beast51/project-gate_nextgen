@@ -9,3 +9,7 @@ export const parseTime = (time: string) => {
   const date = moment(time, 'YYYY-MM-DD HH:mm:ss');
   return date.valueOf();
 }
+
+export const changeFormatTime = (time: string) => {
+  return moment(time).format('DD-MM-YYYY HH:mm:ss');
+};

@@ -1,51 +1,26 @@
 'use client';
 
-import clsx from 'clsx';
 import { Avatar } from '@/sharedLayer/ui/Avatar';
-import { VisitsType } from '../../model/types/ViolationList.types';
 import Link from 'next/link';
 import classes from './BlackListedCard.module.scss';
-import { useMemo } from 'react';
 import cn from 'classnames';
-import { usePathname } from 'next/navigation';
 import { formatPhoneNumber } from '@/sharedLayer/utils/formatPhoneNumber';
 import { CarNumbersList } from '@/entitiesLayer/GateUser';
-import { StayTimerCardList } from '../StayTimerCardList';
 import { GateUserType } from '@/entitiesLayer/GateUser/model/types/GateUser.type';
-import { formatTime } from '@/sharedLayer/utils/date';
-import moment from 'moment';
+import { changeFormatTime, formatTime } from '@/sharedLayer/utils/date';
 import { useIntl } from 'react-intl';
+import {
+  getTimeToUnblock,
+  isTimeToRemoveFromBlackList,
+} from '@/sharedLayer/utils/utils';
 
 type BlackListedCardType = {
   user: GateUserType;
 };
 
-const isTimeToRemoveFromBlackList = (time: string) => {
-  const DATE_AND_TIME_NOW = formatTime(Date.now(), false).toString();
-  const date1 = moment(time, 'YYYY-MM-DD HH:mm:ss');
-  const date2 = moment(DATE_AND_TIME_NOW, 'YYYY-MM-DD HH:mm:ss');
-  const diffMinutes = date2.diff(date1, 'minutes');
-  return diffMinutes > 1;
-};
-
-const getTimeToUnblock = (time: string) => {
-  if (!time) return null;
-
-  const DATE_AND_TIME_NOW = formatTime(Date.now(), false).toString();
-  const date1 = moment(time, 'YYYY-MM-DD HH:mm:ss');
-  const date2 = moment(DATE_AND_TIME_NOW, 'YYYY-MM-DD HH:mm:ss');
-  const diffMinutes = date2.diff(date1, 'minutes');
-  const diffHours = date2.diff(date1, 'hours');
-  const diffDays = date2.diff(date1, 'days');
-
-  if (diffMinutes > 1) return null;
-  if (-diffMinutes > 1440) return `${-diffDays} д.`;
-  if (-diffMinutes < 1440 && -diffMinutes > 60) return `${-diffHours} ч.`;
-  return `${-diffMinutes} хв.`;
-};
-
-const changeFormatTime = (time: string) => {
-  return moment(time).format('DD-MM-YYYY HH:mm:ss');
+const unlockHandler = (event: { preventDefault: () => void }) => {
+  event.preventDefault();
+  console.log('work');
 };
 
 export const BlackListedCard: React.FC<BlackListedCardType> = (user) => {
@@ -58,7 +33,6 @@ export const BlackListedCard: React.FC<BlackListedCardType> = (user) => {
     blackListedFrom,
     blackListedTo,
   } = user.user;
-
   const { $t } = useIntl();
   const isTimeToUnblock = isTimeToRemoveFromBlackList(blackListedTo!);
   const timeToUnblock = getTimeToUnblock(blackListedTo!);
@@ -111,6 +85,13 @@ export const BlackListedCard: React.FC<BlackListedCardType> = (user) => {
         {timeToUnblock && (
           <p className={classes.timeToUnblock}>{timeToUnblock}</p>
         )}
+        {/* {!timeToUnblock ? (
+          <p className={classes.timeToUnblock}>{timeToUnblock}</p>
+        ) : (
+          <Button onClick={unlockHandler} className={classes.button}>
+            Unlock
+          </Button>
+        )} */}
       </div>
     </Link>
   );

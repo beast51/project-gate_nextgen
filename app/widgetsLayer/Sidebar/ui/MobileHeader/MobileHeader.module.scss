@@ -34,6 +34,10 @@
   gap: 24px;
 }
 
+.unlockButton {
+  justify-content: flex-start;
+}
+
 @media (min-width: 1024px) {
   .header {
     padding: 0 16px;

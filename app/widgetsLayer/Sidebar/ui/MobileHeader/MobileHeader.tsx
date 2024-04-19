@@ -9,7 +9,8 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import classes from './MobileHeader.module.scss';
-import { FaEllipsisV, FaUserPlus } from 'react-icons/fa';
+import { FaEllipsisV, FaUnlock } from 'react-icons/fa';
+
 import { FaArrowLeftLong } from 'react-icons/fa6';
 import { AppLink } from '@/sharedLayer/ui/AppLink';
 import LangSwitcher from '@/sharedLayer/ui/LangSwitcher/LangSwitcher';
@@ -29,6 +30,19 @@ export const getFromToFromDataPicker = (date: string | null) => {
 
 const TIME_NOW = moment();
 const START_OF_THE_DAY = formatTime(Date.now(), true);
+
+const unblockAllGreens = async () => {
+  try {
+    const response = await fetch(
+      '/api/violations/unblock_expired_penalties_users',
+      { method: 'GET' },
+    );
+    const data = await response.json();
+    console.log(data.message);
+  } catch (error) {
+    console.error('Failed to unlock users:', error);
+  }
+};
 
 const MobileHeader = ({
   title,
@@ -74,6 +88,16 @@ const MobileHeader = ({
             <AppLink href="/violations/management">
               <Button>
                 <MdOutlineManageAccounts />
+              </Button>
+            </AppLink>
+          )}
+          {type === 'violationsManagement' && (
+            <AppLink
+              className={classes.unlockButton}
+              href="/violations/management"
+            >
+              <Button onClick={unblockAllGreens}>
+                <FaUnlock />
               </Button>
             </AppLink>
           )}
