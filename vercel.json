@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/violations/unblock_expired_penalties_users",
-      "schedule": "50 1 * * *"
+      "schedule": "30 2 * * *"
     }
   ]
 }

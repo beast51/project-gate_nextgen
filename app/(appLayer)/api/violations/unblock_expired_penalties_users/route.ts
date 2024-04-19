@@ -1,7 +1,9 @@
+export const runtime = 'nodejs';
+
 import { unblockExpiredPenaltiesUsers } from "@/app/pagesLayer/ViolationsManagementPage/model/violationManagement";
 
 import { NextResponse } from "next/server";
-export const runtime = 'edge';
+
 
 
 export async function GET(req: Request) {
