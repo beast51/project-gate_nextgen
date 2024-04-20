@@ -67,7 +67,7 @@ const MobileHeader = ({
   const unblockAllGreens = async () => {
     setIsLoading(true);
     axios
-      .post('/api/violations/unblock_expired_penalties_users', {
+      .get('/api/violations/unblock_expired_penalties_users', {
         headers: {
           'Content-Type': 'application/json',
         },

@@ -1,4 +1,4 @@
-export const runtime = 'nodejs';
+
 import { unblockExpiredPenaltiesUsers } from "@/app/pagesLayer/ViolationsManagementPage/model/violationManagement";
 import getIntl from "@/appLayer/providers/ServerIntlProvider/lib/intl";
 
@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 
 
 
-export async function POST(req: Request) {
+export async function GET(req: Request) {
 const { $t } = await getIntl();
 
   const unblocked = await unblockExpiredPenaltiesUsers(); 
