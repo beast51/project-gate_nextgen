@@ -73,6 +73,7 @@ const MobileHeader = ({
       .catch(() => toast.error($t({ id: 'something went wrong' })))
       .finally(() => {
         // setIsLoading(false);
+        console.log('work');
         toast.success($t({ id: 'user added successful' }));
       });
     // try {
