@@ -40,6 +40,8 @@
   "delete a user?": "Delete a user?",
   "Exit": "Exit",
   "Blocked": "Blocked:",
+  "unblocked": "unblocked",
+  "no users to unblock": "no users to unblock",
   "needToUnblock": "Need to unblock:",
   "from": "from",
   "to": "to",

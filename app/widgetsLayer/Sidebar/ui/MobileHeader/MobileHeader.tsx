@@ -53,6 +53,8 @@ const MobileHeader = ({
   const TIME_FROM_URL = useMemo(() => moment(from), [from]);
   const [selectedDate, setSelectedDate] = useState(TIME_FROM_URL || TIME_NOW);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const datePickerHandler = (value: string | null) => {
     const { from, to } = getFromToFromDataPicker(value);
     router.push(
@@ -63,18 +65,20 @@ const MobileHeader = ({
   };
 
   const unblockAllGreens = async () => {
-    // setIsLoading(true);
+    setIsLoading(true);
     axios
       .post('/api/violations/unblock_expired_penalties_users', {
         headers: {
           'Content-Type': 'application/json',
         },
       })
+      .then((response) => {
+        toast.success(response.data.message);
+        router.refresh();
+      })
       .catch(() => toast.error($t({ id: 'something went wrong' })))
       .finally(() => {
-        // setIsLoading(false);
-        console.log('work');
-        toast.success($t({ id: 'user added successful' }));
+        setIsLoading(false);
       });
     // try {
     //   const response = await fetch(
