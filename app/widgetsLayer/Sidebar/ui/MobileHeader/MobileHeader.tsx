@@ -35,7 +35,7 @@ const unblockAllGreens = async () => {
   try {
     const response = await fetch(
       '/api/violations/unblock_expired_penalties_users',
-      { method: 'GET' },
+      { method: 'POST' },
     );
     const data = await response.json();
     console.log(data.message);
