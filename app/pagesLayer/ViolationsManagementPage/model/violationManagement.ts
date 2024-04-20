@@ -33,7 +33,10 @@ export const unblockExpiredPenaltiesUsers = async () => {
   const expiredPenaltiesUsers = gateUsers.filter(user => isTimeToRemoveFromBlackList(user.blackListedTo));
   console.log('!!!', expiredPenaltiesUsers)
   
+  const unblocked: string[] = []
+
   expiredPenaltiesUsers.forEach(async (user) => {
+    unblocked.push(user.phoneNumber)
     await editGateUserOnApi({
       name: user.name,
       phoneNumber: user.phoneNumber,
@@ -55,4 +58,6 @@ export const unblockExpiredPenaltiesUsers = async () => {
       image: user.image,
     })
   })
+
+  return unblocked
 }
