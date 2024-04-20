@@ -31,6 +31,7 @@ export const unblockExpiredPenaltiesUsers = async () => {
   const gateUsers = await getBlackListedGateUserFromDb()
 
   const expiredPenaltiesUsers = gateUsers.filter(user => isTimeToRemoveFromBlackList(user.blackListedTo));
+  console.log('!!!', expiredPenaltiesUsers)
   
   expiredPenaltiesUsers.forEach(async (user) => {
     await editGateUserOnApi({

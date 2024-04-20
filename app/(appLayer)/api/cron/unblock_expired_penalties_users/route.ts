@@ -1,3 +1,4 @@
+export const runtime = 'nodejs';
 
 import { unblockExpiredPenaltiesUsers } from "@/app/pagesLayer/ViolationsManagementPage/model/violationManagement";
 
