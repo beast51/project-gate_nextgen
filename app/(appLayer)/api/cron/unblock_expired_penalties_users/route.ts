@@ -6,8 +6,8 @@ import { NextResponse } from "next/server";
 
 
 
-export async function GET(req: Request) {
-  await unblockExpiredPenaltiesUsers(); 
+export async function POST(req: Request) {
+  const unblocked = await unblockExpiredPenaltiesUsers(); 
 
-  return NextResponse.json({ message: 'Users have been unlocked successfully' })
+  return NextResponse.json({ message: `${unblocked.join(', ')} unblocked` })
 }
