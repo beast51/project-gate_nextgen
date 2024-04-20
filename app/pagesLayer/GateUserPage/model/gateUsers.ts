@@ -271,7 +271,7 @@ console.log(payload)
   // console.log('response', response)
 }
 
-export const editGateUserOnApi = async (body: {
+export const  editGateUserOnApi = async (body: {
   name?: string
   phoneNumber?: string
   carNumber?: string[]
