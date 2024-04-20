@@ -17,6 +17,8 @@ import LangSwitcher from '@/sharedLayer/ui/LangSwitcher/LangSwitcher';
 import { ToggleTheme } from '@/sharedLayer/ui/Toggle';
 import { Button } from '@/sharedLayer/ui/Button';
 import { MdOutlineManageAccounts } from 'react-icons/md';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 export const getFromToFromDataPicker = (date: string | null) => {
   const from = moment(date, 'ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (zz)').format(
@@ -30,19 +32,6 @@ export const getFromToFromDataPicker = (date: string | null) => {
 
 const TIME_NOW = moment();
 const START_OF_THE_DAY = formatTime(Date.now(), true);
-
-const unblockAllGreens = async () => {
-  try {
-    const response = await fetch(
-      '/api/violations/unblock_expired_penalties_users',
-      { method: 'POST' },
-    );
-    const data = await response.json();
-    console.log(data.message);
-  } catch (error) {
-    console.error('Failed to unlock users:', error);
-  }
-};
 
 const MobileHeader = ({
   title,
@@ -71,6 +60,31 @@ const MobileHeader = ({
         ? `/calls?from=${from}&to=${to}`
         : `/violations?from=${from}&to=${to}`,
     );
+  };
+
+  const unblockAllGreens = async () => {
+    // setIsLoading(true);
+    axios
+      .post('/api/violations/unblock_expired_penalties_users', {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .catch(() => toast.error($t({ id: 'something went wrong' })))
+      .finally(() => {
+        // setIsLoading(false);
+        toast.success($t({ id: 'user added successful' }));
+      });
+    // try {
+    //   const response = await fetch(
+    //     '/api/violations/unblock_expired_penalties_users',
+    //     { method: 'POST' },
+    //   );
+    //   const data = await response.json();
+    //   console.log(data.message);
+    // } catch (error) {
+    //   console.error('Failed to unlock users:', error);
+    // }
   };
 
   return (
