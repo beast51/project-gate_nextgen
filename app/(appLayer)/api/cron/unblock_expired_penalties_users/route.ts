@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 
 
 
-export async function POST(req: Request) {
+export async function GET(req: Request) {
 const { $t } = await getIntl();
   console.log('request: !!!', req)
   const unblocked = await unblockExpiredPenaltiesUsers(); 
