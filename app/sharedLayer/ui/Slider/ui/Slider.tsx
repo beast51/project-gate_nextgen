@@ -33,7 +33,7 @@ export const Slider: FC<SliderPropsType> = ({ user }) => {
           />
         </SwiperSlide>
       )}
-      {user.additionalImages?.map((image) => {
+      {user?.additionalImages?.map((image) => {
         return (
           <SwiperSlide key={image}>
             <Image

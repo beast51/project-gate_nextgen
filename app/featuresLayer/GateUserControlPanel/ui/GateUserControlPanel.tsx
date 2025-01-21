@@ -112,7 +112,8 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
       if (action === 'delete') {
         deleteUserHandler(user.phoneNumber, user.idInApi);
       }
-      if (action === 'block' || 'unblock)') changeStatusHandler(user, time);
+      if (action === 'block' || action === 'unblock')
+        changeStatusHandler(user, time);
       // if (action === 'edit') editUserHandler(data);
     },
     [deleteUserHandler, user.phoneNumber, user.idInApi, changeStatusHandler],

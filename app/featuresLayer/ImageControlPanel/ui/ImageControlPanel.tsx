@@ -37,7 +37,7 @@ export const ImageControlPanel: FC<ImageControlPanelProps> = ({
       <CldUploadButton
         options={{
           multiple: true,
-          folder: apartmentNumber,
+          folder: apartmentNumber || 'withoutApartmentNumber',
           publicId: `${apartmentNumber}/${carNumber}`,
         }}
         onUpload={(result: any) =>

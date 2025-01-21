@@ -1,18 +1,24 @@
 
-import { deleteGateUserFromApi } from "@/entitiesLayer/GateUser/model/services/deleteGateUserFromApi";
-import { deleteGateUserFromDb } from "@/entitiesLayer/GateUser/model/services/deleteGateUserFromDb";
+import { unitalkApiGateUsers } from "@/entitiesLayer/GateUser/model/services/apiGateUsers";
+import { mongoDbGateUsers } from "@/entitiesLayer/GateUser/model/services/dbGateUsers";
 import { NextResponse } from "next/server";
 
 
-export async function POST(request: Request) {
+const {
+  deleteGateUserFromApi
+} = unitalkApiGateUsers;
 
+const {
+  deleteGateUserFromDb
+} = mongoDbGateUsers;
+
+export async function POST(request: Request) {
   const body = await request.json()
   const {phoneNumber, id} = body
-  console.log('++++++id!!!!!!!!!!!!!', id)
-  console.log('+++++++body!!!!!!!!!!!!!', body)
-
-  await deleteGateUserFromApi(id)
+  
   await deleteGateUserFromDb(phoneNumber)
+  await deleteGateUserFromApi(id)
+  
 
   return NextResponse.json('users')
 }

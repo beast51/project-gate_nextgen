@@ -18,8 +18,6 @@ export function useTheme(): UseThemeResult {
 
         metaThemeColor?.setAttribute("content", `${theme === Theme.DARK ? '#1f1f1f' : '#ffffff'}`); 
         metaThemeColor?.setAttribute("media", `(prefers-color-scheme: ${theme === Theme.DARK ?'dark' : 'light'})`)
-
-
     }
 
     return {

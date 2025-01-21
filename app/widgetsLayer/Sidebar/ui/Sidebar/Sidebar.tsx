@@ -27,11 +27,8 @@ export async function Sidebar({
       >
         {type !== 'usersList' && <MobileHeader title={title} type={type} />}
         {type !== 'settings' && <MobileFooter />}
-        {/* <DesktopSidebar currentUser={currentUser!} /> */}
         <>{children}</>
       </div>
     </>
   );
 }
-
-// export default Sidebar;

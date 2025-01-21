@@ -125,16 +125,17 @@
 // }
 
 
-import { getPrismaClient } from "@/appLayer/libs/prismadb";
-import { GateUserType } from "@/entitiesLayer/GateUser/model/services/getGateUsersFromApi";
+import { databaseList, getPrismaClient } from "@/appLayer/libs/prismadb";
+import { GateUserType } from "@/entitiesLayer/GateUser/model/types/GateUser.type";
+
 import { isTimeToRemoveFromBlackList } from "@/sharedLayer/utils/utils";
 import getSession from "@/widgetsLayer/Sidebar/actions/getSession";
-
+const CAN_OPEN_GATES = "20879"
 
 const getDatabaseClient = async () => {
   const session = await getSession();
   if (!session?.user?.email) return null;
-  return getPrismaClient(session.user.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  return getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
 };
 
 export const getBlackListedGateUserFromDb = async () => {
@@ -179,7 +180,7 @@ const editGateUserOnApi = async (body: {
     name: body.name,
     note: body.carNumber?.join(','),
     phones: [body.phoneNumber],
-    responsible: body.isBlackListed ? null : "20879",
+    responsible: body.isBlackListed ? null : CAN_OPEN_GATES,
   });
 
   try {
@@ -228,24 +229,24 @@ export const unblockExpiredPenaltiesUsers = async () => {
   for (const user of expiredPenaltiesUsers) {
     unblocked.push(user.phoneNumber);
     await editGateUserOnApi({
-      name: user.name,
+      name: user.name || '',
       phoneNumber: user.phoneNumber,
       carNumber: user.carNumber,
-      apartmentNumber: user.apartmentNumber,
+      apartmentNumber: user.apartmentNumber || '',
       id: user.idInApi,
       isBlackListed: !user.isBlackListed,
     });
 
     await editGateUserInDb({
-      name: user.name,
+      name: user.name || undefined,
       phoneNumber: user.phoneNumber,
       carNumber: user.carNumber,
-      apartmentNumber: user.apartmentNumber,
+      apartmentNumber: user.apartmentNumber || undefined,
       idInApi: user.idInApi,
       isBlackListed: !user.isBlackListed,
       blackListedFrom: user.blackListedFrom,
       blackListedTo: user.blackListedTo,
-      image: user.image,
+      image: user.image || undefined,
     });
   }
 

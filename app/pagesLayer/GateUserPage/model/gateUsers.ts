@@ -3,7 +3,9 @@ import getSession from "../../../widgetsLayer/Sidebar/actions/getSession"
 import { formatTime } from "../../../sharedLayer/utils/date"
 import moment from "moment"
 import fs from 'fs'
-import { getPrismaClient } from "@/appLayer/libs/prismadb"
+import { databaseList, getPrismaClient } from "@/appLayer/libs/prismadb"
+import { GateUserType } from "@/entitiesLayer/GateUser/model/types/GateUser.type"
+
 
 
 export type Contact = {
@@ -24,19 +26,19 @@ export type GateUsersFromApiType = {
     [key: number]: string
   }
 }
-export type GateUserType = {
-  id?: string,
-  idInApi: string;
-  name: string;
-  phoneNumber: string;
-  carNumber: string[];
-  apartmentNumber: string;
-  isBlackListed: boolean;
-  blackListedFrom?: string,
-  blackListedTo?: string,
-  image?: string,
-  additionalImages?: string[]
-}
+// export type GateUserType = {
+//   id?: string,
+//   idInApi: string;
+//   name: string;
+//   phoneNumber: string;
+//   carNumber: string[];
+//   apartmentNumber: string;
+//   isBlackListed: boolean;
+//   blackListedFrom?: string,
+//   blackListedTo?: string,
+//   image?: string,
+//   additionalImages?: string[]
+// }
 
 const serialize = (data: Contact) => ({
   idInApi: data.id.toString(),
@@ -116,7 +118,7 @@ export const getNewUserIdFromApi = async (phoneNumber: string) => {
 
 export const setGateUsersToBd = async (users: GateUserType[]) => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   console.log('users!!!!!!!!!!!!!!!!!', users)
   if (!session?.user?.email) {
     return null
@@ -154,7 +156,7 @@ export const setGateUsersToBd = async (users: GateUserType[]) => {
 
 export const createTimeOfLastUpdateGateUser = async () => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   if (!session?.user?.email) {
     return [];
   }
@@ -170,7 +172,7 @@ export const createTimeOfLastUpdateGateUser = async () => {
 
 export const setTimeOfLastUpdateGateUser = async () => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   if (!session?.user?.email) {
     return [];
   }
@@ -190,7 +192,7 @@ export const setTimeOfLastUpdateGateUser = async () => {
 
 export const getTimeOfLastUpdateGateUser = async () => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   if (!session?.user?.email) {
     return [];
   }
@@ -221,7 +223,7 @@ export const isTimeToUpdateGateUser = async () => {
 
 export const getGateUserFromDb = async (phoneNumber="") => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   if (!session?.user?.email) {
     return [];
   }
@@ -271,43 +273,43 @@ console.log(payload)
   // console.log('response', response)
 }
 
-export const  editGateUserOnApi = async (body: {
-  name?: string
-  phoneNumber?: string
-  carNumber?: string[]
-  apartmentNumber?: string
-  id?: string
-  isBlackListed?: boolean
-}) => {
-  const CAN_OPEN_GATES = "20879";
+// export const  editGateUserOnApi = async (body: {
+//   name?: string
+//   phoneNumber?: string
+//   carNumber?: string[]
+//   apartmentNumber?: string
+//   id?: string
+//   isBlackListed?: boolean
+// }) => {
+//   const CAN_OPEN_GATES = "20879";
 
-  const url = `${process.env.UNITALK_URL}/contacts/set`;
-  const headers: Record<string, string> = {
-    Authorization: process.env.UNITALK_AUTHORIZATION!,
-    ProjectId: process.env.UNITALK_PROJECT_ID!,
-    'Content-Type': 'application/json',
-  };
+//   const url = `${process.env.UNITALK_URL}/contacts/set`;
+//   const headers: Record<string, string> = {
+//     Authorization: process.env.UNITALK_AUTHORIZATION!,
+//     ProjectId: process.env.UNITALK_PROJECT_ID!,
+//     'Content-Type': 'application/json',
+//   };
 
-  const payload = { 
-    "address": body.apartmentNumber,  
-    "email": '', 
-    "id": Number(body.id), 
-    "name": body.name,
-    "note": body.carNumber?.join(','),
-    'phones': [body.phoneNumber],
-    "responsible": body.isBlackListed ? null : CAN_OPEN_GATES, 
-  };
+//   const payload = { 
+//     "address": body.apartmentNumber,  
+//     "email": '', 
+//     "id": Number(body.id), 
+//     "name": body.name,
+//     "note": body.carNumber?.join(','),
+//     'phones': [body.phoneNumber],
+//     "responsible": body.isBlackListed ? null : CAN_OPEN_GATES, 
+//   };
 
-  console.log('payload', payload)
+//   console.log('payload', payload)
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify(payload),
-  })
-  console.log('\nedited ' + body.phoneNumber)
-  // console.log('response', response)
-}
+//   const response = await fetch(url, {
+//     method: 'POST',
+//     headers: headers,
+//     body: JSON.stringify(payload),
+//   })
+//   console.log('\nedited ' + body.phoneNumber)
+//   // console.log('response', response)
+// }
 
 export const editGateUserInDb = async (data: {
   idInApi?: string,
@@ -321,7 +323,7 @@ export const editGateUserInDb = async (data: {
   blackListedTo?: string,
 }) => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   if (!session?.user?.email) {
     return null
   }
@@ -342,7 +344,7 @@ export type GateUsersInfoForDeleteAll = {
 
 export const getAllInfoForDeleteAllUsers = async () => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   if (!session?.user?.email) {
     return [];
   }
@@ -390,7 +392,7 @@ export const deleteGateUserFromApi = async (id: string) => {
 
 export const deleteGateUserFromDb = async (phoneNumber: string) => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   if (!session?.user?.email) {
     return [];
   }
@@ -413,7 +415,7 @@ export const exportUsersFromDbToFile = async () => {
   const now = moment();
 
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   if (!session?.user?.email) {
     return [];
   }

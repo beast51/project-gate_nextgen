@@ -1,11 +1,9 @@
 import { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { FaExchangeAlt } from 'react-icons/fa';
-import { HiArrowLeftOnRectangle, HiUsers } from 'react-icons/hi2';
+import { HiUsers } from 'react-icons/hi2';
 import { RxLapTimer } from 'react-icons/rx';
-import { signOut } from "next-auth/react";
-import { useCurrentLocale } from "next-i18n-router/client";
-import i18nConfig from "@/sharedLayer/config/i18n/i18nConfig";
+
 // import useConversation from "./useConversation";
 
 const useRoutes = () => {

@@ -3,7 +3,8 @@ import getSession from "../../../widgetsLayer/Sidebar/actions/getSession"
 import { formatTime } from "../../../sharedLayer/utils/date"
 import moment from "moment"
 import fs from 'fs'
-import { getPrismaClient } from "@/appLayer/libs/prismadb"
+import { databaseList, getPrismaClient } from "@/appLayer/libs/prismadb"
+import { GateUserType } from "@/entitiesLayer/GateUser/model/types/GateUser.type"
 
 
 export type Contact = {
@@ -24,18 +25,18 @@ export type GateUsersFromApiType = {
     [key: number]: string
   }
 }
-export type GateUserType = {
-  id?: string,
-  idInApi: string;
-  name: string;
-  phoneNumber: string;
-  carNumber: string[];
-  apartmentNumber: string;
-  isBlackListed: boolean;
-  blackListedFrom?: string,
-  blackListedTo?: string,
-  image?: string
-}
+// export type GateUserType = {
+//   id?: string,
+//   idInApi: string;
+//   name: string;
+//   phoneNumber: string;
+//   carNumber: string[];
+//   apartmentNumber: string;
+//   isBlackListed: boolean;
+//   blackListedFrom?: string,
+//   blackListedTo?: string,
+//   image?: string
+// }
 
 const serialize = (data: Contact) => ({
   idInApi: data.id.toString(),
@@ -118,7 +119,7 @@ export const getNewUserIdFromApi = async (phoneNumber: string) => {
 
 export const setGateUsersToBd = async (users: GateUserType[]) => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   console.log('users!!!!!!!!!!!!!!!!!', users)
   if (!session?.user?.email) {
     return null
@@ -156,7 +157,7 @@ export const setGateUsersToBd = async (users: GateUserType[]) => {
 
 export const createTimeOfLastUpdateGateUser = async () => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   if (!session?.user?.email) {
     return [];
   }
@@ -172,7 +173,7 @@ export const createTimeOfLastUpdateGateUser = async () => {
 
 export const setTimeOfLastUpdateGateUser = async () => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   if (!session?.user?.email) {
     return [];
   }
@@ -192,7 +193,7 @@ export const setTimeOfLastUpdateGateUser = async () => {
 
 export const getTimeOfLastUpdateGateUser = async () => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   if (!session?.user?.email) {
     return [];
   }
@@ -223,7 +224,7 @@ export const isTimeToUpdateGateUser = async () => {
 
 export const getGateUserFromDb = async (name="") => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   console.log(session?.user?.name)
   if (!session?.user?.email) {
     return [];
@@ -321,7 +322,7 @@ export const editGateUserInDb = async (data: {
   blackListedTo?: string,
 }) => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   if (!session?.user?.email) {
     return null
   }
@@ -342,7 +343,7 @@ export type GateUsersInfoForDeleteAll = {
 
 export const getAllInfoForDeleteAllUsers = async () => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   if (!session?.user?.email) {
     return [];
   }
@@ -390,7 +391,7 @@ export const deleteGateUserFromApi = async (id: string) => {
 
 export const deleteGateUserFromDb = async (phoneNumber: string) => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   if (!session?.user?.email) {
     return [];
   }
@@ -413,7 +414,7 @@ export const exportUsersFromDbToFile = async () => {
   const now = moment();
 
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   if (!session?.user?.email) {
     return [];
   }
@@ -438,7 +439,7 @@ export const exportUsersFromDbToFile = async () => {
 
 export const importUsersFromFileToDb = async () => {
   const session = await getSession();
-  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? "DEMO_DATABASE_URL" : "DATABASE_URL");
+  const prisma = getPrismaClient(session?.user?.name === 'spectator' ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL);
   if (!session?.user?.email) {
     return [];
   }

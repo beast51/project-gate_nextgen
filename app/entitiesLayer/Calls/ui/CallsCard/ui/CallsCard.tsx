@@ -28,13 +28,10 @@ export const causeMap = new Map(
   Object.entries(causeList).map(([key, value]) => [Number(key), value]),
 );
 
-console.log(causeErrorsMap);
-
 export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
-  // console.log(call);
-  const isCauseError = causeErrorsMap.has(call.cause);
-
+  const isCauseError = causeErrorsMap.has(call.cause!);
   const { $t } = useIntl();
+
   return (
     <li
       onDoubleClick={() => onDoubleClick(call.number)}
@@ -44,8 +41,8 @@ export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
         <Avatar
           image={call.image}
           isSmall
-          name={call.callerName}
-          isBlackListed={call.isBlackListed}
+          name={call.callerName!}
+          isBlackListed={call.isBlackListed!}
           isCauseError={isCauseError}
         />
         <div className={classes.info}>
@@ -68,7 +65,7 @@ export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
             <p className={classes.phoneNumber}>
               {formatPhoneNumber(call.number)}
             </p>
-            <p className={classes.name}>{rename(call.callerName)}</p>
+            <p className={classes.name}>{rename(call.callerName!)}</p>
           </div>
         </div>
       </div>
@@ -85,9 +82,9 @@ export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
           )}
         </div>
       )}
-      {!call.isBlackListed && causeErrorsMap.has(call.cause) && (
+      {!call.isBlackListed && causeErrorsMap.has(call.cause!) && (
         <div className={classes.cause}>
-          {`${call.cause}: ${causeErrorsMap.get(call.cause)}`}
+          {`${call.cause}: ${causeErrorsMap.get(call.cause!)}`}
         </div>
       )}
       {call.carNumber.length > 0 && call.carNumber[0].length > 0 && (

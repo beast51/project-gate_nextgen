@@ -1,18 +1,12 @@
 import { NextResponse } from "next/server";
+import { mongoDbGateUsers } from "@/entitiesLayer/GateUser/model/services/dbGateUsers";
 
-import { getGateUserFromDb } from "@/entitiesLayer/GateUser/model/services/getGateUserFromDb";
+const {
+  getGateUserFromDb
+} = mongoDbGateUsers;
 
 export async function GET(req: Request) {
-
-  // const isTimeToUpdate = await isTimeToUpdateGateUser()
-
-  // if (isTimeToUpdate) {
-  //   const users = await getGateUsersFromApi()
-  //   await setGateUsersToBd(users)
-  //   await setTimeOfLastUpdateGateUser()
-  // }
-
   const users = await getGateUserFromDb()
-
+  
   return NextResponse.json(users)
 }

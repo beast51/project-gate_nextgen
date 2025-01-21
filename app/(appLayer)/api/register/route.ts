@@ -1,11 +1,11 @@
-import { getPrismaClient } from '@/appLayer/libs/prismadb';
+import { databaseList, getPrismaClient } from '@/appLayer/libs/prismadb';
 import bcrypt from 'bcrypt'
 
 // import prisma from '@/appLayer/libs/prismadb'
 import { NextResponse } from 'next/server'
  
 
-const prisma = getPrismaClient("DATABASE_URL");
+const prisma = getPrismaClient(databaseList.DATABASE_URL);
 
 
 export async function POST(

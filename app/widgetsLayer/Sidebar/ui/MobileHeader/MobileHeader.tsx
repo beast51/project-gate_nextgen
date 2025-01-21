@@ -80,16 +80,6 @@ const MobileHeader = ({
       .finally(() => {
         setIsLoading(false);
       });
-    // try {
-    //   const response = await fetch(
-    //     '/api/violations/unblock_expired_penalties_users',
-    //     { method: 'POST' },
-    //   );
-    //   const data = await response.json();
-    //   console.log(data.message);
-    // } catch (error) {
-    //   console.error('Failed to unlock users:', error);
-    // }
   };
 
   return (

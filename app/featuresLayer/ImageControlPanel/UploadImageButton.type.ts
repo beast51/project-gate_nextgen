@@ -1,5 +1,5 @@
 export type ImageControlPanelProps = {
   carNumber?: string
-  apartmentNumber?: string
+  apartmentNumber?: string | null
   mainImage?: boolean
 }

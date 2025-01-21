@@ -1,33 +1,26 @@
-// import { PrismaClient } from '@prisma/client'
-
-// declare global {
-//   var prisma: PrismaClient | undefined
-// }
-
-// const client = globalThis.prisma || new PrismaClient()
-// if (process.env.NODE_ENV !== 'production' ) globalThis.prisma = client
-
-// export default client
-
-
 import { PrismaClient } from '@prisma/client';
 
 declare global {
   var prismaClients: { [key: string]: PrismaClient } | undefined;
 }
 
-function getPrismaClient(databaseKey: string): PrismaClient {
+export enum databaseList {
+  DATABASE_URL = 'DATABASE_URL',
+  DEMO_DATABASE_URL = 'DEMO_DATABASE_URL'
+} 
+
+function getPrismaClient(databaseKey: databaseList): PrismaClient {
 
   globalThis.prismaClients = globalThis.prismaClients ?? {};
 
-  if (!globalThis.prismaClients[databaseKey]) {
-    const databaseUrl = process.env[databaseKey];
-    globalThis.prismaClients[databaseKey] = new PrismaClient({
+  if (!globalThis.prismaClients[databaseList[databaseKey]]) {
+    const databaseUrl = process.env[databaseList[databaseKey]];
+    globalThis.prismaClients[databaseList[databaseKey]] = new PrismaClient({
       datasources: { db: { url: databaseUrl } },
     });
   }
 
-  return globalThis.prismaClients[databaseKey];
+  return globalThis.prismaClients[databaseList[databaseKey]];
 }
 
 export { getPrismaClient };

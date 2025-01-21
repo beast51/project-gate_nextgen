@@ -8,7 +8,7 @@ import { MdOutlineQuestionMark } from 'react-icons/md';
 
 export const Avatar: React.FC<AvatarProps> = ({
   image,
-  name,
+  name = '',
   isBlackListed,
   isSmall,
   isCauseError,
