@@ -7,6 +7,10 @@ const withPWA = require('next-pwa')({
 });
 const nextConfig = {
   reactStrictMode: true,
+  eslint: {
+    // core and infrastructure are outside of app/, the import boundaries are checked there
+    dirs: ['app', 'core', 'infrastructure'],
+  },
   images: {
     remotePatterns: [
       { hostname: 'res.cloudinary.com' },

@@ -70,13 +70,92 @@
     "vitest": "^5.0.1"
   },
   "eslintConfig": {
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
+    "plugins": [
+      "react-hooks"
+    ],
     "extends": [
-      "plugin:storybook/recommended",
-      "eslint:recommended",
-      "plugin:jest/recommended"
+      "plugin:storybook/recommended"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "core/**/*.ts"
+        ],
+        "rules": {
+          "no-restricted-imports": [
+            "error",
+            {
+              "paths": [
+                "next",
+                "next-auth",
+                "react",
+                "react-dom"
+              ],
+              "patterns": [
+                "next/*",
+                "next-auth/*",
+                "react/*",
+                "react-dom/*",
+                "@prisma/*",
+                "@/app/*",
+                "@/appLayer/*",
+                "@/pagesLayer/*",
+                "@/widgetsLayer/*",
+                "@/featuresLayer/*",
+                "@/entitiesLayer/*",
+                "@/sharedLayer/*",
+                "@/infrastructure/*",
+                "**/infrastructure/*",
+                "**/app/*"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "files": [
+          "infrastructure/**/*.ts"
+        ],
+        "rules": {
+          "no-restricted-imports": [
+            "error",
+            {
+              "paths": [
+                "next",
+                "next-auth",
+                "react",
+                "react-dom"
+              ],
+              "patterns": [
+                "next/*",
+                "next-auth/*",
+                "react/*",
+                "react-dom/*",
+                "@/app/*",
+                "@/appLayer/*",
+                "@/pagesLayer/*",
+                "@/widgetsLayer/*",
+                "@/featuresLayer/*",
+                "@/entitiesLayer/*",
+                "@/sharedLayer/*",
+                "**/app/*"
+              ]
+            }
+          ]
+        }
+      }
     ]
   },
   "resolutions": {
-    "jackspeak": "2.3.1"
+    "jackspeak": "2.1.1"
   }
 }
