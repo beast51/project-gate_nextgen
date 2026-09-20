@@ -1,7 +1,6 @@
 // import { getPrismaClient } from "@/appLayer/libs/prismadb";
 // import { GateUserType } from "@/entitiesLayer/GateUser/model/services/getGateUsersFromApi";
-// import { isTimeToRemoveFromBlackList } from "@/sharedLayer/utils/utils";
-// import getSession from "@/widgetsLayer/Sidebar/actions/getSession";
+// // import getSession from "@/widgetsLayer/Sidebar/actions/getSession";
 
 // export const getBlackListedGateUserFromDb = async () => {
 //   const session = await getSession();
@@ -128,9 +127,7 @@
 import { databaseList, getPrismaClient } from "@/appLayer/libs/prismadb";
 import { GateUserType } from "@/entitiesLayer/GateUser/model/types/GateUser.type";
 
-import { isTimeToRemoveFromBlackList } from "@/sharedLayer/utils/utils";
 import getSession from "@/widgetsLayer/Sidebar/actions/getSession";
-const CAN_OPEN_GATES = "20879"
 
 const getDatabaseClient = async () => {
   const session = await getSession();
@@ -151,104 +148,4 @@ export const getBlackListedGateUserFromDb = async () => {
     console.error('Error retrieving data from ViolationManagement', error);
     throw new Error('Error retrieving data from ViolationManagement');
   }
-};
-
-const editGateUserOnApi = async (body: {
-  name?: string;
-  phoneNumber?: string;
-  carNumber?: string[];
-  apartmentNumber?: string;
-  id?: string;
-  isBlackListed?: boolean;
-}) => {
-  const url = `${process.env.UNITALK_URL}/contacts/set`;
-  if (!url || !process.env.UNITALK_AUTHORIZATION || !process.env.UNITALK_PROJECT_ID) {
-    console.error('Environment variables for UNITALK are not set');
-    return;
-  }
-
-  const headers: Record<string, string> = {
-    'Authorization': process.env.UNITALK_AUTHORIZATION,
-    'ProjectId': process.env.UNITALK_PROJECT_ID,
-    'Content-Type': 'application/json',
-  };
-
-  const payload = JSON.stringify({
-    address: body.apartmentNumber,
-    email: '',
-    id: Number(body.id),
-    name: body.name,
-    note: body.carNumber?.join(','),
-    phones: [body.phoneNumber],
-    responsible: body.isBlackListed ? null : CAN_OPEN_GATES,
-  });
-
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: headers,
-      body: payload,
-    });
-    console.log('Edit response:', response.status);
-  } catch (error) {
-    console.error('Failed to edit gate user on API', error);
-  }
-};
-
-const editGateUserInDb = async (data: {
-  idInApi?: string;
-  name?: string;
-  phoneNumber: string;
-  carNumber?: string[];
-  apartmentNumber?: string;
-  image?: string;
-  isBlackListed?: boolean;
-  blackListedFrom?: string;
-  blackListedTo?: string;
-}) => {
-  const prisma = await getDatabaseClient();
-  if (!prisma) return;
-  try {
-    const user = await prisma.gateUser.update({
-      where: { phoneNumber: data.phoneNumber },
-      data,
-    });
-    console.log('User updated in DB:', user);
-  } catch (error) {
-    console.error('Failed to update user in DB', error);
-  }
-};
-
-export const unblockExpiredPenaltiesUsers = async () => {
-  const gateUsers = await getBlackListedGateUserFromDb();
-  if (!gateUsers.length) return [];
-
-  const expiredPenaltiesUsers = gateUsers.filter(user => isTimeToRemoveFromBlackList(user.blackListedTo));
-  const unblocked: string[] = [];
-  
-  for (const user of expiredPenaltiesUsers) {
-    unblocked.push(user.phoneNumber);
-    await editGateUserOnApi({
-      name: user.name || '',
-      phoneNumber: user.phoneNumber,
-      carNumber: user.carNumber,
-      apartmentNumber: user.apartmentNumber || '',
-      id: user.idInApi,
-      isBlackListed: !user.isBlackListed,
-    });
-
-    await editGateUserInDb({
-      name: user.name || undefined,
-      phoneNumber: user.phoneNumber,
-      carNumber: user.carNumber,
-      apartmentNumber: user.apartmentNumber || undefined,
-      idInApi: user.idInApi,
-      isBlackListed: !user.isBlackListed,
-      blackListedFrom: user.blackListedFrom,
-      blackListedTo: user.blackListedTo,
-      image: user.image || undefined,
-    });
-  }
-
-  return unblocked;
 };

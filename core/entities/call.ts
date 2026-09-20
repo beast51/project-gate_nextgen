@@ -23,6 +23,9 @@ export type IncomingCall = {
   state?: string | null
 }
 
+// A call on its way to the storage: what the telephony did not report stays unset
+export type CallToStore = Pick<Call, 'number' | 'time' | 'callerName'> & Partial<Call>
+
 export const UNREGISTERED_CALLER_NAME = 'Not registered';
 
 // Q.850 release causes which mean that the call failed and the gate did not open

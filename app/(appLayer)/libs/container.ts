@@ -1,11 +1,19 @@
+import moment from 'moment-timezone';
 import { NextResponse } from 'next/server';
 import { createAddGateUser } from '@/core/useCases/addGateUser';
 import { createDeleteGateUser } from '@/core/useCases/deleteGateUser';
 import { createEditGateUser } from '@/core/useCases/editGateUser';
+import { createGetCalls } from '@/core/useCases/getCalls';
+import { createGetViolations } from '@/core/useCases/getViolations';
+import { createRefreshCalls, createSyncCalls } from '@/core/useCases/syncCalls';
+import { createUnblockExpiredPenalties } from '@/core/useCases/unblockExpiredPenalties';
+import { createPrismaCallsRepository } from '@/infrastructure/prisma/prismaCallsRepository';
 import { createPrismaGateUsersRepository } from '@/infrastructure/prisma/prismaGateUsersRepository';
+import { createUnitalkCallsSource } from '@/infrastructure/unitalk/unitalkCallsSource';
 import { createUnitalkGateUsersDirectory } from '@/infrastructure/unitalk/unitalkGateUsersDirectory';
 import { UnitalkConfig } from '@/infrastructure/unitalk/unitalkConfig';
 import getSession from '@/widgetsLayer/Sidebar/actions/getSession';
+import { formatTime } from '@/sharedLayer/utils/date';
 import { databaseList, getPrismaClient } from './prismadb';
 
 // Composition root: the only place that knows the session, the environment and the concrete adapters.
@@ -23,11 +31,22 @@ const requiredEnv = (name: string) => {
   return value;
 };
 
-const tenantConfig = (tenant: Tenant): { database: databaseList, unitalk: UnitalkConfig } => {
+type TenantConfig = {
+  database: databaseList
+  // id of the LastCallsRequestFromApi document in the tenant database
+  lastSyncRecordId: string
+  // the demo stand shows prepared calls, it never loads real ones from the telephony
+  syncCallsFromTelephony: boolean
+  unitalk: UnitalkConfig
+}
+
+const tenantConfig = (tenant: Tenant): TenantConfig => {
   const isDemo = tenant === 'demo';
 
   return {
     database: isDemo ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL,
+    lastSyncRecordId: isDemo ? '6599d747845141d32637978d' : '647b516f5176fab7f7310a63',
+    syncCallsFromTelephony: !isDemo,
     unitalk: {
       url: requiredEnv('UNITALK_URL'),
       authorization: requiredEnv('UNITALK_AUTHORIZATION'),
@@ -43,10 +62,28 @@ const buildContainer = (tenant: Tenant) => {
   const prisma = getPrismaClient(config.database);
 
   const gateUsers = createPrismaGateUsersRepository(prisma);
+  const calls = createPrismaCallsRepository(prisma, { lastSyncRecordId: config.lastSyncRecordId });
   const directory = createUnitalkGateUsersDirectory(config.unitalk);
+  const source = createUnitalkCallsSource(config.unitalk);
+
+  const syncCalls = createSyncCalls({
+    source,
+    calls,
+    gateUsers,
+    // NOTE: the last sync time is stored in Moscow time but compared with the server local time below.
+    // It is the historical behaviour, kept as is: changing it changes how often the telephony is called.
+    currentSyncTime: () => moment().tz('Europe/Moscow').format('YYYY-MM-DD HH:mm:ss'),
+  });
+
+  const refreshCalls = config.syncCallsFromTelephony
+    ? createRefreshCalls({ calls, syncCalls, currentTime: () => formatTime(Date.now(), false).toString() })
+    : async () => {};
 
   return {
     tenant,
+    getCalls: createGetCalls({ calls, refreshCalls }),
+    getViolations: createGetViolations({ calls, refreshCalls }),
+    unblockExpiredPenalties: createUnblockExpiredPenalties({ directory, gateUsers }),
     listGateUsers: gateUsers.list,
     addGateUser: createAddGateUser({ directory, gateUsers }),
     editGateUser: createEditGateUser({ directory, gateUsers }),
@@ -65,6 +102,18 @@ export const getContainer = async (): Promise<Container | null> => {
   }
 
   return buildContainer(session.user.name === DEMO_USER_NAME ? 'demo' : 'prod');
+};
+
+// Use cases for jobs that run without a user (Vercel cron). Vercel sends `Authorization: Bearer <CRON_SECRET>`
+// when the CRON_SECRET environment variable is set; without the variable there is no system access at all.
+export const getCronContainer = (request: Request): Container | null => {
+  const secret = process.env.CRON_SECRET;
+
+  if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`) {
+    return null;
+  }
+
+  return buildContainer('prod');
 };
 
 export const unauthorized = () => NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

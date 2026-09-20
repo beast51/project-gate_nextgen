@@ -1,4 +1,4 @@
-import { Call } from '../entities/call';
+import { Call, CallToStore } from '../entities/call';
 
 // Storage of the calls that were already matched with gate users
 export type CallsRepository = {
@@ -7,7 +7,7 @@ export type CallsRepository = {
   findGatePassagesByTimeRange: (from: string, to: string, failedCauses: readonly number[]) => Promise<Call[]>
   findLast: () => Promise<Call | null>
   exists: (number: string, time: string) => Promise<boolean>
-  add: (call: Call, gateUserId?: string) => Promise<void>
+  add: (call: CallToStore, gateUserId?: string) => Promise<void>
   getLastSyncTime: () => Promise<string | null>
   setLastSyncTime: (time: string) => Promise<void>
 }
