@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import classes from './GateUserPage.module.scss';
-import { getGateUserFromDb } from '../model/gateUsers';
+import { loadGateUsers } from '../../lib/loadGateUsers';
 import { Slider } from '@/sharedLayer/ui/Slider';
 import { GateUserControlPanel } from '@/featuresLayer/GateUserControlPanel';
 import { ImageControlPanel } from '@/featuresLayer/ImageControlPanel';
@@ -11,7 +11,7 @@ export type GateUserPageProps = {
 };
 
 export const GateUserPage: FC<GateUserPageProps> = async ({ phoneNumber }) => {
-  const [user] = await getGateUserFromDb(phoneNumber);
+  const [user] = await loadGateUsers(phoneNumber);
 
   return (
     <div className={classes.gateUsersPage}>

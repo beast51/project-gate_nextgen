@@ -4,7 +4,9 @@ import { createDeleteGateUser } from '@/core/useCases/deleteGateUser';
 import { createEditGateUser } from '@/core/useCases/editGateUser';
 import { createGetCalls } from '@/core/useCases/getCalls';
 import { createGetViolations } from '@/core/useCases/getViolations';
+import { createImportGateUsers } from '@/core/useCases/importGateUsers';
 import { createRefreshCalls, createSyncCalls } from '@/core/useCases/syncCalls';
+import { createSyncGateUsers } from '@/core/useCases/syncGateUsers';
 import { createUnblockExpiredPenalties } from '@/core/useCases/unblockExpiredPenalties';
 import { createPrismaCallsRepository } from '@/infrastructure/prisma/prismaCallsRepository';
 import { createPrismaGateUsersRepository } from '@/infrastructure/prisma/prismaGateUsersRepository';
@@ -76,6 +78,9 @@ const buildContainer = (tenant: Tenant) => {
     getViolations: createGetViolations({ calls, refreshCalls }),
     unblockExpiredPenalties: createUnblockExpiredPenalties({ directory, gateUsers }),
     listGateUsers: gateUsers.list,
+    listBlackListedGateUsers: gateUsers.listBlackListed,
+    syncGateUsers: createSyncGateUsers({ directory, gateUsers }),
+    importGateUsers: createImportGateUsers({ gateUsers }),
     addGateUser: createAddGateUser({ directory, gateUsers }),
     editGateUser: createEditGateUser({ directory, gateUsers }),
     deleteGateUser: createDeleteGateUser({ directory, gateUsers }),

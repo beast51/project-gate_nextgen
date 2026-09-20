@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { Call, IncomingCall } from '../entities/call';
 import { GateUser } from '../entities/gateUser';
-import { GateUsersRepository } from '../ports/gateUsersRepository';
 import { createFakeCallsRepository } from './__fixtures__/fakeCallsRepository';
+import { createFakeGateUsersRepository } from './__fixtures__/fakeGateUsersRepository';
 import { createGetCalls } from './getCalls';
 import { createRefreshCalls, createSyncCalls, DEFAULT_SYNC_INTERVAL_SECONDS } from './syncCalls';
 
@@ -20,14 +20,7 @@ const resident: GateUser = {
   blackListedTo: '',
 };
 
-const gateUsersWith = (...users: GateUser[]): GateUsersRepository => ({
-  list: async () => users,
-  listBlackListed: async () => [],
-  findByPhoneNumber: async (phoneNumber) => users.find(user => user.phoneNumber === phoneNumber) ?? null,
-  addMissing: async () => {},
-  update: async () => {},
-  remove: async () => {},
-});
+const gateUsersWith = (...users: GateUser[]) => createFakeGateUsersRepository(users).repository;
 
 const storedCall = (number: string, time: string): Call => ({
   number,
