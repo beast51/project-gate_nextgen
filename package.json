@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest run",
     "storybook": "storybook dev -p 6006 -c ./config/storybook",
     "build-storybook": "storybook build -c ./config/storybook",
     "postinstall": "prisma generate"
@@ -64,7 +65,9 @@
     "prisma": "^5.5.2",
     "sass": "^1.66.1",
     "storybook": "^7.5.2",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vite": "^7",
+    "vitest": "^5.0.1"
   },
   "eslintConfig": {
     "extends": [
