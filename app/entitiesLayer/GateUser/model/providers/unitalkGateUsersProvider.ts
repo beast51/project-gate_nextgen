@@ -1,6 +1,6 @@
 import getSession from "@/widgetsLayer/Sidebar/actions/getSession"
 import { Contact, GateUserType, GateUsersFromApiType } from "../types/GateUser.type";
-import { BodyType } from "@/appLayer/api/users/add_user/route";
+import { NewGateUser } from "@/core/entities/gateUser";
 import { formatCarNumber } from "@/sharedLayer/utils/formatCarNumber";
 
 const serialize = (data: Contact) => ({
@@ -29,7 +29,7 @@ export const unitalkGateUsersProvider = () => {
   };
 
   return {
-    addGateUserToApi:  async (body: BodyType) => {   
+    addGateUserToApi:  async (body: NewGateUser) => {   
       const url = `${UNITALK_URL}/contacts/set`;
   
       const payload = { 
@@ -70,7 +70,7 @@ export const unitalkGateUsersProvider = () => {
       })
       console.log('after delete from api', response.status)
     },
-    editGateUserOnApi: async (body: BodyType & {id: string, isBlackListed: boolean}) => {  
+    editGateUserOnApi: async (body: NewGateUser & {id: string, isBlackListed: boolean}) => {  
       const url = `${UNITALK_URL}/contacts/set`;
     
       const payload = { 

@@ -2,14 +2,10 @@ import { NextResponse } from "next/server";
 import getSession from "@/widgetsLayer/Sidebar/actions/getSession";
 import { unitalkApiGateUsers } from "@/entitiesLayer/GateUser/model/services/apiGateUsers";
 import { formatCarNumber } from "@/entitiesLayer/GateUser/model/providers/unitalkGateUsersProvider";
+import { NewGateUser } from "@/core/entities/gateUser";
 import { mongoDbGateUsers } from "@/entitiesLayer/GateUser/model/services/dbGateUsers";
 
-export type BodyType = {
-  name: string,
-  phoneNumber: string,
-  carNumber: string,
-  apartmentNumber: string,
-}
+type BodyType = NewGateUser
 
 const {
   getGateUsersFromApi,

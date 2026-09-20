@@ -1,3 +1,4 @@
+import { Call, IncomingCall } from "@/core/entities/call";
 import { GateUserType } from "@/entitiesLayer/GateUser/model/types/GateUser.type";
 import { callState, causeAllowList, causeDisallowList } from "../providers/unitalkCallsProvider";
 
@@ -52,46 +53,17 @@ export type CallFromApiDataType = {
   warning: string | null
 }
 
-export type SerializedCall = {
-  number: string
-  time: string
-  secondsFullTime?: number,
-  cause?: CauseNumbers | null,
-  state?: CallStateValues | null
-}
+export type SerializedCall = IncomingCall
 
 export type CallsCardPropsType = {
   call: CallType;
   onDoubleClick: (phoneNumber: string) => void
 };
 
-// export type getInfoFromDatabaseByPhoneNumberType = {
-//   id: string
-//   name: string | null
-//   carNumber: string[]
-//   apartmentNumber: string | null
-//   image: string | null
-//   isBlackListed: boolean | null
-//   blackListedFrom: string | null
-//   blackListedTo: string | null
-// } | null
 export type getInfoFromDatabaseByPhoneNumberType = Omit<GateUserType, 'phoneNumber' | 'idInApi'> | null
 
 
-export type CallType = {
-  number: string
-  time: string
-  carNumber: string[]
-  callerName: string | null
-  apartmentNumber: string | null
-  image: string | null
-  isBlackListed?: boolean | null
-  blackListedFrom: string | null
-  blackListedTo: string | null
-  secondsFullTime: number | null
-  cause: number | null
-  state: string | null
-}
+export type CallType = Call
 
 export type CallsType = CallType[]
 

@@ -1,14 +1,10 @@
-import { Prisma } from '@prisma/client';
-import { BodyType } from "@/appLayer/api/users/add_user/route";
+import { GateUser, NewGateUser } from '@/core/entities/gateUser';
 
-type GateUser = Omit<Prisma.GateUserGroupByOutputType, '_count' | '_min' | '_max'>
-type RequiredFields = Omit<GateUser, 'image' | 'additionalImages' | 'id'>
-type OptionalFields = Partial<Pick<GateUser, 'image' | 'additionalImages' | 'id'>>
-type GateUserBase = RequiredFields & OptionalFields
+export type { GateUser, NewGateUser };
 
-export type GateUserType = {
-  [K in keyof GateUserBase]: GateUserBase[K];
-}
+// Shape of a gate user in API responses and in the UI.
+// The domain entity calls the telephony id `externalId`, the wire format keeps the historical `idInApi`.
+export type GateUserType = Omit<GateUser, 'externalId'> & { idInApi: string }
 
 export type GateUserCardProps = {
   data: GateUserType;
@@ -16,13 +12,6 @@ export type GateUserCardProps = {
 
 export type GateUserCardsListType = {
   users: GateUserType[]
-}
-
-export type apiGateUsersType = {
-  name?: string
-  phoneNumber: string
-  carNumber: string
-  apartmentNumber: string
 }
 
 export type Contact = {
@@ -44,12 +33,10 @@ export type GateUsersFromApiType = {
   }
 }
 
-export type getGateUsersFromApiType = (phoneNumber?: string, name?: string, isDemo?: boolean) => Promise<GateUserType[]>
-
 export type ApiGateUsersType = {
-  addGateUserToApi: (body: BodyType) => Promise<void>
+  addGateUserToApi: (body: NewGateUser) => Promise<void>
   deleteGateUserFromApi: (id: string) => Promise<void>
-  editGateUserOnApi: (body: BodyType & {
+  editGateUserOnApi: (body: NewGateUser & {
     id: string;
     isBlackListed: boolean;
 }) => Promise<void>
