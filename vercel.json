@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/unblock_expired_penalties_users",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/cleanup_demo_sandboxes",
+      "schedule": "0 3 * * *"
     }
   ],
   "headers": [

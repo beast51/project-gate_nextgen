@@ -16,6 +16,10 @@ model User {
   carNumber      String?   @unique
   image          String?
   hashedPassword String?
+  // key of the gate (customer) whose data the user works with; without it the user gets a personal demo sandbox
+  tenant            String?
+  // when the personal demo sandbox was used last, null when the user has no sandbox database
+  sandboxLastUsedAt DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
