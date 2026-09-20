@@ -59,16 +59,6 @@ export const createPrismaCallsRepository = (prisma: PrismaClient): CallsReposito
     }
   },
 
-  exists: async (number, time) => {
-    try {
-      const call = await prisma.call.findFirst({ where: { number, time }, select: { id: true } });
-      return Boolean(call);
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
-  },
-
   add: async (call, gateUserId) => {
     try {
       await prisma.call.create({

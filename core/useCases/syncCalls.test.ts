@@ -44,7 +44,7 @@ describe('syncCalls', () => {
     { number: '380509999999', time: '2024-03-10 10:05:00', secondsFullTime: 3, cause: 31, state: 'NOANSWER' },
   ];
 
-  it('stores only calls newer than the last stored one, with a snapshot of the caller', async () => {
+  it('stores only calls that are not stored yet, with a snapshot of the caller', async () => {
     const { repository, state } = createFakeCallsRepository([storedCall('380501111111', '2024-03-10 09:00:00')]);
 
     await createSyncCalls({
@@ -84,6 +84,39 @@ describe('syncCalls', () => {
       },
     ]);
     expect(state.links).toEqual(['gate-user-id', undefined]);
+  });
+
+  // regression: nobody opened the application on the 19th, the 20th was synchronized first,
+  // after that the calls of the 19th were dropped forever as "older than the newest stored call"
+  it('fills in a missed day even when later calls are already stored', async () => {
+    const { repository, state } = createFakeCallsRepository([storedCall('380501111111', '2024-03-11 08:00:00')]);
+
+    await createSyncCalls({
+      source: { getCalls: async () => incoming },
+      calls: repository,
+      gateUsers: gateUsersWith(resident),
+    })('2024-03-10 00:00:00', '2024-03-10 23:59:59');
+
+    expect(state.calls.map(call => call.time).sort()).toEqual([
+      '2024-03-10 09:00:00',
+      '2024-03-10 10:00:00',
+      '2024-03-10 10:05:00',
+      '2024-03-11 08:00:00',
+    ]);
+  });
+
+  it('asks the storage once per synchronization, not once per call', async () => {
+    const { repository } = createFakeCallsRepository();
+    const findByTimeRange = vi.spyOn(repository, 'findByTimeRange');
+
+    await createSyncCalls({
+      source: { getCalls: async () => incoming },
+      calls: repository,
+      gateUsers: gateUsersWith(resident),
+    })('from', 'to');
+
+    expect(findByTimeRange).toHaveBeenCalledTimes(1);
+    expect(findByTimeRange).toHaveBeenCalledWith('2024-03-10 09:00:00', '2024-03-10 10:05:00');
   });
 
   it('does not duplicate calls when it runs twice', async () => {

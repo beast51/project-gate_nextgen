@@ -22,7 +22,6 @@ export const createFakeCallsRepository = (stored: Call[] = [], lastSyncTime: Dat
       ),
     findLast: async () =>
       ([...state.calls] as Call[]).sort((a, b) => b.time.localeCompare(a.time))[0] ?? null,
-    exists: async (number, time) => state.calls.some(call => call.number === number && call.time === time),
     add: async (call, gateUserId) => {
       state.calls.push(call);
       state.links.push(gateUserId);

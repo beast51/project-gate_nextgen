@@ -6,7 +6,6 @@ export type CallsRepository = {
   // only calls that opened the gate: known, not black listed caller and no failure cause
   findGatePassagesByTimeRange: (from: string, to: string, failedCauses: readonly number[]) => Promise<Call[]>
   findLast: () => Promise<Call | null>
-  exists: (number: string, time: string) => Promise<boolean>
   add: (call: CallToStore, gateUserId?: string) => Promise<void>
   // Rate limit guard of the telephony API, shared by all users of the storage.
   // Atomically marks `now` as the time of the last synchronization when at least `minIntervalSeconds`

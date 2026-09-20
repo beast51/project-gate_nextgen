@@ -23,6 +23,9 @@ export const toStoredCall = (call: IncomingCall, caller: GateUser | null): CallT
   state: call.state,
 });
 
+// one phone can not make two calls in the same second
+const callKey = (call: { number: string, time: string }) => `${call.number}|${call.time}`;
+
 type Dependencies = {
   source: CallsSource
   calls: CallsRepository
@@ -33,13 +36,17 @@ export const createSyncCalls = ({ source, calls, gateUsers }: Dependencies) =>
   async (from: string, to: string): Promise<void> => {
     const incomingCalls = await source.getCalls(from, to);
 
-    const lastCall = await calls.findLast();
-    const lastCallTime = lastCall ? new Date(lastCall.time).getTime() : 0;
+    if (incomingCalls.length === 0) return;
 
-    const newCalls = incomingCalls.filter(call => new Date(call.time).getTime() > lastCallTime);
+    // Calls are compared with what is already stored for the same period, not with the newest stored call:
+    // a day nobody looked at is filled in whenever it is requested, even if later days are already stored.
+    const times = incomingCalls.map(call => call.time).sort();
+    const stored = await calls.findByTimeRange(times[0], times[times.length - 1]);
+    const known = new Set(stored.map(call => callKey(call)));
 
-    for (const call of newCalls) {
-      if (await calls.exists(call.number, call.time)) continue;
+    for (const call of incomingCalls) {
+      if (known.has(callKey(call))) continue;
+      known.add(callKey(call));
 
       const caller = await gateUsers.findByPhoneNumber(call.number);
       await calls.add(toStoredCall(call, caller), caller?.id);
