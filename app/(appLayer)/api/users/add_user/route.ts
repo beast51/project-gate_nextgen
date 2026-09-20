@@ -1,40 +1,14 @@
 import { NextResponse } from "next/server";
-import getSession from "@/widgetsLayer/Sidebar/actions/getSession";
-import { unitalkApiGateUsers } from "@/entitiesLayer/GateUser/model/services/apiGateUsers";
-import { formatCarNumber } from "@/entitiesLayer/GateUser/model/providers/unitalkGateUsersProvider";
+import { getContainer, unauthorized } from "@/appLayer/libs/container";
 import { NewGateUser } from "@/core/entities/gateUser";
-import { mongoDbGateUsers } from "@/entitiesLayer/GateUser/model/services/dbGateUsers";
-
-type BodyType = NewGateUser
-
-const {
-  getGateUsersFromApi,
-  addGateUserToApi,
-} = unitalkApiGateUsers;
-
-const {
-  addGateUsersToDatabase
-  
-} = mongoDbGateUsers
 
 export async function POST(request: Request) {
-  const session = await getSession();
-  const isDemo = session?.user?.name === 'spectator'
-  const body: BodyType = await request.json()
-  await addGateUserToApi(body)
-  const {idInApi} = (await getGateUsersFromApi(body.phoneNumber, "", isDemo))[0]
-  console.log('idInApi', idInApi)
-  await addGateUsersToDatabase([{
-    ...body,
-    name: body.name, 
-    carNumber: formatCarNumber(body.carNumber).split(','),
-    isBlackListed: false,
-    idInApi,
-    image: null,
-    additionalImages: [],
-    blackListedFrom: "",
-    blackListedTo: ""
-  }])
+  const container = await getContainer()
+  if (!container) return unauthorized()
+
+  const body: NewGateUser = await request.json()
+
+  await container.addGateUser(body)
 
   return NextResponse.json('users')
 }

@@ -1,24 +1,14 @@
-
-import { unitalkApiGateUsers } from "@/entitiesLayer/GateUser/model/services/apiGateUsers";
-import { mongoDbGateUsers } from "@/entitiesLayer/GateUser/model/services/dbGateUsers";
 import { NextResponse } from "next/server";
-
-
-const {
-  deleteGateUserFromApi
-} = unitalkApiGateUsers;
-
-const {
-  deleteGateUserFromDb
-} = mongoDbGateUsers;
+import { getContainer, unauthorized } from "@/appLayer/libs/container";
 
 export async function POST(request: Request) {
-  const body = await request.json()
-  const {phoneNumber, id} = body
-  
-  await deleteGateUserFromDb(phoneNumber)
-  await deleteGateUserFromApi(id)
-  
+  const container = await getContainer()
+  if (!container) return unauthorized()
+
+  // `id` is the id of the user in the telephony directory
+  const { phoneNumber, id } = await request.json()
+
+  await container.deleteGateUser({ phoneNumber, externalId: id })
 
   return NextResponse.json('users')
 }
