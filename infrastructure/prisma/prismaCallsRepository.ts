@@ -2,11 +2,6 @@ import { PrismaClient } from '@prisma/client';
 import { UNREGISTERED_CALLER_NAME } from '@/core/entities/call';
 import { CallsRepository } from '@/core/ports/callsRepository';
 
-export type PrismaCallsRepositoryConfig = {
-  // id of the single LastCallsRequestFromApi document of this database
-  lastSyncRecordId: string
-}
-
 const callFields = {
   number: true,
   time: true,
@@ -22,10 +17,7 @@ const callFields = {
   state: true,
 } as const;
 
-export const createPrismaCallsRepository = (
-  prisma: PrismaClient,
-  config: PrismaCallsRepositoryConfig,
-): CallsRepository => ({
+export const createPrismaCallsRepository = (prisma: PrismaClient): CallsRepository => ({
   findByTimeRange: async (from, to) => {
     try {
       return await prisma.call.findMany({
@@ -90,24 +82,36 @@ export const createPrismaCallsRepository = (
     }
   },
 
-  getLastSyncTime: async () => {
-    try {
-      const record = await prisma.lastCallsRequestFromApi.findFirst({ select: { time: true } });
-      return record && record.time;
-    } catch (error) {
-      console.error('failed to receive time of last update calls', error);
-      return null;
-    }
-  },
+  // The time is stored as an ISO string in UTC, ISO strings are compared lexicographically.
+  // A database has one LastCallsRequestFromApi document; values in the old local-time format count as expired.
+  claimSync: async (now, minIntervalSeconds) => {
+    const threshold = new Date(now.getTime() - minIntervalSeconds * 1000).toISOString();
 
-  setLastSyncTime: async (time) => {
     try {
-      await prisma.lastCallsRequestFromApi.update({
-        where: { id: config.lastSyncRecordId },
-        data: { time },
+      // a conditional update is atomic: of several concurrent requests only one matches the filter
+      const claimed = await prisma.lastCallsRequestFromApi.updateMany({
+        where: {
+          OR: [
+            { time: { lt: threshold } },
+            { NOT: { time: { contains: 'T' } } },
+          ],
+        },
+        data: { time: now.toISOString() },
       });
+
+      if (claimed.count > 0) return true;
+
+      // an empty database (a new tenant): the first request creates the record and takes the slot
+      if (await prisma.lastCallsRequestFromApi.count() === 0) {
+        await prisma.lastCallsRequestFromApi.create({ data: { time: now.toISOString() } });
+        return true;
+      }
+
+      return false;
     } catch (error) {
-      console.error(error);
+      // when in doubt, protect the telephony limit
+      console.error('failed to claim the calls synchronization slot', error);
+      return false;
     }
   },
 });

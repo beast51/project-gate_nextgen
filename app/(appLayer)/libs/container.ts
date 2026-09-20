@@ -1,4 +1,3 @@
-import moment from 'moment-timezone';
 import { NextResponse } from 'next/server';
 import { createAddGateUser } from '@/core/useCases/addGateUser';
 import { createDeleteGateUser } from '@/core/useCases/deleteGateUser';
@@ -13,7 +12,6 @@ import { createUnitalkCallsSource } from '@/infrastructure/unitalk/unitalkCallsS
 import { createUnitalkGateUsersDirectory } from '@/infrastructure/unitalk/unitalkGateUsersDirectory';
 import { UnitalkConfig } from '@/infrastructure/unitalk/unitalkConfig';
 import getSession from '@/widgetsLayer/Sidebar/actions/getSession';
-import { formatTime } from '@/sharedLayer/utils/date';
 import { databaseList, getPrismaClient } from './prismadb';
 
 // Composition root: the only place that knows the session, the environment and the concrete adapters.
@@ -33,8 +31,8 @@ const requiredEnv = (name: string) => {
 
 type TenantConfig = {
   database: databaseList
-  // id of the LastCallsRequestFromApi document in the tenant database
-  lastSyncRecordId: string
+  // rate limit of the telephony API: not more than one calls synchronization per this number of seconds
+  callsSyncIntervalSeconds: number
   // the demo stand shows prepared calls, it never loads real ones from the telephony
   syncCallsFromTelephony: boolean
   unitalk: UnitalkConfig
@@ -45,7 +43,7 @@ const tenantConfig = (tenant: Tenant): TenantConfig => {
 
   return {
     database: isDemo ? databaseList.DEMO_DATABASE_URL : databaseList.DATABASE_URL,
-    lastSyncRecordId: isDemo ? '6599d747845141d32637978d' : '647b516f5176fab7f7310a63',
+    callsSyncIntervalSeconds: 5,
     syncCallsFromTelephony: !isDemo,
     unitalk: {
       url: requiredEnv('UNITALK_URL'),
@@ -62,21 +60,14 @@ const buildContainer = (tenant: Tenant) => {
   const prisma = getPrismaClient(config.database);
 
   const gateUsers = createPrismaGateUsersRepository(prisma);
-  const calls = createPrismaCallsRepository(prisma, { lastSyncRecordId: config.lastSyncRecordId });
+  const calls = createPrismaCallsRepository(prisma);
   const directory = createUnitalkGateUsersDirectory(config.unitalk);
   const source = createUnitalkCallsSource(config.unitalk);
 
-  const syncCalls = createSyncCalls({
-    source,
-    calls,
-    gateUsers,
-    // NOTE: the last sync time is stored in Moscow time but compared with the server local time below.
-    // It is the historical behaviour, kept as is: changing it changes how often the telephony is called.
-    currentSyncTime: () => moment().tz('Europe/Moscow').format('YYYY-MM-DD HH:mm:ss'),
-  });
+  const syncCalls = createSyncCalls({ source, calls, gateUsers });
 
   const refreshCalls = config.syncCallsFromTelephony
-    ? createRefreshCalls({ calls, syncCalls, currentTime: () => formatTime(Date.now(), false).toString() })
+    ? createRefreshCalls({ calls, syncCalls, minIntervalSeconds: config.callsSyncIntervalSeconds })
     : async () => {};
 
   return {

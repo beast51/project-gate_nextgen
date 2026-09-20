@@ -4,7 +4,7 @@ import { GateUser } from '../entities/gateUser';
 import { GateUsersRepository } from '../ports/gateUsersRepository';
 import { createFakeCallsRepository } from './__fixtures__/fakeCallsRepository';
 import { createGetCalls } from './getCalls';
-import { createRefreshCalls, createSyncCalls, isTimeToSyncCalls } from './syncCalls';
+import { createRefreshCalls, createSyncCalls, DEFAULT_SYNC_INTERVAL_SECONDS } from './syncCalls';
 
 const resident: GateUser = {
   id: 'gate-user-id',
@@ -44,27 +44,6 @@ const storedCall = (number: string, time: string): Call => ({
   state: 'BUSY',
 });
 
-describe('isTimeToSyncCalls', () => {
-  it('is time when more than the interval has passed', () => {
-    expect(isTimeToSyncCalls('2024-03-10 12:00:00', '2024-03-10 12:00:11')).toBe(true);
-  });
-
-  it('is not time inside the interval', () => {
-    expect(isTimeToSyncCalls('2024-03-10 12:00:00', '2024-03-10 12:00:10')).toBe(false);
-    expect(isTimeToSyncCalls('2024-03-10 12:00:00', '2024-03-10 12:00:01')).toBe(false);
-  });
-
-  // historical behaviour: a zero or negative difference (clock in another time zone) means "sync"
-  it('is time when the stored time is not earlier than the current time', () => {
-    expect(isTimeToSyncCalls('2024-03-10 12:00:00', '2024-03-10 12:00:00')).toBe(true);
-    expect(isTimeToSyncCalls('2024-03-10 15:00:00', '2024-03-10 12:00:00')).toBe(true);
-  });
-
-  it('is not time when the last sync time is unknown', () => {
-    expect(isTimeToSyncCalls(null, '2024-03-10 12:00:00')).toBe(false);
-  });
-});
-
 describe('syncCalls', () => {
   const incoming: IncomingCall[] = [
     { number: '380501111111', time: '2024-03-10 09:00:00', secondsFullTime: 4, cause: 17, state: 'BUSY' },
@@ -79,7 +58,6 @@ describe('syncCalls', () => {
       source: { getCalls: async () => incoming },
       calls: repository,
       gateUsers: gateUsersWith(resident),
-      currentSyncTime: () => '2024-03-10 13:00:00',
     })('from', 'to');
 
     expect(state.calls.slice(1)).toEqual([
@@ -113,7 +91,6 @@ describe('syncCalls', () => {
       },
     ]);
     expect(state.links).toEqual(['gate-user-id', undefined]);
-    expect(state.lastSyncTime).toBe('2024-03-10 13:00:00');
   });
 
   it('does not duplicate calls when it runs twice', async () => {
@@ -122,7 +99,6 @@ describe('syncCalls', () => {
       source: { getCalls: async () => incoming },
       calls: repository,
       gateUsers: gateUsersWith(resident),
-      currentSyncTime: () => '2024-03-10 13:00:00',
     });
 
     await syncCalls('from', 'to');
@@ -132,16 +108,54 @@ describe('syncCalls', () => {
   });
 });
 
-describe('refreshCalls', () => {
-  it('synchronizes only when the interval has passed', async () => {
-    const { repository } = createFakeCallsRepository([], '2024-03-10 12:00:00');
+describe('refreshCalls (rate limit guard of the telephony)', () => {
+  const at = (iso: string) => () => new Date(iso);
+
+  it('goes to the telephony not more often than once per 5 seconds by default', async () => {
+    expect(DEFAULT_SYNC_INTERVAL_SECONDS).toBe(5);
+
+    const { repository } = createFakeCallsRepository([], new Date('2024-03-10T12:00:00.000Z'));
     const syncCalls = vi.fn(async () => {});
 
-    await createRefreshCalls({ calls: repository, syncCalls, currentTime: () => '2024-03-10 12:00:05' })('from', 'to');
+    await createRefreshCalls({ calls: repository, syncCalls, now: at('2024-03-10T12:00:03.000Z') })('from', 'to');
+    await createRefreshCalls({ calls: repository, syncCalls, now: at('2024-03-10T12:00:05.000Z') })('from', 'to');
     expect(syncCalls).not.toHaveBeenCalled();
 
-    await createRefreshCalls({ calls: repository, syncCalls, currentTime: () => '2024-03-10 12:00:30' })('from', 'to');
+    await createRefreshCalls({ calls: repository, syncCalls, now: at('2024-03-10T12:00:05.001Z') })('from', 'to');
+    expect(syncCalls).toHaveBeenCalledTimes(1);
     expect(syncCalls).toHaveBeenCalledWith('from', 'to');
+  });
+
+  it('lets only one of several simultaneous requests through', async () => {
+    const { repository } = createFakeCallsRepository();
+    const syncCalls = vi.fn(async () => {});
+    const refreshCalls = createRefreshCalls({ calls: repository, syncCalls, now: at('2024-03-10T12:00:00.000Z') });
+
+    await Promise.all([refreshCalls('from', 'to'), refreshCalls('from', 'to'), refreshCalls('from', 'to')]);
+
+    expect(syncCalls).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the limit when the synchronization fails', async () => {
+    const { repository } = createFakeCallsRepository();
+    const syncCalls = vi.fn(async () => { throw new Error('telephony is down'); });
+    const refreshCalls = createRefreshCalls({ calls: repository, syncCalls, now: at('2024-03-10T12:00:00.000Z') });
+
+    await expect(refreshCalls('from', 'to')).rejects.toThrow('telephony is down');
+    await refreshCalls('from', 'to');
+
+    expect(syncCalls).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses the interval of the tenant', async () => {
+    const { repository } = createFakeCallsRepository([], new Date('2024-03-10T12:00:00.000Z'));
+    const syncCalls = vi.fn(async () => {});
+
+    await createRefreshCalls({
+      calls: repository, syncCalls, minIntervalSeconds: 60, now: at('2024-03-10T12:00:30.000Z'),
+    })('from', 'to');
+
+    expect(syncCalls).not.toHaveBeenCalled();
   });
 });
 

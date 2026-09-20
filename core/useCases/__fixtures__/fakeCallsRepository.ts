@@ -2,7 +2,7 @@ import { Call, CallToStore, UNREGISTERED_CALLER_NAME } from '../../entities/call
 import { CallsRepository } from '../../ports/callsRepository';
 
 // In-memory CallsRepository with the same filtering rules as the real storage
-export const createFakeCallsRepository = (stored: Call[] = [], lastSyncTime: string | null = null) => {
+export const createFakeCallsRepository = (stored: Call[] = [], lastSyncTime: Date | null = null) => {
   const state = {
     calls: [...stored] as (Call | CallToStore)[],
     links: [] as (string | undefined)[],
@@ -27,8 +27,12 @@ export const createFakeCallsRepository = (stored: Call[] = [], lastSyncTime: str
       state.calls.push(call);
       state.links.push(gateUserId);
     },
-    getLastSyncTime: async () => state.lastSyncTime,
-    setLastSyncTime: async (time) => { state.lastSyncTime = time; },
+    claimSync: async (now, minIntervalSeconds) => {
+      const allowed = !state.lastSyncTime ||
+        now.getTime() - state.lastSyncTime.getTime() > minIntervalSeconds * 1000;
+      if (allowed) state.lastSyncTime = now;
+      return allowed;
+    },
   };
 
   return { repository, state };

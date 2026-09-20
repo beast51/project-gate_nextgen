@@ -8,6 +8,8 @@ export type CallsRepository = {
   findLast: () => Promise<Call | null>
   exists: (number: string, time: string) => Promise<boolean>
   add: (call: CallToStore, gateUserId?: string) => Promise<void>
-  getLastSyncTime: () => Promise<string | null>
-  setLastSyncTime: (time: string) => Promise<void>
+  // Rate limit guard of the telephony API, shared by all users of the storage.
+  // Atomically marks `now` as the time of the last synchronization when at least `minIntervalSeconds`
+  // have passed since the previous one. Only the caller that gets `true` may go to the telephony.
+  claimSync: (now: Date, minIntervalSeconds: number) => Promise<boolean>
 }

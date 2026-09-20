@@ -26,6 +26,8 @@ export const ViolationsList = () => {
   const { data: violations, isLoading } = useSWR(
     `api/violations/?from=${from}&to=${to}`,
     getViolations,
+    // the server asks the telephony not more often than once per 5 seconds, more frequent requests are useless
+    { dedupingInterval: 5000 },
   );
 
   if (isLoading) {
