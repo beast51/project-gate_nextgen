@@ -10,8 +10,8 @@ const createPrismaStub = (records: { time: string }[]) => {
     record.time < where.OR[0].time.lt || !record.time.includes(where.OR[1].NOT.time.contains);
 
   const lastCallsRequestFromApi = {
-    updateMany: vi.fn(async ({ where, data }: { where: Where, data: { time: string } }) => {
-      const matched = records.filter(record => matches(record, where));
+    updateMany: vi.fn(async ({ where, data }: { where?: Where, data: { time: string } }) => {
+      const matched = records.filter(record => !where || matches(record, where));
       matched.forEach(record => { record.time = data.time; });
       return { count: matched.length };
     }),
@@ -61,6 +61,17 @@ describe('prismaCallsRepository.claimSync', () => {
 
     expect(await createPrismaCallsRepository(prisma).claimSync(NOW, 5)).toBe(true);
     expect(records).toEqual([{ time: '2024-03-10T12:00:00.000Z' }]);
+  });
+
+  it('restarts the interval for the owner of the slot, so nobody starts while it is writing', async () => {
+    const { prisma } = createPrismaStub([{ time: '2024-03-10T11:00:00.000Z' }]);
+    const repository = createPrismaCallsRepository(prisma);
+
+    expect(await repository.claimSync(NOW, 5)).toBe(true);
+    const sixSecondsLater = new Date(NOW.getTime() + 6000);
+    await repository.extendSync(sixSecondsLater);
+
+    expect(await repository.claimSync(new Date(sixSecondsLater.getTime() + 1000), 5)).toBe(false);
   });
 
   it('protects the telephony when the storage fails', async () => {

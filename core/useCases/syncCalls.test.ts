@@ -119,6 +119,39 @@ describe('syncCalls', () => {
     expect(findByTimeRange).toHaveBeenCalledWith('2024-03-10 09:00:00', '2024-03-10 10:05:00');
   });
 
+  // regression: filling in a missed day took a minute, a repeated request started a second synchronization
+  // meanwhile and the same 70 calls were stored twice
+  it('does not store calls twice when synchronizations overlap', async () => {
+    const { repository, state } = createFakeCallsRepository();
+    const slowSource = { getCalls: async () => { await new Promise(resolve => setTimeout(resolve, 20)); return incoming; } };
+    let clock = new Date('2024-03-10T12:00:00.000Z').getTime();
+    const now = () => new Date(clock);
+
+    const syncCalls = createSyncCalls({ source: slowSource, calls: repository, gateUsers: gateUsersWith(resident), now });
+    const refreshCalls = createRefreshCalls({ calls: repository, syncCalls, now });
+
+    const first = refreshCalls('from', 'to');
+    clock += 6000; // the rate limit interval has passed while the telephony was answering
+    await first;
+    await refreshCalls('from', 'to'); // arrives right after the first one has written: the interval was restarted
+
+    expect(state.calls).toHaveLength(3);
+    expect(new Set(state.calls.map(call => `${call.number}|${call.time}`)).size).toBe(3);
+  });
+
+  it('writes all new calls with one request and looks the callers up once', async () => {
+    const { repository } = createFakeCallsRepository();
+    const gateUsers = gateUsersWith(resident);
+    const addMany = vi.spyOn(repository, 'addMany');
+    const findByPhoneNumbers = vi.spyOn(gateUsers, 'findByPhoneNumbers');
+
+    await createSyncCalls({ source: { getCalls: async () => incoming }, calls: repository, gateUsers })('from', 'to');
+
+    expect(addMany).toHaveBeenCalledTimes(1);
+    expect(findByPhoneNumbers).toHaveBeenCalledTimes(1);
+    expect(findByPhoneNumbers).toHaveBeenCalledWith(['380501111111', '380509999999']);
+  });
+
   it('does not duplicate calls when it runs twice', async () => {
     const { repository, state } = createFakeCallsRepository();
     const syncCalls = createSyncCalls({

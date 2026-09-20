@@ -7,7 +7,7 @@ export type GateUserChanges = Pick<GateUser, 'phoneNumber'> & Partial<Omit<GateU
 export type GateUsersRepository = {
   list: (filter?: { phoneNumber?: string }) => Promise<GateUser[]>
   listBlackListed: () => Promise<GateUser[]>
-  findByPhoneNumber: (phoneNumber: string) => Promise<GateUser | null>
+  findByPhoneNumbers: (phoneNumbers: string[]) => Promise<GateUser[]>
   // users whose phone number is already stored are skipped; returns how many users were added
   addMissing: (users: GateUser[]) => Promise<number>
   update: (changes: GateUserChanges) => Promise<void>

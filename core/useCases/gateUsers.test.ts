@@ -29,7 +29,7 @@ const createFakes = () => {
   const gateUsers: GateUsersRepository = {
     list: vi.fn(async () => []),
     listBlackListed: vi.fn(async () => []),
-    findByPhoneNumber: vi.fn(async () => null),
+    findByPhoneNumbers: vi.fn(async () => []),
     addMissing: vi.fn(async () => { log.push('gateUsers.addMissing'); return 1; }),
     update: vi.fn(async () => { log.push('gateUsers.update'); }),
     remove: vi.fn(async () => { log.push('gateUsers.remove'); }),

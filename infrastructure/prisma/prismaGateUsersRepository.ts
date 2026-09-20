@@ -34,14 +34,9 @@ export const createPrismaGateUsersRepository = (prisma: PrismaClient): GateUsers
     }
   },
 
-  findByPhoneNumber: async (phoneNumber) => {
-    try {
-      const record = await prisma.gateUser.findUnique({ where: { phoneNumber } });
-      return record ? toGateUser(record) : null;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+  findByPhoneNumbers: async (phoneNumbers) => {
+    const records = await prisma.gateUser.findMany({ where: { phoneNumber: { in: phoneNumbers } } });
+    return records.map(toGateUser);
   },
 
   addMissing: async (users) => {

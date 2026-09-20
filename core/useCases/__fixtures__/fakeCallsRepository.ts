@@ -22,9 +22,11 @@ export const createFakeCallsRepository = (stored: Call[] = [], lastSyncTime: Dat
       ),
     findLast: async () =>
       ([...state.calls] as Call[]).sort((a, b) => b.time.localeCompare(a.time))[0] ?? null,
-    add: async (call, gateUserId) => {
-      state.calls.push(call);
-      state.links.push(gateUserId);
+    addMany: async (calls) => {
+      calls.forEach(({ call, gateUserId }) => {
+        state.calls.push(call);
+        state.links.push(gateUserId);
+      });
     },
     claimSync: async (now, minIntervalSeconds) => {
       const allowed = !state.lastSyncTime ||
@@ -32,6 +34,7 @@ export const createFakeCallsRepository = (stored: Call[] = [], lastSyncTime: Dat
       if (allowed) state.lastSyncTime = now;
       return allowed;
     },
+    extendSync: async (now) => { state.lastSyncTime = now; },
   };
 
   return { repository, state };

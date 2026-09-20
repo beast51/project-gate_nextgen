@@ -59,17 +59,12 @@ export const createPrismaCallsRepository = (prisma: PrismaClient): CallsReposito
     }
   },
 
-  add: async (call, gateUserId) => {
-    try {
-      await prisma.call.create({
-        data: {
-          ...call,
-          gateUser: gateUserId ? { connect: { id: gateUserId } } : undefined,
-        },
-      });
-    } catch (error) {
-      console.error(error);
-    }
+  addMany: async (calls) => {
+    if (calls.length === 0) return;
+
+    await prisma.call.createMany({
+      data: calls.map(({ call, gateUserId }) => ({ ...call, gateUserId })),
+    });
   },
 
   // The time is stored as an ISO string in UTC, ISO strings are compared lexicographically.
@@ -103,5 +98,9 @@ export const createPrismaCallsRepository = (prisma: PrismaClient): CallsReposito
       console.error('failed to claim the calls synchronization slot', error);
       return false;
     }
+  },
+
+  extendSync: async (now) => {
+    await prisma.lastCallsRequestFromApi.updateMany({ data: { time: now.toISOString() } });
   },
 });

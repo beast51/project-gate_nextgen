@@ -24,9 +24,7 @@ export const createSeedDemoSandbox = ({ gateUsers, calls, seed, now = () => new 
     const stored = await gateUsers.list();
     const idByPhoneNumber = new Map(stored.map(user => [user.phoneNumber, user.id]));
 
-    for (const call of data.calls) {
-      await calls.add(call, idByPhoneNumber.get(call.number));
-    }
+    await calls.addMany(data.calls.map(call => ({ call, gateUserId: idByPhoneNumber.get(call.number) })));
 
     return true;
   };

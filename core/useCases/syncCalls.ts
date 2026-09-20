@@ -30,13 +30,18 @@ type Dependencies = {
   source: CallsSource
   calls: CallsRepository
   gateUsers: GateUsersRepository
+  now?: () => Date
 }
 
-export const createSyncCalls = ({ source, calls, gateUsers }: Dependencies) =>
+export const createSyncCalls = ({ source, calls, gateUsers, now = () => new Date() }: Dependencies) =>
   async (from: string, to: string): Promise<void> => {
     const incomingCalls = await source.getCalls(from, to);
 
     if (incomingCalls.length === 0) return;
+
+    // The telephony may answer slowly. The write phase starts with a fresh exclusive interval, so a request
+    // that comes meanwhile can not start a second synchronization that would store the same calls again.
+    await calls.extendSync(now());
 
     // Calls are compared with what is already stored for the same period, not with the newest stored call:
     // a day nobody looked at is filled in whenever it is requested, even if later days are already stored.
@@ -44,13 +49,22 @@ export const createSyncCalls = ({ source, calls, gateUsers }: Dependencies) =>
     const stored = await calls.findByTimeRange(times[0], times[times.length - 1]);
     const known = new Set(stored.map(call => callKey(call)));
 
-    for (const call of incomingCalls) {
-      if (known.has(callKey(call))) continue;
+    const newCalls = incomingCalls.filter(call => {
+      if (known.has(callKey(call))) return false;
       known.add(callKey(call));
+      return true;
+    });
 
-      const caller = await gateUsers.findByPhoneNumber(call.number);
-      await calls.add(toStoredCall(call, caller), caller?.id);
-    }
+    if (newCalls.length === 0) return;
+
+    // two requests for the whole synchronization: the callers and one batch insert
+    const callers = await gateUsers.findByPhoneNumbers(Array.from(new Set(newCalls.map(call => call.number))));
+    const callerByNumber = new Map(callers.map(caller => [caller.phoneNumber, caller]));
+
+    await calls.addMany(newCalls.map(call => {
+      const caller = callerByNumber.get(call.number) ?? null;
+      return { call: toStoredCall(call, caller), gateUserId: caller?.id };
+    }));
   };
 
 type RefreshDependencies = {
