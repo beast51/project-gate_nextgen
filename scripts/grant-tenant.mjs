@@ -1,10 +1,11 @@
 // Grants or revokes access of an account to a gate (tenant).
 //
 //   node --env-file=.env scripts/grant-tenant.mjs                      list accounts and their tenants
-//   node --env-file=.env scripts/grant-tenant.mjs <phoneNumber> prod   the account works with the "prod" gate
+//   node --env-file=.env scripts/grant-tenant.mjs <phoneNumber> shota  the account works with the "shota" gate
 //   node --env-file=.env scripts/grant-tenant.mjs <phoneNumber> none   back to a personal demo sandbox
 //
-// Accounts live in the database from DATABASE_URL. Tenant keys are listed in app/(appLayer)/libs/container.ts.
+// Accounts live in the database from DATABASE_URL. Tenants are declared by TENANT_<KEY>_* environment variables,
+// see app/(appLayer)/libs/tenants.ts; an unknown tenant key means no access at all.
 import { PrismaClient } from '@prisma/client';
 
 const [phoneNumber, tenant] = process.argv.slice(2);

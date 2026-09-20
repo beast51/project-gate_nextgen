@@ -23,4 +23,15 @@ function getPrismaClient(databaseKey: databaseList): PrismaClient {
   return globalThis.prismaClients[databaseList[databaseKey]];
 }
 
-export { getPrismaClient };
+// One client (one connection pool) per database, `key` names the database in the cache
+function getPrismaClientByUrl(key: string, url: string): PrismaClient {
+  globalThis.prismaClients = globalThis.prismaClients ?? {};
+
+  if (!globalThis.prismaClients[key]) {
+    globalThis.prismaClients[key] = new PrismaClient({ datasources: { db: { url } } });
+  }
+
+  return globalThis.prismaClients[key];
+}
+
+export { getPrismaClient, getPrismaClientByUrl };

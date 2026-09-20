@@ -108,7 +108,7 @@ describe('cleanupDemoSandboxes', () => {
   });
 
   it('never drops anything for an account that works with a customer gate', async () => {
-    const accounts = accountsWith([account('operator', 'prod', 400)]);
+    const accounts = accountsWith([account('operator', 'shota', 400)]);
     const drop = vi.fn(async () => {});
 
     const removed = await createCleanupDemoSandboxes({ accounts, sandboxes: { drop }, now: () => NOW })();

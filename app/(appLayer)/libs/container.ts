@@ -21,10 +21,10 @@ import { createPrismaCallsRepository } from '@/infrastructure/prisma/prismaCalls
 import { createPrismaGateUsersRepository } from '@/infrastructure/prisma/prismaGateUsersRepository';
 import { createUnitalkCallsSource } from '@/infrastructure/unitalk/unitalkCallsSource';
 import { createUnitalkGateUsersDirectory } from '@/infrastructure/unitalk/unitalkGateUsersDirectory';
-import { UnitalkConfig } from '@/infrastructure/unitalk/unitalkConfig';
-import { databaseList, getPrismaClient } from './prismadb';
+import { databaseList, getPrismaClient, getPrismaClientByUrl } from './prismadb';
 import { getSandboxPrismaClient, sandboxStorage } from './sandboxes';
 import { getSession } from './session';
+import { getTenantConfig, listTenants } from './tenants';
 
 // Composition root: the only place that knows the session, the environment and the concrete adapters.
 //
@@ -33,36 +33,7 @@ import { getSession } from './session';
 //  - an account without a tenant (everyone who has just registered) works in a personal demo sandbox:
 //    its own database with synthetic data and a telephony that does nothing. It can not reach customer data.
 // Access to a gate is granted by setting `tenant` of the account (scripts/grant-tenant.mjs).
-
-const requiredEnv = (name: string) => {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Environment variable ${name} is missing`);
-  }
-  return value;
-};
-
-type TenantConfig = {
-  database: databaseList
-  // rate limit of the telephony API: not more than one calls synchronization per this number of seconds
-  callsSyncIntervalSeconds: number
-  unitalk: UnitalkConfig
-}
-
-// Registry of gates. A new customer is a new entry here plus its environment variables.
-const tenants: Record<string, () => TenantConfig> = {
-  prod: () => ({
-    database: databaseList.DATABASE_URL,
-    callsSyncIntervalSeconds: 5,
-    unitalk: {
-      url: requiredEnv('UNITALK_URL'),
-      authorization: requiredEnv('UNITALK_AUTHORIZATION'),
-      internalApiAuthorization: requiredEnv('UNITALK_INTERNAL_API_AUTHORIZATION'),
-      projectId: requiredEnv('UNITALK_PROJECT_ID'),
-      canOpenGatesResponsibleId: requiredEnv('UNITALK_CAN_OPEN_GATES'),
-    },
-  }),
-};
+// The gates themselves are described by environment variables, see libs/tenants.ts.
 
 type Adapters = {
   gateUsers: GateUsersRepository
@@ -97,16 +68,16 @@ const assemble = ({ gateUsers, calls, directory, source, callsSyncIntervalSecond
 export type Container = ReturnType<typeof assemble>
 
 const buildTenantContainer = (tenant: string): Container | null => {
-  const config = tenants[tenant]?.();
+  const config = getTenantConfig(tenant);
   if (!config) return null;
 
-  const prisma = getPrismaClient(config.database);
+  const prisma = getPrismaClientByUrl(`tenant:${config.key}`, config.databaseUrl);
 
   return assemble({
     gateUsers: createPrismaGateUsersRepository(prisma),
     calls: createPrismaCallsRepository(prisma),
-    directory: createUnitalkGateUsersDirectory(config.unitalk),
-    source: createUnitalkCallsSource(config.unitalk),
+    directory: createUnitalkGateUsersDirectory(config.telephony.unitalk),
+    source: createUnitalkCallsSource(config.telephony.unitalk),
     callsSyncIntervalSeconds: config.callsSyncIntervalSeconds,
   });
 };
@@ -171,8 +142,11 @@ const isCronRequest = (request: Request) => {
   return Boolean(secret) && request.headers.get('authorization') === `Bearer ${secret}`;
 };
 
-export const getCronContainer = (request: Request, tenant = 'prod'): Container | null =>
-  isCronRequest(request) ? buildTenantContainer(tenant) : null;
+// containers of all gates: a scheduled job has to serve every customer
+export const getCronContainers = (request: Request): Container[] | null =>
+  isCronRequest(request)
+    ? listTenants().map(buildTenantContainer).filter((container): container is Container => Boolean(container))
+    : null;
 
 export const getCleanupDemoSandboxes = (request: Request) =>
   isCronRequest(request)
