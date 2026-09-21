@@ -19,13 +19,19 @@ describe('matchesSearch', () => {
     expect(matchesSearch(resident, '050111', 'phone')).toBe(true);
   });
 
-  it('apartment: by the beginning only', () => {
-    expect(matchesSearch(resident, '1', 'apartment')).toBe(true);
+  it('apartment: the exact number only', () => {
     expect(matchesSearch(resident, '12', 'apartment')).toBe(true);
+    expect(matchesSearch(resident, ' 12 ', 'apartment')).toBe(true);
+    expect(matchesSearch(resident, '1', 'apartment')).toBe(false);
     expect(matchesSearch(resident, '2', 'apartment')).toBe(false);
     expect(matchesSearch(resident, '120', 'apartment')).toBe(false);
     expect(matchesSearch({ ...resident, apartment: '312' }, '12', 'apartment')).toBe(false);
+    expect(matchesSearch({ ...resident, apartment: '120' }, '12', 'apartment')).toBe(false);
+    // a letter is a part of the number: 12 and 12A are different apartments, the alphabet of the letter is not
+    expect(matchesSearch({ ...resident, apartment: '12А' }, '12', 'apartment')).toBe(false);
     expect(matchesSearch({ ...resident, apartment: '12А' }, '12a', 'apartment')).toBe(true);
+    expect(matchesSearch({ ...resident, apartment: '479-1' }, '479-1', 'apartment')).toBe(true);
+    expect(matchesSearch({ ...resident, apartment: '479-1' }, '479', 'apartment')).toBe(false);
     expect(matchesSearch({ ...resident, apartment: null }, '1', 'apartment')).toBe(false);
   });
 

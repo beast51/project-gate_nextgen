@@ -11,8 +11,8 @@ const caller = visits({ carNumber: [], image: null, apartmentNumber: null, name:
 
 describe('searchableVisitor', () => {
   it('finds an apartment by the key of its card: the visitor itself carries no apartment number', () => {
-    expect(matchesSearch(searchableVisitor('441', apartment), '44', 'apartment')).toBe(true);
-    expect(matchesSearch(searchableVisitor('441', apartment), '41', 'apartment')).toBe(false);
+    expect(matchesSearch(searchableVisitor('441', apartment), '441', 'apartment')).toBe(true);
+    expect(matchesSearch(searchableVisitor('441', apartment), '44', 'apartment')).toBe(false);
     expect(matchesSearch(searchableVisitor('441', apartment), '066-095', 'phone')).toBe(true);
     // the key of an apartment is not a phone number
     expect(matchesSearch(searchableVisitor('441', apartment), '441', 'phone')).toBe(false);

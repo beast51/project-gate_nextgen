@@ -31,10 +31,11 @@ const matchesPhone = ({ phones }: Searchable, query: string) => {
   return digits.length > 0 && phones.some(phone => digitsOf(phone ?? '').includes(digits));
 };
 
-// by the beginning: "12" finds 12, 120 and 12A, not 312
+// the exact number: "12" finds apartment 12, not 120, 312 or 12A. The case, the spaces and the alphabet
+// of a letter do not matter: "12а" finds 12A.
 const matchesApartment = ({ apartment }: Searchable, query: string) => {
   const wanted = normalizePlate(query);
-  return wanted.length > 0 && normalizePlate(apartment ?? '').startsWith(wanted);
+  return wanted.length > 0 && normalizePlate(apartment ?? '') === wanted;
 };
 
 const matchesCar = ({ cars }: Searchable, query: string) => {
