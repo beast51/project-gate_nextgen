@@ -5,6 +5,7 @@ export const API_ROUTES = {
   violations: '/api/violations',
   violationStats: '/api/violations/stats',
   unblockExpiredPenalties: '/api/violations/unblock_expired_penalties_users',
+  restorePenalties: '/api/penalties/restore',
   gateUsers: '/api/users',
   addGateUser: '/api/users/add_user',
   editGateUser: '/api/users/edit_user',

@@ -92,6 +92,19 @@ export const createPrismaCallsRepository = (
         .map(toPassage);
     },
 
+    findPenaltySnapshots: async (since) => {
+      const records = await prisma.call.findMany({
+        where: { isBlackListed: true, blackListedFrom: { gte: since } },
+        select: { number: true, apartmentNumber: true, blackListedFrom: true, blackListedTo: true },
+      });
+
+      return records.map(record => ({
+        ...record,
+        blackListedFrom: record.blackListedFrom ?? '',
+        blackListedTo: record.blackListedTo ?? '',
+      }));
+    },
+
     findLast: async () => {
       try {
         const record = await prisma.call.findFirst({ orderBy: { time: 'desc' }, select: callFields });

@@ -1,6 +1,8 @@
 import { Call, CallToStore, PassageCall } from '../entities/call';
 
 // Storage of the calls that were already matched with gate users
+export type PenaltySnapshot = { number: string, apartmentNumber: string | null, blackListedFrom: string, blackListedTo: string }
+
 export type CallsRepository = {
   findByTimeRange: (from: string, to: string) => Promise<Call[]>
   // the same period in the light form the rules of violations need: months of calls are read this way
@@ -8,6 +10,9 @@ export type CallsRepository = {
   // the same for one apartment or, for a caller without an apartment, one phone number
   findPassagesOfSubject: (subjectKey: string, from: string, to: string) => Promise<PassageCall[]>
   findLast: () => Promise<Call | null>
+  // Every call keeps a snapshot of its caller. The penalties the callers were under, for blocks that started
+  // at `since` ('YYYY-MM-DD HH:mm:ss') or later: the only trace of the penalties nobody recorded.
+  findPenaltySnapshots: (since: string) => Promise<PenaltySnapshot[]>
   // stores all calls with one request; fails as a whole, the next synchronization retries
   addMany: (calls: { call: CallToStore, gateUserId?: string }[]) => Promise<void>
   // Rate limit guard of the telephony API, shared by all users of the storage.

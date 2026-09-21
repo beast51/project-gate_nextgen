@@ -23,6 +23,7 @@ import { createGetViolations } from '@/core/useCases/getViolations';
 import { createGetViolationStats } from '@/core/useCases/getViolationStats';
 import { createImportGateUsers } from '@/core/useCases/importGateUsers';
 import { createPenaltyRecorder } from '@/core/useCases/penalties';
+import { createRestorePenalties } from '@/core/useCases/restorePenalties';
 import { createRefreshCalls, createSyncCalls } from '@/core/useCases/syncCalls';
 import { createSyncGateUsers } from '@/core/useCases/syncGateUsers';
 import { createUnblockExpiredPenalties } from '@/core/useCases/unblockExpiredPenalties';
@@ -89,6 +90,8 @@ const assemble = ({
     backfillCalls: callsSyncIntervalSeconds !== null && mayReadActivity
       ? createBackfillCalls({ calls, syncCalls, today: clock.today, minIntervalSeconds: callsSyncIntervalSeconds })
       : null,
+    // null: only an admin of the gate may rewrite the history of penalties
+    restorePenalties: mayReadActivity ? createRestorePenalties({ calls, gateUsers, penalties, now: clock.now }) : null,
     unblockExpiredPenalties: createUnblockExpiredPenalties({ directory, gateUsers, recordActivity, penalties: penaltyRecorder }),
     listGateUsers: gateUsers.list,
     listBlackListedGateUsers: gateUsers.listBlackListed,

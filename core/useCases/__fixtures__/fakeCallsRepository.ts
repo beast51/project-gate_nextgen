@@ -21,6 +21,14 @@ export const createFakeCallsRepository = (stored: Call[] = [], lastSyncTime: Dat
     listFilledDays: async (fromDay, toDay) =>
       Array.from(state.filledDays).filter(day => day >= fromDay && day <= toDay).sort(),
     markDaysFilled: async (days) => { days.forEach(day => state.filledDays.add(day)); },
+    findPenaltySnapshots: async (since) => (state.calls as Call[])
+      .filter(call => call.isBlackListed && call.blackListedFrom && call.blackListedFrom >= since)
+      .map(call => ({
+        number: call.number,
+        apartmentNumber: call.apartmentNumber ?? null,
+        blackListedFrom: call.blackListedFrom ?? '',
+        blackListedTo: call.blackListedTo ?? '',
+      })),
     findLast: async () =>
       ([...state.calls] as Call[]).sort((a, b) => b.time.localeCompare(a.time))[0] ?? null,
     addMany: async (calls) => {

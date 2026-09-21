@@ -67,5 +67,23 @@ export type BackfillCallsResponse =
   | { status: 'rateLimited', remaining: number }
   | { status: 'filled', day: string, added: number, remaining: number }
 
+// POST /api/penalties/restore — finds the penalties of the time before they were recorded (in the snapshots
+// the calls keep) and, with `apply`, writes the missing ones. Admins only.
+export type RestorePenaltiesRequest = { since: string, apply?: boolean }
+
+export type RestoredPenaltyDto = {
+  apartmentNumber: string | null
+  phones: number
+  from: string
+  until: string
+  inForce: boolean
+  overstays: number
+  openVisits: number
+  overstayMinutes: number
+  minutesOverLimit: number
+}
+
+export type RestorePenaltiesResponse = { blocks: number, found: number, written: number, missing: RestoredPenaltyDto[] }
+
 // POST /api/violations/unblock_expired_penalties_users
 export type UnblockExpiredPenaltiesResponse = { message: string }
