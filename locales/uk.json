@@ -51,5 +51,7 @@
   "apt": "кв. ",
   "user deleted successful": "Користувача видалено",
   "user blocked successful": "Користувача заблоковано",
-  "user unblocked successful": "Користувача розблоковано"
+  "user unblocked successful": "Користувача розблоковано",
+  "call outcome: connectionFailed": "Невдале з'єднання",
+  "call outcome: operatorError": "Помилка зі сторони оператора"
 }

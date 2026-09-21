@@ -51,5 +51,7 @@
   "apt": "apt. ",
   "user deleted successful": "User deleted",
   "user blocked successful": "User blocked",
-  "user unblocked successful": "User unblocked"
+  "user unblocked successful": "User unblocked",
+  "call outcome: connectionFailed": "Connection failed",
+  "call outcome: operatorError": "Operator side error"
 }

@@ -276,6 +276,27 @@
         "rules": {
           "no-restricted-syntax": "off"
         }
+      },
+      {
+        "files": [
+          "app/(appLayer)/api/**/*.ts"
+        ],
+        "rules": {
+          "no-restricted-imports": [
+            "error",
+            {
+              "patterns": [
+                {
+                  "group": [
+                    "@/infrastructure/*",
+                    "**/infrastructure/*"
+                  ],
+                  "message": "Route handlers get use cases from libs/container.ts. Only the composition root knows the adapters (database, telephony provider)."
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },

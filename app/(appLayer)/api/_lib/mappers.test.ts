@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { FAILED_CALL_OUTCOMES } from '@/contracts';
+import { CALL_OUTCOMES, isFailedOutcome } from '@/core/entities/call';
 import { GateUser } from '@/core/entities/gateUser';
 import { fromGateUserDto, toGateUserDto, toViolationsResponse } from './mappers';
 
@@ -36,5 +38,12 @@ describe('API mappers', () => {
     };
 
     expect(toViolationsResponse(visits)).toEqual(visits);
+  });
+
+  // the front end decides how to show a call with the list from the contract, the core with its own rule
+  it('agrees with the contract about which outcomes are failures', () => {
+    CALL_OUTCOMES.forEach(outcome => {
+      expect(FAILED_CALL_OUTCOMES.includes(outcome)).toBe(isFailedOutcome(outcome));
+    });
   });
 });

@@ -8,28 +8,10 @@ import moment from 'moment';
 import { CallsCardPropsType } from '../../../model/types/Calls.type';
 import { useIntl } from 'react-intl';
 import { rename } from '@/sharedLayer/utils/rename';
-
-const causeList = {
-  '16': 'Довге очикування, але відкрив',
-  '17': 'Відкрив',
-  '18': 'Довге очикування, але відкрив',
-  '19': 'Тимчасово недоступний напрямок алу відкрив',
-};
-
-const causeErrorsList = {
-  '31': "Невдале з'єднання",
-  '38': 'Помилка зі сторони оператора',
-};
-
-export const causeErrorsMap = new Map(
-  Object.entries(causeErrorsList).map(([key, value]) => [Number(key), value]),
-);
-export const causeMap = new Map(
-  Object.entries(causeList).map(([key, value]) => [Number(key), value]),
-);
+import { FAILED_CALL_OUTCOMES } from '@/contracts';
 
 export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
-  const isCauseError = causeErrorsMap.has(call.cause!);
+  const isCauseError = FAILED_CALL_OUTCOMES.includes(call.outcome);
   const { $t } = useIntl();
 
   return (
@@ -82,9 +64,10 @@ export const CallsCard: FC<CallsCardPropsType> = ({ call, onDoubleClick }) => {
           )}
         </div>
       )}
-      {!call.isBlackListed && causeErrorsMap.has(call.cause!) && (
+      {!call.isBlackListed && isCauseError && (
         <div className={classes.cause}>
-          {`${call.cause}: ${causeErrorsMap.get(call.cause!)}`}
+          {call.cause ? `${call.cause}: ` : ''}
+          {$t({ id: `call outcome: ${call.outcome}` })}
         </div>
       )}
       {call.carNumber.length > 0 && call.carNumber[0].length > 0 && (
