@@ -1,6 +1,6 @@
 import { NewPenalty, Penalty } from '../entities/penalty';
 
-export type PenaltyChanges = Partial<Pick<Penalty, 'phoneNumbers' | 'until' | 'lifted'>>
+export type PenaltyChanges = Partial<Pick<Penalty, 'phoneNumbers' | 'until' | 'lifted' | 'ground' | 'comment'>>
 
 export type PenaltiesRepository = {
   add: (penalty: NewPenalty) => Promise<void>

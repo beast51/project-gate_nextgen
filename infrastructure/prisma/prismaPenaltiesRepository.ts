@@ -1,5 +1,5 @@
 import { Penalty as PenaltyRecord, PrismaClient } from '@prisma/client';
-import { Penalty } from '@/core/entities/penalty';
+import { isPenaltyGround, isPenaltyLiftGround, Penalty } from '@/core/entities/penalty';
 import { PenaltiesRepository } from '@/core/ports/penaltiesRepository';
 
 const toPenalty = (record: PenaltyRecord): Penalty => ({
@@ -10,7 +10,15 @@ const toPenalty = (record: PenaltyRecord): Penalty => ({
   from: record.from,
   until: record.until,
   imposedBy: record.imposedById ? { id: record.imposedById, name: record.imposedByName ?? '' } : null,
-  lifted: record.liftedAt ? { at: record.liftedAt, how: record.liftedHow === 'manually' ? 'manually' : 'expired' } : null,
+  ground: isPenaltyGround(record.ground) ? record.ground : null,
+  comment: record.comment,
+  reason: record.reason,
+  lifted: record.liftedAt ? {
+    at: record.liftedAt,
+    how: record.liftedHow === 'manually' ? 'manually' : 'expired',
+    ground: isPenaltyLiftGround(record.liftedGround) ? record.liftedGround : null,
+    comment: record.liftedComment,
+  } : null,
   source: record.source === 'restoredFromCalls' ? 'restoredFromCalls' : 'recorded',
 });
 
@@ -23,6 +31,8 @@ export const createPrismaPenaltiesRepository = (prisma: PrismaClient): Penalties
         imposedByName: imposedBy?.name ?? null,
         liftedAt: lifted?.at ?? null,
         liftedHow: lifted?.how ?? null,
+        liftedGround: lifted?.ground ?? null,
+        liftedComment: lifted?.comment ?? null,
       },
     });
   },
@@ -32,7 +42,12 @@ export const createPrismaPenaltiesRepository = (prisma: PrismaClient): Penalties
       where: { id },
       data: {
         ...changes,
-        ...(lifted !== undefined && { liftedAt: lifted?.at ?? null, liftedHow: lifted?.how ?? null }),
+        ...(lifted !== undefined && {
+          liftedAt: lifted?.at ?? null,
+          liftedHow: lifted?.how ?? null,
+          liftedGround: lifted?.ground ?? null,
+          liftedComment: lifted?.comment ?? null,
+        }),
       },
     });
   },

@@ -103,6 +103,15 @@ model Call {
   @@unique([time, number])
 }
 
+// What a penalty was for: the violations of the apartment since its previous penalty, see core PenaltyReason
+type PenaltyReasonRecord {
+  since            String
+  overstays        Int
+  openVisits       Int
+  overstayMinutes  Int
+  minutesOverLimit Int
+}
+
 // A penalty of an apartment (or of a caller without an apartment): its phones may not open the gate
 // for a while. Kept apart from GateUser: removing a gate user must not erase the history of penalties.
 model Penalty {
@@ -116,9 +125,16 @@ model Penalty {
   until           String
   imposedById     String?
   imposedByName   String?
+  // the ready-made ground the operator chose (core PenaltyGround) and what they wrote when blocking
+  ground          String?
+  comment         String?
+  reason          PenaltyReasonRecord?
   liftedAt        String?
   // 'manually' | 'expired'
   liftedHow       String?
+  // why it was lifted: core PenaltyLiftGround and the words of the operator
+  liftedGround    String?
+  liftedComment   String?
   // 'recorded' | 'restoredFromCalls'
   source          String
   createdAt       DateTime @default(now())

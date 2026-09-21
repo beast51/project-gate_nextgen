@@ -58,7 +58,7 @@ describe('getViolationStats', () => {
   it('counts the penalties that started in the periods, also for somebody without violations', async () => {
     const penalty = (subjectKey: string, from: string): Penalty => ({
       id: from, subjectKey, apartmentNumber: subjectKey, phoneNumbers: [], from, until: from,
-      imposedBy: null, lifted: null, source: 'recorded',
+      imposedBy: null, ground: null, comment: null, reason: null, lifted: null, source: 'recorded',
     });
     const { repository } = createFakeCallsRepository([call('2024-03-12 09:00:00'), call('2024-03-12 10:00:00')]);
     const imposed = penalties([

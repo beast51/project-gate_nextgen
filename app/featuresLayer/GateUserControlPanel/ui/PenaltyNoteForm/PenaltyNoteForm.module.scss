@@ -1,0 +1,94 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  width: min(100%, 420px);
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.grounds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ground {
+  padding: 8px 14px;
+  border: 1px solid #11a694;
+  border-radius: 20px;
+  background: transparent;
+  color: #11a694;
+  font-size: 15px;
+  cursor: pointer;
+
+  &:disabled {
+    border-color: currentColor;
+    color: inherit;
+    opacity: .3;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--green);
+  }
+}
+
+.chosen {
+  background: #11a694;
+  color: #fff;
+}
+
+.field {
+  position: relative;
+}
+
+.label {
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  padding: 0 8px;
+  background-color: var(--input-primary-label-bg);
+  color: var(--input-primary-label-color);
+  font-size: 12px;
+  line-height: 150%;
+  border-radius: 10px;
+}
+
+.textarea {
+  display: block;
+  width: 100%;
+  padding: 14px 16px 10px;
+  border-radius: 20px;
+  border: var(--input-primary-border);
+  background-color: var(--input-primary-bg);
+  color: var(--input-primary-color);
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 130%;
+  resize: vertical;
+
+  &:focus-visible {
+    border: 2px solid var(--green);
+    outline: none;
+  }
+}
+
+.hint {
+  margin: 6px 4px 0;
+  font-size: 13px;
+  opacity: .6;
+}
+
+.actions {
+  display: grid;
+  gap: 12px;
+}

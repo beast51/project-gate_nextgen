@@ -7,7 +7,9 @@ import { api, useGateUsersCache } from '@/sharedLayer/api';
 import toast from 'react-hot-toast';
 import Popup from '@/sharedLayer/ui/Popup/ui/Popup';
 import { useRouter } from '@/sharedLayer/framework/navigation';
-import { formatTime } from '@/sharedLayer/utils/date';
+import { formatTime, parseTime } from '@/sharedLayer/utils/date';
+import { PENALTY_GROUNDS, PENALTY_LIFT_GROUNDS, PenaltyNoteDto } from '@/contracts';
+import { PenaltyNoteForm } from './PenaltyNoteForm/PenaltyNoteForm';
 import { BlockButtons } from './BlockButtons/BlockButtons';
 import { ConfirmButtons } from './ConfirmButtons/ConfirmButtons';
 import {
@@ -33,6 +35,8 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isOpenPopup, setIsOpenPopup] = useState(false);
   const [action, setAction] = useState<ActionType>(null);
+  // blocking takes two steps: the term, then the reason. null: the term is not chosen yet
+  const [blockDays, setBlockDays] = useState<number | null>(null);
   const router = useRouter();
   const gateUsersCache = useGateUsersCache();
   const { $t } = useIntl();
@@ -40,6 +44,7 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
   const handleOpen = (actionType: ActionType) => {
     console.log('click');
     setAction(actionType);
+    setBlockDays(null);
     setIsOpenPopup(true);
   };
   const handleClose = useCallback(() => {
@@ -65,7 +70,7 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
       });
   };
 
-  const changeStatusHandler = async (data: GateUserType, days: number) => {
+  const changeStatusHandler = async (data: GateUserType, days: number, penaltyNote: PenaltyNoteDto) => {
     // console.log(action + '' + phoneNumber);
     setIsLoading(true);
 
@@ -83,7 +88,7 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
     };
 
     api
-      .editGateUser(changedUser)
+      .editGateUser({ ...changedUser, penaltyNote })
       .then(async () => {
         // the cached lists (all users, black list) get the change at once,
         // the card itself is a server rendered page and is rendered again
@@ -103,12 +108,14 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
       if (action === 'delete') {
         deleteUserHandler(user.phoneNumber, user.idInApi);
       }
-      if (action === 'block' || action === 'unblock')
-        changeStatusHandler(user, time);
+      // the term of a block is only remembered here: the block is confirmed together with its reason
+      if (action === 'block') setBlockDays(time);
       // if (action === 'edit') editUserHandler(data);
     },
-    [deleteUserHandler, user.phoneNumber, user.idInApi, changeStatusHandler],
+    [deleteUserHandler, user.phoneNumber, user.idInApi],
   );
+
+  const isTermOver = Boolean(user.blackListedTo) && parseTime(user.blackListedTo!) <= Date.now();
 
   return (
     <>
@@ -138,12 +145,26 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
         {(action === 'block' || action === 'unblock') && (
           <>
             {user.isBlackListed ? (
-              <ConfirmButtons
-                confirmAction={confirmAction}
-                handleClose={handleClose}
-                action={action}
+              <PenaltyNoteForm
+                title={$t({ id: 'penalty note: unblock title' })}
+                grounds={PENALTY_LIFT_GROUNDS}
+                // once the term is over there is nothing else to say; before that the term is not a reason
+                onlyGround={isTermOver ? 'termExpired' : undefined}
+                disabledGrounds={isTermOver ? [] : ['termExpired']}
+                confirmLabel={$t({ id: 'unblock' })}
                 isLoading={isLoading}
-                title={$t({ id: 'unblock a user?' })}
+                onConfirm={(note) => changeStatusHandler(user, ONE_WEEK, note)}
+                onBack={handleClose}
+              />
+            ) : blockDays !== null ? (
+              <PenaltyNoteForm
+                title={$t({ id: 'penalty note: block title' })}
+                grounds={PENALTY_GROUNDS}
+                confirmLabel={$t({ id: 'block' })}
+                confirmVariant="warning"
+                isLoading={isLoading}
+                onConfirm={(note) => changeStatusHandler(user, blockDays, note)}
+                onBack={() => setBlockDays(null)}
               />
             ) : (
               <BlockButtons

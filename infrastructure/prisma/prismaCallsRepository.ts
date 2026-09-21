@@ -30,6 +30,8 @@ const passageFields = {
   state: true,
 } as const;
 
+type StoredPassage = Omit<PassageCall, 'outcome' | 'carNumber' | 'image'> & { outcome: string | null, cause: number | null, state: string | null }
+
 type StoredCall = Omit<Call, 'outcome'> & { outcome: string | null }
 
 export type PrismaCallsRepositoryConfig = {
@@ -48,6 +50,11 @@ export const createPrismaCallsRepository = (
   const toCall = (record: StoredCall): Call => ({
     ...record,
     outcome: isCallOutcome(record.outcome) ? record.outcome : legacyOutcomeOf(record),
+  });
+
+  const toPassage = ({ cause, state, outcome, ...passage }: StoredPassage): PassageCall => ({
+    ...passage,
+    outcome: isCallOutcome(outcome) ? outcome : legacyOutcomeOf({ cause, state }),
   });
 
   return {
@@ -70,10 +77,19 @@ export const createPrismaCallsRepository = (
         select: passageFields,
       });
 
-      return records.map(({ cause, state, outcome, ...passage }): PassageCall => ({
-        ...passage,
-        outcome: isCallOutcome(outcome) ? outcome : legacyOutcomeOf({ cause, state }),
-      }));
+      return records.map(toPassage);
+    },
+
+    findPassagesOfSubject: async (subjectKey, from, to) => {
+      const records = await prisma.call.findMany({
+        where: { time: { gte: from, lte: to }, OR: [{ apartmentNumber: subjectKey }, { number: subjectKey }] },
+        select: passageFields,
+      });
+
+      return records
+        // a phone number is the key only for a caller without an apartment
+        .filter(record => (record.apartmentNumber || record.number) === subjectKey)
+        .map(toPassage);
     },
 
     findLast: async () => {

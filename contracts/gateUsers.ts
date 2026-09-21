@@ -31,8 +31,25 @@ export type AddGateUserRequest = {
   apartmentNumber: string
 }
 
-// POST /api/users/edit_user — the whole user; blocking and unblocking are edits of the penalty fields
-export type EditGateUserRequest = GateUserDto
+// Ready-made grounds an operator chooses from when blocking a gate user...
+export const PENALTY_GROUNDS = ['cheater', 'tailgating', 'overstay'] as const;
+
+export type PenaltyGroundDto = typeof PENALTY_GROUNDS[number]
+
+// ... and when unblocking one. 'termExpired' is the only ground once the term of the penalty is over.
+export const PENALTY_LIFT_GROUNDS = ['pleaded', 'rarelyViolates', 'recruitmentOffice', 'delivery', 'termExpired'] as const;
+
+export type PenaltyLiftGroundDto = typeof PENALTY_LIFT_GROUNDS[number]
+
+// what the operator says about the penalty: the chosen ground and/or their own words (up to 500 characters)
+export type PenaltyNoteDto = {
+  ground?: PenaltyGroundDto | PenaltyLiftGroundDto | null
+  comment?: string | null
+}
+
+// POST /api/users/edit_user — the whole user; blocking and unblocking are edits of the penalty fields.
+// `penaltyNote` goes with an edit that blocks or unblocks the user and is kept in the record of the penalty.
+export type EditGateUserRequest = GateUserDto & { penaltyNote?: PenaltyNoteDto }
 
 // POST /api/users/delete_user — `id` is GateUserDto.idInApi
 export type DeleteGateUserRequest = {

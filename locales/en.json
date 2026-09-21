@@ -98,5 +98,18 @@
   "search: open": "Search",
   "search: close": "Close the search",
   "search: nothing found": "Nothing found",
-  "violation stats penalties": "Blocks"
+  "violation stats penalties": "Blocks",
+  "penalty note: block title": "Why is the user blocked?",
+  "penalty note: unblock title": "Why is the user unblocked?",
+  "penalty note: comment": "Comment",
+  "penalty note: hint": "Press a button or write the reason",
+  "penalty note: back": "Back",
+  "penalty ground: cheater": "Cheater",
+  "penalty ground: tailgating": "Tailgating",
+  "penalty ground: overstay": "Over 45 minutes",
+  "penalty ground: pleaded": "Begged hard",
+  "penalty ground: rarelyViolates": "Rarely breaks the rules",
+  "penalty ground: recruitmentOffice": "Recruitment office",
+  "penalty ground: delivery": "Delivery",
+  "penalty ground: termExpired": "Block term is over"
 }

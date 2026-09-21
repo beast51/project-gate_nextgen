@@ -189,7 +189,10 @@ export const generateDemoData = (
     from: format(from),
     until: format(until),
     imposedBy: actor,
-    lifted: isLifted ? { at: format(until), how: 'expired' } : null,
+    ground: 'overstay',
+    comment: null,
+    reason: null,
+    lifted: isLifted ? { at: format(until), how: 'expired', ground: 'termExpired', comment: null } : null,
     source: 'recorded',
   });
 

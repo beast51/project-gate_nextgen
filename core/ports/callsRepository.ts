@@ -5,6 +5,8 @@ export type CallsRepository = {
   findByTimeRange: (from: string, to: string) => Promise<Call[]>
   // the same period in the light form the rules of violations need: months of calls are read this way
   findPassagesByTimeRange: (from: string, to: string) => Promise<PassageCall[]>
+  // the same for one apartment or, for a caller without an apartment, one phone number
+  findPassagesOfSubject: (subjectKey: string, from: string, to: string) => Promise<PassageCall[]>
   findLast: () => Promise<Call | null>
   // stores all calls with one request; fails as a whole, the next synchronization retries
   addMany: (calls: { call: CallToStore, gateUserId?: string }[]) => Promise<void>

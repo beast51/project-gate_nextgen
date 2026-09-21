@@ -1,4 +1,6 @@
-import { noPenalties } from './__fixtures__/fakePenaltiesRepository';
+import { createFakePenaltiesRepository, noPenalties } from './__fixtures__/fakePenaltiesRepository';
+import { createFakeCallsRepository } from './__fixtures__/fakeCallsRepository';
+import { createPenaltyRecorder } from './penalties';
 import { noActivity } from './__fixtures__/fakeActivityLog';
 import { describe, expect, it, vi } from 'vitest';
 import { GateUser } from '../entities/gateUser';
@@ -94,5 +96,23 @@ describe('unblockExpiredPenalties', () => {
 
     expect(unblocked).toEqual(['380502222222']);
     expect(gateUsers.update).toHaveBeenCalledTimes(1);
+  });
+
+  // the cron job and the "unblock everybody whose term is over" button are this same use case
+  it('closes the penalties it lifts with the ground "the term is over"', async () => {
+    const expired = blackListed('380501111111', '2024-03-10 10:00:00');
+    const { directory, gateUsers } = createFakes([expired, blackListed('380502222222', '2024-03-12 10:00:00')]);
+    const penalties = createFakePenaltiesRepository();
+    const recorder = createPenaltyRecorder({
+      penalties: penalties.repository, calls: createFakeCallsRepository().repository,
+      actor: { id: 'system', name: 'system' }, now: () => NOW,
+    });
+    await recorder.imposed(expired, { ground: 'overstay' });
+
+    await createUnblockExpiredPenalties({ directory, gateUsers, recordActivity: noActivity, penalties: recorder })(NOW);
+
+    expect(penalties.state.penalties[0].lifted).toEqual({
+      at: '2024-03-10 12:00:00', how: 'expired', ground: 'termExpired', comment: null,
+    });
   });
 });

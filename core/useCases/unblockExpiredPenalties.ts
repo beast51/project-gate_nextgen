@@ -53,7 +53,7 @@ export const createUnblockExpiredPenalties = ({ directory, gateUsers, recordActi
         });
 
         unblocked.push(user);
-        await penalties.lifted(user, 'expired');
+        await penalties.lifted(user, 'expired', { ground: 'termExpired' });
       } catch (error) {
         // one failed user must not stop the others, the next run will retry
         console.error(`Failed to unblock ${user.phoneNumber}`, error);

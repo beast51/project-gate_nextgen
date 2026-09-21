@@ -75,7 +75,7 @@ const assemble = ({
   const clock = createGateClock(timeZone);
   const syncCalls = createSyncCalls({ source, calls, gateUsers });
   const recordActivity = createRecordActivity({ log: activityLog, actor });
-  const penaltyRecorder = createPenaltyRecorder({ penalties, actor, now: clock.now });
+  const penaltyRecorder = createPenaltyRecorder({ penalties, calls, actor, now: clock.now });
 
   const refreshCalls = callsSyncIntervalSeconds === null
     ? async () => {}

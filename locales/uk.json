@@ -98,5 +98,18 @@
   "search: open": "Пошук",
   "search: close": "Закрити пошук",
   "search: nothing found": "Нічого не знайдено",
-  "violation stats penalties": "Блокувань"
+  "violation stats penalties": "Блокувань",
+  "penalty note: block title": "За що блокуємо?",
+  "penalty note: unblock title": "Чому розблоковуємо?",
+  "penalty note: comment": "Коментар",
+  "penalty note: hint": "Натисніть кнопку або напишіть причину",
+  "penalty note: back": "Назад",
+  "penalty ground: cheater": "Читер",
+  "penalty ground: tailgating": "Паровоз",
+  "penalty ground: overstay": "Перевищив 45 хвилин",
+  "penalty ground: pleaded": "Слізно попросив",
+  "penalty ground: rarelyViolates": "Дуже мало порушує",
+  "penalty ground: recruitmentOffice": "ТЦК",
+  "penalty ground: delivery": "Доставка",
+  "penalty ground: termExpired": "Час блокування вийшов"
 }

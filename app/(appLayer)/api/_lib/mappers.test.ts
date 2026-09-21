@@ -1,3 +1,5 @@
+import { PENALTY_GROUNDS as CONTRACT_GROUNDS, PENALTY_LIFT_GROUNDS as CONTRACT_LIFT_GROUNDS } from '@/contracts';
+import { PENALTY_GROUNDS, PENALTY_LIFT_GROUNDS } from '@/core/entities/penalty';
 import { describe, expect, it } from 'vitest';
 import { FAILED_CALL_OUTCOMES } from '@/contracts';
 import { CALL_OUTCOMES, isFailedOutcome } from '@/core/entities/call';
@@ -17,6 +19,13 @@ const user: GateUser = {
   blackListedFrom: '',
   blackListedTo: '',
 };
+
+describe('grounds of penalties', () => {
+  it('are the same in the contract and in the core', () => {
+    expect([...CONTRACT_GROUNDS]).toEqual([...PENALTY_GROUNDS]);
+    expect([...CONTRACT_LIFT_GROUNDS]).toEqual([...PENALTY_LIFT_GROUNDS]);
+  });
+});
 
 describe('API mappers', () => {
   it('shows the telephony id under its historical contract name and takes it back', () => {

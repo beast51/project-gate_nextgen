@@ -169,6 +169,20 @@ export const countViolations = (
   );
 };
 
+// The visits themselves, for whoever needs more than the numbers. The calls must belong to ONE calendar day.
+export const listVisits = (
+  calls: PassageCall[],
+  rules: Partial<ViolationRules> = {},
+  now: Date = new Date(),
+): Record<string, VisitInfo[]> => {
+  const appliedRules: ViolationRules = { ...defaultViolationRules, ...rules };
+  const { byApartment, byPhoneNumber } = groupPassages(calls, appliedRules);
+
+  return Object.fromEntries(
+    Object.entries({ ...byApartment, ...byPhoneNumber }).map(([key, { time }]) => [key, toVisits(time, appliedRules, now).visits]),
+  );
+};
+
 export const findViolations = (
   calls: Call[],
   rules: Partial<ViolationRules> = {},
