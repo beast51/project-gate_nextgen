@@ -1,17 +1,14 @@
-import { signIn } from 'next-auth/react';
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import { AppRouter } from '@/sharedLayer/framework/navigation';
+import { PhoneCredentials, signInWithPhone } from '@/sharedLayer/framework/session';
 import { FieldValues } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-export const loginUser = (data: FieldValues, router: AppRouterInstance) => {
-  signIn('credentials', {
-    ...data,
-    redirect: false,
-  }).then((callback) => {
-    if (callback?.error) {
+export const loginUser = (data: FieldValues, router: AppRouter) => {
+  signInWithPhone(data as PhoneCredentials).then((result) => {
+    if (result.error) {
       toast.error('Invalid credentials');
     }
-    if (callback?.ok && !callback?.error) {
+    if (result.ok) {
       toast.success('Success logged in');
       router.push('/users');
     }

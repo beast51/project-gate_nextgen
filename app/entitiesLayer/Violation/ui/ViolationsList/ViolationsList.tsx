@@ -1,7 +1,7 @@
 // 'use client';
 
 import { formatTime } from '@/sharedLayer/utils/date';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from '@/sharedLayer/framework/navigation';
 import { paramsToString } from '@/sharedLayer/utils/paramsToString';
 import { useViolations } from '@/sharedLayer/api';
 import { ViolationsCard } from '../ViolationsCard/ViolationsCard';

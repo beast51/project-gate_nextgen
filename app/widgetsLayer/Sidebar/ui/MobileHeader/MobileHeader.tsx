@@ -5,7 +5,7 @@ import { paramsToString } from '@/sharedLayer/utils/paramsToString';
 import { DatePicker } from '@/sharedLayer/ui/DatePicker';
 import moment from 'moment';
 import 'moment/locale/uk';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from '@/sharedLayer/framework/navigation';
 import { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import classes from './MobileHeader.module.scss';

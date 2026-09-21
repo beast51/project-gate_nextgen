@@ -4,7 +4,7 @@ import styles from './SettingsPage.module.scss';
 import { useIntl } from 'react-intl';
 import { Button } from '@/sharedLayer/ui/Button';
 import LangSwitcher from '@/sharedLayer/ui/LangSwitcher/LangSwitcher';
-import { signOut } from 'next-auth/react';
+import { signOut } from '@/sharedLayer/framework/session';
 import { ToggleTheme } from '@/sharedLayer/ui/Toggle';
 
 export const SettingsPage = async () => {
@@ -20,7 +20,7 @@ export const SettingsPage = async () => {
       </div>
       <Button
         className={styles.button}
-        onClick={() => signOut({ callbackUrl: '/' })}
+        onClick={() => signOut('/')}
       >
         {$t({ id: 'Exit' })}
       </Button>

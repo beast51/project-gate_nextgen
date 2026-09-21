@@ -1,6 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
-import Image from 'next/image';
+import { Image } from '@/sharedLayer/framework/Image';
 import { AvatarProps } from '../Avatar.type';
 import classes from './Avatar.module.scss';
 import { FaTimes } from 'react-icons/fa';

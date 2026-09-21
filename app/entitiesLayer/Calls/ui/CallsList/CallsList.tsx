@@ -1,7 +1,7 @@
 'use client';
 import { formatTime } from '@/sharedLayer/utils/date';
 import { paramsToString } from '@/sharedLayer/utils/paramsToString';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from '@/sharedLayer/framework/navigation';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useCalls } from '@/sharedLayer/api';
 import { CallsCard } from '../CallsCard';

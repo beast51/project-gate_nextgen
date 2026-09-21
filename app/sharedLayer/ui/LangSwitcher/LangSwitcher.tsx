@@ -1,8 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation';
-import { useCurrentLocale } from 'next-i18n-router/client';
+import { usePathname, useRouter } from '@/sharedLayer/framework/navigation';
+import { useCurrentLocale } from '@/sharedLayer/framework/locale';
 import i18nConfig from '../../config/i18n/i18nConfig';
 import { Select } from '../Select';
 import { MenuItem, SelectChangeEvent } from '@mui/material';
@@ -11,7 +10,7 @@ import { useIntl } from 'react-intl';
 export default function LanguageChanger() {
   const router = useRouter();
   const currentPathname = usePathname();
-  const currentLocale = useCurrentLocale(i18nConfig);
+  const currentLocale = useCurrentLocale();
   const { $t } = useIntl();
 
   const handleChange = (e: SelectChangeEvent<string>) => {

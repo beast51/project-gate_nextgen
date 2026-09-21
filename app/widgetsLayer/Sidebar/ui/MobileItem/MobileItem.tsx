@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@/sharedLayer/framework/Link';
 import React from 'react';
 import cn from 'classnames';
 import cls from './MobileItem.module.scss';

@@ -1,7 +1,7 @@
 import cls from './AppLink.module.scss';
 import cn from 'classnames';
 import { type FC } from 'react';
-import Link, { LinkProps } from 'next/link';
+import { Link } from '@/sharedLayer/framework/Link';
 import React from 'react';
 import { AppLinkProps } from '../AppLink.type';
 

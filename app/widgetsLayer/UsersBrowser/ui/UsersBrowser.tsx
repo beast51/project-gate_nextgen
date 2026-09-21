@@ -9,7 +9,7 @@ import { UserBrowserType } from '../UserBrowser.type';
 import { useSearchAndPagination } from '../lib/useSearchAndPagination';
 import { Input } from '@/sharedLayer/ui/Input';
 import classes from './UsersBrowser.module.scss';
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/sharedLayer/framework/navigation';
 import { useGateUsers, useRefreshGateUsers } from '@/sharedLayer/api';
 import { AppLink } from '@/sharedLayer/ui/AppLink';
 import { FaEllipsisV } from 'react-icons/fa';

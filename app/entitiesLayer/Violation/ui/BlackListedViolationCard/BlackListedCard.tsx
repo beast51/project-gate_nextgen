@@ -1,7 +1,7 @@
 'use client';
 
 import { Avatar } from '@/sharedLayer/ui/Avatar';
-import Link from 'next/link';
+import { Link } from '@/sharedLayer/framework/Link';
 import classes from './BlackListedCard.module.scss';
 import cn from 'classnames';
 import { formatPhoneNumber } from '@/sharedLayer/utils/formatPhoneNumber';

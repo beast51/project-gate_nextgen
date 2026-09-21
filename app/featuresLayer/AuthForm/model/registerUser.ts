@@ -1,13 +1,13 @@
 import { RegisterRequest } from "@/contracts";
 import { api } from "@/sharedLayer/api";
-import { signIn } from "next-auth/react";
+import { PhoneCredentials, signInWithPhone } from "@/sharedLayer/framework/session";
 import { FieldValues } from "react-hook-form";
 import toast from "react-hot-toast";
 
 export const registerUser = (data: FieldValues) => {
   api
   .register(data as RegisterRequest)
-  .then(() => signIn('credentials', data))
+  .then(() => signInWithPhone(data as PhoneCredentials))
   .catch(() => toast.error('Something went wrong'))
 }
 

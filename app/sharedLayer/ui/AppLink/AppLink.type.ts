@@ -1,4 +1,4 @@
-import { LinkProps } from "next/link";
+import { LinkProps } from '@/sharedLayer/framework/Link';
 
 // export enum AppLinkVariant {
 //   PRIMARY = 'primary',

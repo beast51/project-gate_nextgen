@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname } from '@/sharedLayer/framework/navigation';
 import { FaExchangeAlt } from 'react-icons/fa';
 import { HiUsers } from 'react-icons/hi2';
 import { RxLapTimer } from 'react-icons/rx';

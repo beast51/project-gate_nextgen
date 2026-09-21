@@ -6,7 +6,7 @@ import { GateUserType } from '@/entitiesLayer/GateUser/model/types/GateUser.type
 import { api, useRefreshGateUsers } from '@/sharedLayer/api';
 import toast from 'react-hot-toast';
 import Popup from '@/sharedLayer/ui/Popup/ui/Popup';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/sharedLayer/framework/navigation';
 import { formatTime } from '@/sharedLayer/utils/date';
 import { BlockButtons } from './BlockButtons/BlockButtons';
 import { ConfirmButtons } from './ConfirmButtons/ConfirmButtons';

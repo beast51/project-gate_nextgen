@@ -8,7 +8,7 @@ import {
   ThemeProvider,
   createTheme,
 } from '@mui/material/';
-import { useCurrentLocale } from 'next-i18n-router/client';
+import { useCurrentLocale } from '@/sharedLayer/framework/locale';
 import { useTheme } from '@/appLayer/providers/ThemeProvider';
 import i18nConfig from '@/sharedLayer/config/i18n/i18nConfig';
 
@@ -25,7 +25,7 @@ export const Select: React.FC<SelectPropsType> = ({
   onChange,
   children,
 }) => {
-  const currentLocale = useCurrentLocale(i18nConfig);
+  const currentLocale = useCurrentLocale();
   const { theme: THEME } = useTheme();
 
   const newTheme = createTheme(

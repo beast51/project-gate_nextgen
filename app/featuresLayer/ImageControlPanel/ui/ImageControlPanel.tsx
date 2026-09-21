@@ -2,7 +2,7 @@
 
 import React, { FC } from 'react';
 import { HiPhoto } from 'react-icons/hi2';
-import { CldUploadButton } from 'next-cloudinary';
+import { ImageUploadButton } from '@/sharedLayer/framework/ImageUploadButton';
 import { ImageControlPanelProps } from '../UploadImageButton.type';
 import { Button } from '@/sharedLayer/ui/Button';
 // import { deleteFolder } from '@/app/pagesLayer/GateUserPage/model/cloudinary';
@@ -27,21 +27,15 @@ export const ImageControlPanel: FC<ImageControlPanelProps> = ({
 
   return (
     <div className={classes.imageControlWrapper}>
-      <CldUploadButton
-        options={{
-          multiple: true,
-          folder: apartmentNumber || 'withoutApartmentNumber',
-          publicId: `${apartmentNumber}/${carNumber}`,
-        }}
-        onUpload={(result: any) =>
-          console.log('done uploading', result?.info?.secure_url)
-        }
+      <ImageUploadButton
+        multiple
+        folder={apartmentNumber || 'withoutApartmentNumber'}
+        publicId={`${apartmentNumber}/${carNumber}`}
         uploadPreset="gateUser"
         className={classes.button}
       >
         {$t({ id: 'upload a photo' })}
-        {/* <HiPhoto className={classes.icon} /> */}
-      </CldUploadButton>
+      </ImageUploadButton>
       <Button onClick={() => deleteFiles('test')} disabled>
         {$t({ id: 'delete a photo' })}
       </Button>

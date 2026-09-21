@@ -3,11 +3,11 @@
 import clsx from 'clsx';
 import { Avatar } from '@/sharedLayer/ui/Avatar';
 import { VisitsType } from '../../model/types/ViolationList.types';
-import Link from 'next/link';
+import { Link } from '@/sharedLayer/framework/Link';
 import classes from './ViolationCard.module.scss';
 import { useMemo } from 'react';
 import cn from 'classnames';
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/sharedLayer/framework/navigation';
 import { formatPhoneNumber } from '@/sharedLayer/utils/formatPhoneNumber';
 import { CarNumbersList } from '@/entitiesLayer/GateUser';
 import { StayTimerCardList } from '../StayTimerCardList';

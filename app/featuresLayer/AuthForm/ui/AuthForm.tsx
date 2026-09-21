@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useSessionStatus } from '@/sharedLayer/framework/session';
+import { useRouter } from '@/sharedLayer/framework/navigation';
 import classes from './FormWrapper.module.scss';
 import { Button } from '@/sharedLayer/ui/Button';
 import { Input } from '@/sharedLayer/ui/Input';
@@ -15,18 +15,17 @@ import { FormInput } from '@/sharedLayer/ui/FormInput';
 
 export const AuthForm = () => {
   const { $t } = useIntl();
-  const session = useSession();
+  const sessionStatus = useSessionStatus();
   const router = useRouter();
   const [variant, setVariant] = useState<Variant>('LOGIN');
   const [isLoading, setIsLoading] = useState(false);
 
-  console.log('session', session);
 
   useEffect(() => {
-    if (session?.status === 'authenticated') {
+    if (sessionStatus === 'authenticated') {
       router.push('/users');
     }
-  }, [session?.status, router]);
+  }, [sessionStatus, router]);
 
   const toggleVariant = useCallback(() => {
     if (variant === 'LOGIN') {

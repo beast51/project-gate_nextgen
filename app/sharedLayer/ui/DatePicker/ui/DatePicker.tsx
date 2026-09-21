@@ -9,7 +9,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { ukUA } from '@mui/x-date-pickers/locales';
 import { enUS } from '@mui/x-date-pickers/locales';
 import 'moment/locale/uk';
-import { useCurrentLocale } from 'next-i18n-router/client';
+import { useCurrentLocale } from '@/sharedLayer/framework/locale';
 import i18nConfig from '@/sharedLayer/config/i18n/i18nConfig';
 import { DatePickerTypeProps } from '../DatePicker.type';
 
@@ -18,7 +18,7 @@ export const DatePicker: React.FC<DatePickerTypeProps> = ({
   selectedDate,
   onAccept,
 }) => {
-  const currentLocale = useCurrentLocale(i18nConfig);
+  const currentLocale = useCurrentLocale();
   const { theme: THEME } = useTheme();
 
   const newTheme = createTheme(
