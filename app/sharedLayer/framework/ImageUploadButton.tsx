@@ -1,7 +1,7 @@
 'use client';
 
 import { CldUploadButton } from 'next-cloudinary';
-import { FC } from 'react';
+import { FC, JSX } from 'react';
 
 export type ImageUploadButtonProps = {
   folder: string
@@ -19,7 +19,7 @@ export const ImageUploadButton: FC<ImageUploadButtonProps> = ({
 }) => (
   <CldUploadButton
     options={{ multiple, folder, publicId }}
-    onUpload={(result: any) => onUploaded?.(result?.info?.secure_url)}
+    onSuccess={(result) => onUploaded?.(typeof result.info === 'object' ? result.info.secure_url : undefined)}
     uploadPreset={uploadPreset}
     className={className}
   >

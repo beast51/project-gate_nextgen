@@ -5,7 +5,6 @@ import ThemeProvider from '@/appLayer/providers/ThemeProvider/ui/ThemeProvider';
 import { Suspense } from 'react';
 import ServerIntlProvider from '@/appLayer/providers/ServerIntlProvider/ui/ServerIntlProvider';
 import getIntl from '@/appLayer/providers/ServerIntlProvider/lib/intl';
-import { currentLocale } from 'next-i18n-router';
 import AuthContext from './(appLayer)/context/AuthContext';
 import ToasterContext from './(appLayer)/context/ToasterContext';
 import cn from 'classnames';
@@ -65,7 +64,7 @@ export default async function RootLayout({
   const intl = await getIntl();
 
   return (
-    <html lang={currentLocale()}>
+    <html lang={intl.locale}>
       <body className={cn(sfpro.className, Mittelschrift.variable)}>
         <AuthContext>
           <ToasterContext />

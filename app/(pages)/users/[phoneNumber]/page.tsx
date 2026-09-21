@@ -1,12 +1,11 @@
 import { GateUserPage } from '@/app/pagesLayer/GateUserPage';
-import { FC } from 'react';
 
 export type UserPropsType = {
-  params: { phoneNumber: string };
+  params: Promise<{ phoneNumber: string }>;
 };
 
-const User: FC<UserPropsType> = ({ params: { phoneNumber } }) => {
+export default async function User({ params }: UserPropsType) {
+  const { phoneNumber } = await params;
+
   return <GateUserPage phoneNumber={phoneNumber} />;
-};
-
-export default User;
+}

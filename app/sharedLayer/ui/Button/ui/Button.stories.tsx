@@ -1,4 +1,4 @@
-import type { Meta, StoryFn, StoryObj } from '@storybook/react';
+import type { Meta, StoryFn, StoryObj } from '@storybook/nextjs';
 
 import { Button } from './Button';
 import { ThemeDecorator } from '@/sharedLayer/config/storybook/ThemeDecorator/ThemeDecorator';

@@ -6,7 +6,7 @@ import { getServerApi } from '@/sharedLayer/framework/serverApi';
 
 const load = async (query: GateUsersQuery): Promise<GateUsersResponse> => {
   try {
-    return await getServerApi().getGateUsers(query);
+    return await (await getServerApi()).getGateUsers(query);
   } catch (error) {
     // a visitor without a session sees an empty page, the middleware sends them to the sign in form
     if (error instanceof ApiError && error.status === 401) return [];

@@ -22,8 +22,8 @@ export const requestOrigin = (get: (name: string) => string | null) => {
   return `${protocol}://${host}`;
 };
 
-export const getServerApi = () => {
-  const incoming = headers();
+export const getServerApi = async () => {
+  const incoming = await headers();
 
   return createApiClient({
     fetch: (...args) => fetch(...args),

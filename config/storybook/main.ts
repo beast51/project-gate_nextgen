@@ -2,24 +2,18 @@ import type { StorybookConfig } from "@storybook/nextjs";
 
 const config: StorybookConfig = {
   stories: [
-    "../../stories/**/*.mdx",
-    "../../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)",
     "../../app/**/*.stories.@(js|jsx|mjs|ts|tsx)",
     "../../app/**/*.mdx"
   ],
+  // controls, actions, viewport, backgrounds and interactions are part of the Storybook core since version 9
   addons: [
     "@storybook/addon-links",
-    "@storybook/addon-essentials",
-    "@storybook/addon-onboarding",
-    "@storybook/addon-interactions",
-    "@storybook/addon-mdx-gfm"
+    "@storybook/addon-docs",
+    "@storybook/addon-onboarding"
   ],
   framework: {
     name: "@storybook/nextjs",
     options: {},
-  },
-  docs: {
-    autodocs: "tag",
   },
 };
 export default config;

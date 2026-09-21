@@ -23,12 +23,12 @@
 //       </div>
 //     );
 
-import { StoryFn } from '@storybook/react';
+import { ComponentType, JSX } from 'react';
 import { Theme } from '@/appLayer/providers/ThemeProvider/lib/ThemeContext';
 
 export const ThemeDecorator =
   (theme: Theme) =>
-  (StoryComponent: StoryFn): JSX.Element =>
+  (StoryComponent: ComponentType): JSX.Element =>
     (
       <div
         style={{
