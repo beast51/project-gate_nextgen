@@ -1,4 +1,5 @@
-import { ActivityEventDto, CallDto, GateUserDto, ViolationsResponse } from '@/contracts';
+import { AccessEventDto, ActivityEventDto, CallDto, GateUserDto, ViolationsResponse } from '@/contracts';
+import { AccessEvent } from '@/core/entities/access';
 import { ActivityEvent } from '@/core/entities/activity';
 import { Call } from '@/core/entities/call';
 import { GateUser } from '@/core/entities/gateUser';
@@ -19,6 +20,8 @@ export const fromGateUserDto = ({ idInApi, ...dto }: GateUserDto): GateUser => (
 });
 
 export const toCallDto = (call: Call): CallDto => call;
+
+export const toAccessEventDto = (event: AccessEvent): AccessEventDto => event;
 
 export const toActivityEventDto = (event: ActivityEvent): ActivityEventDto => event;
 

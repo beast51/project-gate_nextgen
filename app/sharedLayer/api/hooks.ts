@@ -1,7 +1,7 @@
 'use client';
 
 import useSWR, { useSWRConfig } from 'swr';
-import { ActivityQuery, GateUserDto, GateUsersQuery, GateUsersResponse, PeriodQuery } from '@/contracts';
+import { AccessQuery, ActivityQuery, GateUserDto, GateUsersQuery, GateUsersResponse, PeriodQuery } from '@/contracts';
 import { apiKeys, isKeyOf } from './apiKeys';
 import { api } from './browserApi';
 import { blackListWithChangedGateUser, withChangedGateUser, withoutGateUser } from './gateUsersCache';
@@ -32,6 +32,13 @@ export const useActivity = (query: ActivityQuery = {}) =>
 
 export const useActivityActors = () =>
   useSWR(apiKeys.activityActors(), () => api.getActivityActors(), NO_RETRY_WHEN_FORBIDDEN);
+
+// Sign ins and opened pages, for admins only like the journal of actions
+export const useAccessLog = (query: AccessQuery = {}) =>
+  useSWR(apiKeys.access(query), () => api.getAccessLog(query), NO_RETRY_WHEN_FORBIDDEN);
+
+export const useAccessActors = () =>
+  useSWR(apiKeys.accessActors(), () => api.getAccessActors(), NO_RETRY_WHEN_FORBIDDEN);
 
 // Keeps every cached list of gate users in step with a change made anywhere in the application.
 // A list that is on the screen reloads at once, a list that is not reloads when it is opened.

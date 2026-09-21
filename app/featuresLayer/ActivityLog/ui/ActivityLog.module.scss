@@ -16,18 +16,46 @@
   }
 }
 
-.title {
-  font-size: 18px;
-  font-weight: 600;
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.tab {
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--input-border);
+  background: transparent;
   color: var(--primary-color);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.activeTab {
+  background: var(--button-primary-bg);
+  color: var(--button-primary-color);
+  border-color: transparent;
+}
+
+.body {
+  display: grid;
+  grid-template-rows: auto;
+  align-content: flex-start;
+  gap: 8px;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+// a sign in stands out among the page views
+.signIn {
+  border: 1px solid var(--green);
 }
 
 .list {
   display: grid;
   gap: 8px;
   align-content: flex-start;
-  overflow-y: auto;
-  min-height: 0;
   padding: 0;
   margin: 0;
   list-style: none;

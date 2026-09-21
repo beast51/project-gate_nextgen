@@ -1,4 +1,7 @@
 import {
+  AccessActorsResponse,
+  AccessQuery,
+  AccessResponse,
   ActivityActorsResponse,
   ActivityQuery,
   ActivityResponse,
@@ -9,6 +12,7 @@ import {
   EditGateUserRequest,
   GateUsersQuery,
   GateUsersResponse,
+  PageViewRequest,
   PeriodQuery,
   RegisterRequest,
   UnblockExpiredPenaltiesResponse,
@@ -85,6 +89,10 @@ export const createApiClient = ({ fetch: send, baseUrl = '', headers, onUnauthor
 
     getActivity: (query: ActivityQuery = {}) => request<ActivityResponse>(API_ROUTES.activity, { query }),
     getActivityActors: () => request<ActivityActorsResponse>(API_ROUTES.activityActors),
+
+    getAccessLog: (query: AccessQuery = {}) => request<AccessResponse>(API_ROUTES.access, { query }),
+    getAccessActors: () => request<AccessActorsResponse>(API_ROUTES.accessActors),
+    reportPageView: (view: PageViewRequest) => request<unknown>(API_ROUTES.pageViews, { body: view }),
 
     register: (account: RegisterRequest) => request<unknown>(API_ROUTES.register, { body: account }),
     deleteFiles: (files: unknown) => request<unknown>(API_ROUTES.deleteFiles, { body: files }),

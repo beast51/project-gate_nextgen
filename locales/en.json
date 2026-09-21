@@ -75,5 +75,10 @@
   "activity field: carNumber": "vehicle numbers",
   "activity field: apartmentNumber": "apartment",
   "activity field: image": "photo",
-  "activity field: additionalImages": "additional photos"
+  "activity field: additionalImages": "additional photos",
+  "activity tab: actions": "Actions",
+  "activity tab: access": "Sign ins and pages",
+  "access: signed in": "Signed in",
+  "access: unknown address": "address unknown",
+  "access: retention": "Records are kept for 30 days"
 }

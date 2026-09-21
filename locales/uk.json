@@ -75,5 +75,10 @@
   "activity field: carNumber": "номери авто",
   "activity field: apartmentNumber": "квартира",
   "activity field: image": "фото",
-  "activity field: additionalImages": "додаткові фото"
+  "activity field: additionalImages": "додаткові фото",
+  "activity tab: actions": "Дії",
+  "activity tab: access": "Входи та сторінки",
+  "access: signed in": "Вхід у сервіс",
+  "access: unknown address": "адреса невідома",
+  "access: retention": "Записи зберігаються 30 днів"
 }

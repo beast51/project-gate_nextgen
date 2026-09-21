@@ -8,6 +8,7 @@ import getIntl from '@/appLayer/providers/ServerIntlProvider/lib/intl';
 import AuthContext from './(appLayer)/context/AuthContext';
 import ToasterContext from './(appLayer)/context/ToasterContext';
 import cn from 'classnames';
+import { PageViewTracker } from '@/featuresLayer/ActivityLog';
 
 const sfpro = localFont({
   src: [
@@ -68,6 +69,7 @@ export default async function RootLayout({
       <body className={cn(sfpro.className, Mittelschrift.variable)}>
         <AuthContext>
           <ToasterContext />
+          <PageViewTracker />
           <Suspense
           // fallback="loading"
           >

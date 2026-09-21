@@ -1,4 +1,4 @@
-import { ActivityQuery, GateUsersQuery, PeriodQuery } from '@/contracts';
+import { AccessQuery, ActivityQuery, GateUsersQuery, PeriodQuery } from '@/contracts';
 
 // Cache keys of SWR. A key starts with the name of the resource, so everything that belongs
 // to a resource can be refreshed at once, whatever the filters are.
@@ -9,7 +9,9 @@ export const apiKeys = {
     ['gateUsers', phoneNumber, blackListed] as const,
   activity: ({ limit = 10, actor = '' }: ActivityQuery = {}) => ['activity', limit, actor] as const,
   activityActors: () => ['activity', 'actors'] as const,
+  access: ({ limit = 30, actor = '' }: AccessQuery = {}) => ['access', limit, actor] as const,
+  accessActors: () => ['access', 'actors'] as const,
 };
 
-export const isKeyOf = (resource: 'calls' | 'violations' | 'gateUsers' | 'activity') =>
+export const isKeyOf = (resource: 'calls' | 'violations' | 'gateUsers' | 'activity' | 'access') =>
   (key: unknown) => Array.isArray(key) && key[0] === resource;
