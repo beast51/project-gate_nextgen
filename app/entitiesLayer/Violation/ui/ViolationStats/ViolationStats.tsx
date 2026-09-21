@@ -11,6 +11,9 @@ export type ViolationStatsType = ViolationStatsDto;
 type ViolationStatsProps = {
   // null: the visitor has no violations in any of the periods
   stats: ViolationStatsType | null;
+  // The page of a resident calls a visit without an exit what it is there, tailgating: every day it shows is over.
+  // The list of a day keeps "no exit": today such a visit may still be closed.
+  openVisitsLabelId?: string;
 };
 
 const PERIODS = [
@@ -30,7 +33,7 @@ const KINDS = [
 
 // Violations of the visitor around the chosen day: the week, the month and three months,
 // overstays and visits without an exit apart, and how many times it ended with a penalty
-export const ViolationStats: FC<ViolationStatsProps> = memo(({ stats }) => {
+export const ViolationStats: FC<ViolationStatsProps> = memo(({ stats, openVisitsLabelId }) => {
   const { $t } = useIntl();
 
   if (!stats) {
@@ -47,7 +50,9 @@ export const ViolationStats: FC<ViolationStatsProps> = memo(({ stats }) => {
       </div>
       {KINDS.map(([kind, label]) => (
         <div key={kind} className={classes.row} role="row">
-          <span className={classes.kind} role="rowheader">{$t({ id: label })}</span>
+          <span className={classes.kind} role="rowheader">
+            {$t({ id: kind === 'openVisits' && openVisitsLabelId ? openVisitsLabelId : label })}
+          </span>
           {PERIODS.map(([period]) => (
             <span
               key={period}

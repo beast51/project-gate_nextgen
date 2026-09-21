@@ -43,6 +43,9 @@ export const ViolationHistory: FC<ViolationHistoryProps> = ({ violations }) => {
               <StayTimerCard
                 key={violation.timeIn}
                 isOverstay
+                // An unpaired passage of a finished day: the car got in or out behind somebody else, without a call.
+                // The list of a day shows '?', because there the visit may still be closed.
+                openLabel={$t({ id: 'violation: tailgating' })}
                 visit={{
                   timeIn: violation.timeIn,
                   timeOut: violation.timeOut,

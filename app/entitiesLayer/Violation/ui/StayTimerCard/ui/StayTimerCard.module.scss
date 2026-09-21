@@ -21,3 +21,10 @@
   font-size: 12px;
   font-weight: 400;
 }
+
+// a word instead of the question mark has to fit into the same card
+.openLabel {
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+}

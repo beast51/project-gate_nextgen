@@ -7,7 +7,7 @@ import { StayTimerCardProps } from '../StayTimerCard.type';
 import { useIntl } from 'react-intl';
 
 export const StayTimerCard: FC<StayTimerCardProps> = memo(
-  ({ visit, isOverstay }) => {
+  ({ visit, isOverstay, openLabel = '?' }) => {
     const { $t } = useIntl();
     return (
       <div
@@ -16,10 +16,10 @@ export const StayTimerCard: FC<StayTimerCardProps> = memo(
         })}
         key={visit.violationTime}
       >
-        <p>
+        <p className={cn({ [classes.openLabel]: !visit.violationTime && openLabel !== '?' })}>
           {visit.violationTime
             ? `${visit.violationTime} ${$t({ id: 'min.' })}`
-            : '?'}
+            : openLabel}
         </p>
         <div className={classes.wrapper}>
           <p>{visit.timeIn.split(' ')[1]}</p>

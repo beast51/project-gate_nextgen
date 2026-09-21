@@ -26,7 +26,7 @@ export const ResidentHistory: FC<ResidentHistoryProps> = ({ subject }) => {
     <div className={classes.history}>
       <section className={classes.section}>
         <h2 className={classes.title}>{$t({ id: 'resident history: violations title' })}</h2>
-        {stats?.stats[subject] && <ViolationStats stats={stats.stats[subject]} />}
+        {stats?.stats[subject] && <ViolationStats stats={stats.stats[subject]} openVisitsLabelId="violation: tailgating" />}
         <ViolationHistory violations={history.violations} />
       </section>
 
