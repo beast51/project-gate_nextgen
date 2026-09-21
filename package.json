@@ -174,6 +174,108 @@
             }
           ]
         }
+      },
+      {
+        "files": [
+          "app/pagesLayer/**/*.{ts,tsx}",
+          "app/widgetsLayer/**/*.{ts,tsx}",
+          "app/featuresLayer/**/*.{ts,tsx}",
+          "app/entitiesLayer/**/*.{ts,tsx}",
+          "app/sharedLayer/**/*.{ts,tsx}",
+          "app/(pages)/**/*.{ts,tsx}"
+        ],
+        "rules": {
+          "no-restricted-imports": [
+            "error",
+            {
+              "patterns": [
+                {
+                  "group": [
+                    "@/core/*",
+                    "@/infrastructure/*",
+                    "@/appLayer/libs/*",
+                    "@/appLayer/api/*",
+                    "@prisma/*",
+                    "**/core/*",
+                    "**/infrastructure/*",
+                    "**/(appLayer)/libs/*",
+                    "**/(appLayer)/api/*"
+                  ],
+                  "message": "The front end knows only contracts/ and HTTP (sharedLayer/api). It must not import back-end code."
+                },
+                {
+                  "group": [
+                    "next",
+                    "next/*",
+                    "next-auth",
+                    "next-auth/*",
+                    "next-i18n-router",
+                    "next-i18n-router/*",
+                    "next-cloudinary"
+                  ],
+                  "message": "Use the wrappers from sharedLayer/framework: it is the only place of the UI that knows the framework."
+                },
+                {
+                  "group": [
+                    "axios"
+                  ],
+                  "message": "Use the API client from sharedLayer/api."
+                }
+              ]
+            }
+          ],
+          "no-restricted-syntax": [
+            "error",
+            {
+              "selector": "CallExpression[callee.name='fetch']",
+              "message": "Use the API client from sharedLayer/api."
+            }
+          ]
+        }
+      },
+      {
+        "files": [
+          "app/sharedLayer/framework/**/*.{ts,tsx}",
+          "app/(pages)/**/*.{ts,tsx}"
+        ],
+        "rules": {
+          "no-restricted-imports": [
+            "error",
+            {
+              "patterns": [
+                {
+                  "group": [
+                    "@/core/*",
+                    "@/infrastructure/*",
+                    "@/appLayer/libs/*",
+                    "@/appLayer/api/*",
+                    "@prisma/*",
+                    "**/core/*",
+                    "**/infrastructure/*",
+                    "**/(appLayer)/libs/*",
+                    "**/(appLayer)/api/*"
+                  ],
+                  "message": "The front end knows only contracts/ and HTTP (sharedLayer/api). It must not import back-end code."
+                },
+                {
+                  "group": [
+                    "axios"
+                  ],
+                  "message": "Use the API client from sharedLayer/api."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "files": [
+          "app/sharedLayer/api/**/*.ts",
+          "app/sharedLayer/framework/serverApi.ts"
+        ],
+        "rules": {
+          "no-restricted-syntax": "off"
+        }
       }
     ]
   },
