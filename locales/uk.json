@@ -48,5 +48,8 @@
   "min.": "хв.",
   "hours": "ч.",
   "days": "д.",
-  "apt": "кв. "
-} 
+  "apt": "кв. ",
+  "user deleted successful": "Користувача видалено",
+  "user blocked successful": "Користувача заблоковано",
+  "user unblocked successful": "Користувача розблоковано"
+}

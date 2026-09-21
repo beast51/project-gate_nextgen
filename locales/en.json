@@ -48,5 +48,8 @@
   "min.": "min.",
   "hours": "h.",
   "days": "d.",
-  "apt": "apt. "
-} 
+  "apt": "apt. ",
+  "user deleted successful": "User deleted",
+  "user blocked successful": "User blocked",
+  "user unblocked successful": "User unblocked"
+}

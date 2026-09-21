@@ -1,7 +1,7 @@
 'use client';
 
 import { AddGateUserRequest } from '@/contracts';
-import { api, useRefreshGateUsers } from '@/sharedLayer/api';
+import { api, useGateUsersCache } from '@/sharedLayer/api';
 import classes from './AddGateUserForm.module.scss';
 import { useEffect, useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
@@ -13,7 +13,7 @@ import { useIntl } from 'react-intl';
 export const AddGateUserForm = () => {
   const { $t } = useIntl();
   const [isLoading, setIsLoading] = useState(false);
-  const refreshGateUsers = useRefreshGateUsers();
+  const gateUsersCache = useGateUsersCache();
 
   const {
     register,
@@ -51,7 +51,7 @@ export const AddGateUserForm = () => {
       .then(() => {
         toast.success($t({ id: 'user added successful' }));
         reset();
-        refreshGateUsers();
+        gateUsersCache.refresh();
       })
       .catch(() => toast.error($t({ id: 'something went wrong' })))
       .finally(() => setIsLoading(false));

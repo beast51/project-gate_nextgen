@@ -10,7 +10,7 @@ import { useSearchAndPagination } from '../lib/useSearchAndPagination';
 import { Input } from '@/sharedLayer/ui/Input';
 import classes from './UsersBrowser.module.scss';
 import { usePathname } from '@/sharedLayer/framework/navigation';
-import { useGateUsers, useRefreshGateUsers } from '@/sharedLayer/api';
+import { useGateUsers, useGateUsersCache } from '@/sharedLayer/api';
 import { AppLink } from '@/sharedLayer/ui/AppLink';
 import { FaEllipsisV } from 'react-icons/fa';
 import { GateUserCardsList } from '@/entitiesLayer/GateUser/ui/GateUserCardsList/GateUserCardsList';
@@ -26,13 +26,13 @@ export const UserBrowser: FC<UserBrowserType> = ({ users: initialUsers }) => {
   const { $t } = useIntl();
   // the page arrives with the list already rendered, later the list is refreshed without reloading the page
   const { data: users = initialUsers } = useGateUsers({}, initialUsers);
-  const refreshGateUsers = useRefreshGateUsers();
+  const gateUsersCache = useGateUsersCache();
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    refreshGateUsers();
+    gateUsersCache.refresh();
   };
 
   const {

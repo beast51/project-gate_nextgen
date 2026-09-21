@@ -17,7 +17,7 @@ import LangSwitcher from '@/sharedLayer/ui/LangSwitcher/LangSwitcher';
 import { ToggleTheme } from '@/sharedLayer/ui/Toggle';
 import { Button } from '@/sharedLayer/ui/Button';
 import { MdOutlineManageAccounts } from 'react-icons/md';
-import { api, useRefreshGateUsers } from '@/sharedLayer/api';
+import { api, useGateUsersCache } from '@/sharedLayer/api';
 import toast from 'react-hot-toast';
 
 export const getFromToFromDataPicker = (date: string | null) => {
@@ -54,7 +54,7 @@ const MobileHeader = ({
   const [selectedDate, setSelectedDate] = useState(TIME_FROM_URL || TIME_NOW);
 
   const [isLoading, setIsLoading] = useState(false);
-  const refreshGateUsers = useRefreshGateUsers();
+  const gateUsersCache = useGateUsersCache();
 
   const datePickerHandler = (value: string | null) => {
     const { from, to } = getFromToFromDataPicker(value);
@@ -71,7 +71,7 @@ const MobileHeader = ({
       .unblockExpiredPenalties()
       .then((response) => {
         toast.success(response.message);
-        refreshGateUsers();
+        gateUsersCache.refresh();
       })
       .catch(() => toast.error($t({ id: 'something went wrong' })))
       .finally(() => {

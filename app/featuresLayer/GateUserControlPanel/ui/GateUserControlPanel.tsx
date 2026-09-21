@@ -3,7 +3,7 @@ import { Button } from '@/sharedLayer/ui/Button';
 import { FC, useCallback, useState } from 'react';
 import classes from './GateUserControlPanel.module.scss';
 import { GateUserType } from '@/entitiesLayer/GateUser/model/types/GateUser.type';
-import { api, useRefreshGateUsers } from '@/sharedLayer/api';
+import { api, useGateUsersCache } from '@/sharedLayer/api';
 import toast from 'react-hot-toast';
 import Popup from '@/sharedLayer/ui/Popup/ui/Popup';
 import { useRouter } from '@/sharedLayer/framework/navigation';
@@ -34,7 +34,7 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
   const [isOpenPopup, setIsOpenPopup] = useState(false);
   const [action, setAction] = useState<ActionType>(null);
   const router = useRouter();
-  const refreshGateUsers = useRefreshGateUsers();
+  const gateUsersCache = useGateUsersCache();
   const { $t } = useIntl();
 
   const handleOpen = (actionType: ActionType) => {
@@ -50,12 +50,14 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
     setIsLoading(true);
     api
       .deleteGateUser({ phoneNumber, id })
-      .then(() => {
-        refreshGateUsers();
+      .then(async () => {
+        // the lists lose the user before the list page opens, so the removed user never shows up there
+        await gateUsersCache.removed(phoneNumber);
+        toast.success($t({ id: 'user deleted successful' }));
         router.push('/users');
       })
       .catch(() => {
-        toast.error('Something went wrong');
+        toast.error($t({ id: 'something went wrong' }));
         setIsOpenPopup(false);
       })
       .finally(() => {
@@ -69,24 +71,27 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
 
     // console.log(data);
     // setIsLoading(false);
+    const changedUser = {
+      ...data,
+      blackListedFrom: user.isBlackListed
+        ? user.blackListedFrom
+        : formatTime(Date.now(), false),
+      blackListedTo: user.isBlackListed
+        ? user.blackListedTo
+        : formatTime(getTimestampInDays(days), false),
+      isBlackListed: !user.isBlackListed,
+    };
+
     api
-      .editGateUser({
-        ...data,
-        blackListedFrom: user.isBlackListed
-          ? user.blackListedFrom
-          : formatTime(Date.now(), false),
-        blackListedTo: user.isBlackListed
-          ? user.blackListedTo
-          : formatTime(getTimestampInDays(days), false),
-        isBlackListed: !user.isBlackListed,
-      })
-      .then(() => {
-        // the lists (all users, black listed) are refreshed through the cache,
+      .editGateUser(changedUser)
+      .then(async () => {
+        // the cached lists (all users, black list) get the change at once,
         // the card itself is a server rendered page and is rendered again
-        refreshGateUsers();
+        await gateUsersCache.changed(changedUser);
+        toast.success($t({ id: changedUser.isBlackListed ? 'user blocked successful' : 'user unblocked successful' }));
         router.refresh();
       })
-      .catch(() => toast.error('Something went wrong'))
+      .catch(() => toast.error($t({ id: 'something went wrong' })))
       .finally(() => {
         setIsLoading(false);
         setIsOpenPopup(false);
