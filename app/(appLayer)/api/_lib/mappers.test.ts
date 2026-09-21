@@ -2,7 +2,7 @@ import { PENALTY_GROUNDS as CONTRACT_GROUNDS, PENALTY_LIFT_GROUNDS as CONTRACT_L
 import { PENALTY_GROUNDS, PENALTY_LIFT_GROUNDS } from '@/core/entities/penalty';
 import { describe, expect, it } from 'vitest';
 import { FAILED_CALL_OUTCOMES } from '@/contracts';
-import { CALL_OUTCOMES, isFailedOutcome } from '@/core/entities/call';
+import { CALL_OUTCOMES, isPassageOutcome } from '@/core/entities/call';
 import { GateUser } from '@/core/entities/gateUser';
 import { fromGateUserDto, toGateUserDto, toViolationsResponse } from './mappers';
 
@@ -50,9 +50,9 @@ describe('API mappers', () => {
   });
 
   // the front end decides how to show a call with the list from the contract, the core with its own rule
-  it('agrees with the contract about which outcomes are failures', () => {
+  it('agrees with the contract about the calls the gate did not open for', () => {
     CALL_OUTCOMES.forEach(outcome => {
-      expect(FAILED_CALL_OUTCOMES.includes(outcome)).toBe(isFailedOutcome(outcome));
+      expect(FAILED_CALL_OUTCOMES.includes(outcome)).toBe(!isPassageOutcome(outcome));
     });
   });
 });

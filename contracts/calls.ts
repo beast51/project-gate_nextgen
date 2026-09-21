@@ -11,10 +11,14 @@ export type CallOutcomeDto =
   | 'openedRouteUnavailable'
   | 'connectionFailed'
   | 'operatorError'
+  // the call went through, but the gate did not open
+  | 'notOpened'
+  // the gate refused the caller at once: the number has no right to open it (a blocked gate user, first of all)
+  | 'refused'
   | 'unknown'
 
-// the call did not reach the gate
-export const FAILED_CALL_OUTCOMES: readonly CallOutcomeDto[] = ['connectionFailed', 'operatorError'];
+// the gate did not open: the call did not reach it, or it was not answered
+export const FAILED_CALL_OUTCOMES: readonly CallOutcomeDto[] = ['connectionFailed', 'operatorError', 'notOpened', 'refused'];
 
 // A call to the gate with a snapshot of the caller at the moment of the call
 export type CallDto = {

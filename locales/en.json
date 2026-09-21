@@ -53,6 +53,8 @@
   "user blocked successful": "User blocked",
   "user unblocked successful": "User unblocked",
   "call outcome: connectionFailed": "Connection failed",
+  "call outcome: notOpened": "The gate did not open",
+  "call outcome: refused": "The gate refused: no right to open (blocked?)",
   "call outcome: operatorError": "Operator side error",
   "activity: title": "Actions of users",
   "activity: filter by user": "User",

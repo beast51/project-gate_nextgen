@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { isFailedOutcome } from '@/core/entities/call';
+import { isFailedOutcome, isPassageOutcome } from '@/core/entities/call';
 import { unitalkCallOutcome } from './unitalkCallOutcome';
 import { createUnitalkCallsSource } from './unitalkCallsSource';
 
@@ -12,25 +12,57 @@ const config = {
 };
 
 describe('unitalkCallOutcome', () => {
-  // every cause value that exists in the production database (2023-05 .. 2026-09), plus "nothing reported"
-  const STORED_CAUSES = [17, 16, 19, 31, 3, 18, 27, 34, 38, 127, 102, 41, null, undefined];
-
-  // the rule before outcomes existed: a call is not a passage through the gate only for causes 31 and 38
-  const wasFailureBefore = (cause: number | null | undefined) => cause === 31 || cause === 38;
-
-  it.each(STORED_CAUSES)('keeps the old meaning of cause %s', (cause) => {
-    expect(isFailedOutcome(unitalkCallOutcome({ cause }))).toBe(wasFailureBefore(cause));
+  // the rule of the operators of the gate: the gate opened only when the call ended as "busy"
+  it('sees a passage only in a "busy"', () => {
+    expect(unitalkCallOutcome({ cause: 17, state: 'BUSY', secondsFullTime: 4 })).toBe('opened');
+    expect(unitalkCallOutcome({ cause: 17, state: 'BUSY', secondsFullTime: 6 })).toBe('opened');
   });
 
-  it('names the outcomes the operators know', () => {
-    expect(unitalkCallOutcome({ cause: 17 })).toBe('opened');
-    expect(unitalkCallOutcome({ cause: 16 })).toBe('openedAfterLongWait');
-    expect(unitalkCallOutcome({ cause: 18 })).toBe('openedAfterLongWait');
-    expect(unitalkCallOutcome({ cause: 19 })).toBe('openedRouteUnavailable');
-    expect(unitalkCallOutcome({ cause: 31 })).toBe('connectionFailed');
+  // regression: 8 seconds of "busy" was the entry of a normal visit; dropped, it turned the day into three violations
+  it('does not judge a "busy" by its duration', () => {
+    expect(unitalkCallOutcome({ cause: 17, state: 'BUSY', secondsFullTime: 8 })).toBe('opened');
+    expect(unitalkCallOutcome({ cause: 17, state: 'BUSY', secondsFullTime: 15 })).toBe('opened');
+  });
+
+  it('does not take an unanswered call for a passage, whatever the old labels said', () => {
+    expect(unitalkCallOutcome({ cause: 16, state: 'NOANSWER', secondsFullTime: 12 })).toBe('notOpened');
+    expect(unitalkCallOutcome({ cause: 16, state: 'ANSWER', secondsFullTime: 5 })).toBe('notOpened');
+    expect(unitalkCallOutcome({ cause: 16, state: 'NOMONEY', secondsFullTime: 0 })).toBe('notOpened');
+    expect(unitalkCallOutcome({ cause: 16, state: 'BUSYOUT', secondsFullTime: 3 })).toBe('notOpened');
+    expect(unitalkCallOutcome({ cause: 18 })).toBe('notOpened');
+    expect(unitalkCallOutcome({ cause: 19 })).toBe('notOpened');
+    expect(unitalkCallOutcome({ cause: 3, state: 'FAIL' })).toBe('notOpened');
+    expect(unitalkCallOutcome({ cause: 127 })).toBe('notOpened');
+    expect(unitalkCallOutcome({})).toBe('notOpened');
+  });
+
+  // what a blocked gate user gets: turned away at once
+  it('recognizes a caller the gate refused', () => {
+    expect(unitalkCallOutcome({ cause: 16, state: 'NOANSWER', secondsFullTime: 0 })).toBe('refused');
+    expect(isPassageOutcome('refused')).toBe(false);
+    expect(isFailedOutcome('refused')).toBe(false);
+    // no money on the account looks similar, but it is not about the caller
+    expect(unitalkCallOutcome({ cause: 16, state: 'NOMONEY', secondsFullTime: 0 })).toBe('notOpened');
+  });
+
+  it('keeps the failures of the connection apart: the call never reached the gate', () => {
+    expect(unitalkCallOutcome({ cause: 31, state: 'FAIL' })).toBe('connectionFailed');
     expect(unitalkCallOutcome({ cause: 38 })).toBe('operatorError');
-    expect(unitalkCallOutcome({ cause: 127 })).toBe('unknown');
-    expect(unitalkCallOutcome({})).toBe('unknown');
+    expect(isFailedOutcome(unitalkCallOutcome({ cause: 31 }))).toBe(true);
+    expect(isFailedOutcome(unitalkCallOutcome({ cause: 16 }))).toBe(false);
+  });
+
+  it('only a "busy" is a passage for the rules of violations', () => {
+    expect(isPassageOutcome(unitalkCallOutcome({ cause: 17, state: 'BUSY', secondsFullTime: 5 }))).toBe(true);
+    expect(isPassageOutcome(unitalkCallOutcome({ cause: 16, state: 'NOANSWER', secondsFullTime: 8 }))).toBe(false);
+    expect(isPassageOutcome(unitalkCallOutcome({ cause: 17, state: 'ANSWER', secondsFullTime: 5 }))).toBe(false);
+    expect(isPassageOutcome(unitalkCallOutcome({ cause: 31 }))).toBe(false);
+  });
+
+  // a few old records lack the state
+  it('lets the cause alone decide when the state was not recorded', () => {
+    expect(unitalkCallOutcome({ cause: 17 })).toBe('opened');
+    expect(unitalkCallOutcome({ cause: 17, state: null, secondsFullTime: null })).toBe('opened');
   });
 });
 

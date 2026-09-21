@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { Call, isFailedOutcome, PassageCall, UNREGISTERED_CALLER_NAME } from '../entities/call';
+import { Call, isPassageOutcome, PassageCall, UNREGISTERED_CALLER_NAME } from '../entities/call';
 import { ApartmentVisitor, PhoneVisitor, VisitInfo, ViolationCounts, ViolationRules, VisitsOutput } from '../entities/violation';
 
 const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
@@ -18,7 +18,7 @@ const parseTime = (time: string) => moment(time, TIME_FORMAT).valueOf();
 export const isGatePassage = (call: PassageCall) =>
   call.callerName !== UNREGISTERED_CALLER_NAME &&
   call.isBlackListed === false &&
-  !isFailedOutcome(call.outcome);
+  isPassageOutcome(call.outcome);
 
 const isRedial = (call: PassageCall, previousCall: PassageCall, rules: ViolationRules) => {
   const difference = Math.abs(new Date(call.time).getTime() - new Date(previousCall.time).getTime());

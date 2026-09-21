@@ -93,20 +93,26 @@ describe('prismaCallsRepository outcomes', () => {
   const prismaWith = (records: unknown[]) =>
     ({ call: { findMany: vi.fn(async () => records) } }) as unknown as PrismaClient;
 
-  it('reads the stored outcome of new calls', async () => {
-    const repository = createPrismaCallsRepository(prismaWith([record({ outcome: 'operatorError', cause: 17 })]), {
-      legacyOutcomeOf: () => 'opened',
-    });
+  // the rule that reads the codes of the provider may be corrected, and the history has to follow
+  it('lets the raw codes of the provider win over the stored outcome', async () => {
+    const outcomeOfRawCodes = vi.fn(({ cause }: { cause: number | null }) => (cause === 17 ? 'opened' as const : 'notOpened' as const));
+    const repository = createPrismaCallsRepository(prismaWith([
+      record({ outcome: 'openedAfterLongWait', cause: 16, state: 'NOANSWER', secondsFullTime: 0 }),
+      record({ outcome: null, cause: 17, state: 'BUSY', secondsFullTime: 4 }),
+    ]), { outcomeOfRawCodes });
 
-    expect((await repository.findByTimeRange('a', 'b'))[0].outcome).toBe('operatorError');
+    expect((await repository.findByTimeRange('a', 'b')).map(call => call.outcome)).toEqual(['notOpened', 'opened']);
+    expect(outcomeOfRawCodes).toHaveBeenCalledWith({ cause: 16, state: 'NOANSWER', secondsFullTime: 0 });
+    expect((await repository.findPassagesByTimeRange('a', 'b')).map(call => call.outcome)).toEqual(['notOpened', 'opened']);
   });
 
-  // calls stored before outcomes existed are not rewritten, their outcome is derived when they are read
-  it('derives the outcome of old calls from the raw codes with the translation of the provider', async () => {
-    const legacyOutcomeOf = vi.fn(({ cause }: { cause: number | null }) => (cause === 31 ? 'connectionFailed' as const : 'opened' as const));
-    const repository = createPrismaCallsRepository(prismaWith([record({ cause: 31, state: 'FAIL' }), record({ cause: 17 })]), { legacyOutcomeOf });
+  // a demo has no provider: its calls carry only the outcome
+  it('reads the stored outcome of a call without raw codes', async () => {
+    const withProvider = createPrismaCallsRepository(prismaWith([record({ outcome: 'operatorError' })]), { outcomeOfRawCodes: () => 'opened' });
+    const demo = createPrismaCallsRepository(prismaWith([record({ outcome: 'openedAfterLongWait', cause: 17 })]));
 
-    expect((await repository.findByTimeRange('a', 'b')).map(call => call.outcome)).toEqual(['connectionFailed', 'opened']);
+    expect((await withProvider.findByTimeRange('a', 'b'))[0].outcome).toBe('operatorError');
+    expect((await demo.findByTimeRange('a', 'b'))[0].outcome).toBe('openedAfterLongWait');
   });
 
   it('does not trust an outcome it does not know', async () => {

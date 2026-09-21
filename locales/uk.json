@@ -53,6 +53,8 @@
   "user blocked successful": "Користувача заблоковано",
   "user unblocked successful": "Користувача розблоковано",
   "call outcome: connectionFailed": "Невдале з'єднання",
+  "call outcome: notOpened": "Ворота не відкрились",
+  "call outcome: refused": "Ворота відмовили: немає права відкривати (заблокований?)",
   "call outcome: operatorError": "Помилка зі сторони оператора",
   "activity: title": "Дії користувачів",
   "activity: filter by user": "Користувач",

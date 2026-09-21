@@ -125,8 +125,8 @@ const buildTenantContainer = (tenant: string, actor: ActivityActor, mayReadActiv
 
   return assemble({
     gateUsers: createPrismaGateUsersRepository(prisma),
-    // calls stored before outcomes existed carry only the codes of the provider of this tenant
-    calls: createPrismaCallsRepository(prisma, { legacyOutcomeOf: unitalkCallOutcome }),
+    // the calls keep the raw codes of the provider of this tenant: its adapter says what they mean
+    calls: createPrismaCallsRepository(prisma, { outcomeOfRawCodes: unitalkCallOutcome }),
     penalties: createPrismaPenaltiesRepository(prisma),
     directory: createUnitalkGateUsersDirectory(config.telephony.unitalk),
     source: createUnitalkCallsSource(config.telephony.unitalk),

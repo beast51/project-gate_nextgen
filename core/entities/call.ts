@@ -6,16 +6,24 @@ export type CallOutcome =
   | 'openedRouteUnavailable'
   | 'connectionFailed'
   | 'operatorError'
+  // the call went through, but the gate did not open: nobody answered, the caller gave up, no money on the account
+  | 'notOpened'
+  // the gate refused the caller at once: the number has no right to open it (a blocked gate user, first of all)
+  | 'refused'
   // the provider reported nothing, or something the adapter does not know
   | 'unknown'
 
 export const CALL_OUTCOMES: readonly CallOutcome[] = [
-  'opened', 'openedAfterLongWait', 'openedRouteUnavailable', 'connectionFailed', 'operatorError', 'unknown',
+  'opened', 'openedAfterLongWait', 'openedRouteUnavailable', 'connectionFailed', 'operatorError', 'notOpened', 'refused', 'unknown',
 ];
 
 // The call never reached the gate. An unknown outcome is not a failure: the gate is assumed to have opened.
 export const isFailedOutcome = (outcome: CallOutcome) =>
   outcome === 'connectionFailed' || outcome === 'operatorError';
+
+// The gate opened: a car passed. What exactly counts as "opened" is decided by the adapter of the provider.
+export const isPassageOutcome = (outcome: CallOutcome) =>
+  !isFailedOutcome(outcome) && outcome !== 'notOpened' && outcome !== 'refused';
 
 // Call that has already been matched with a gate user
 export type Call = {

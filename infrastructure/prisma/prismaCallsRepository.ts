@@ -25,19 +25,23 @@ const passageFields = {
   callerName: true,
   apartmentNumber: true,
   isBlackListed: true,
+  secondsFullTime: true,
   outcome: true,
   cause: true,
   state: true,
 } as const;
 
-type StoredPassage = Omit<PassageCall, 'outcome' | 'carNumber' | 'image'> & { outcome: string | null, cause: number | null, state: string | null }
+type RawCodes = { cause: number | null, state: string | null, secondsFullTime: number | null }
+
+type StoredPassage = Omit<PassageCall, 'outcome' | 'carNumber' | 'image'> & { outcome: string | null } & RawCodes
 
 type StoredCall = Omit<Call, 'outcome'> & { outcome: string | null }
 
 export type PrismaCallsRepositoryConfig = {
-  // Calls stored before outcomes existed keep only the raw codes of the telephony provider of this database.
-  // The storage does not know providers, so the translation comes from the provider adapter.
-  legacyOutcomeOf?: (raw: { cause: number | null, state: string | null }) => CallOutcome
+  // A call keeps the raw codes of the telephony provider of this database next to its outcome. When the codes are
+  // there, they win: the rule that reads them may be corrected, and the history must follow. The storage does not
+  // know providers, so the translation comes from the provider adapter. Without it (a demo) the stored outcome is used.
+  outcomeOfRawCodes?: (raw: RawCodes) => CallOutcome
 }
 
 const isCallOutcome = (value: string | null): value is CallOutcome =>
@@ -45,16 +49,21 @@ const isCallOutcome = (value: string | null): value is CallOutcome =>
 
 export const createPrismaCallsRepository = (
   prisma: PrismaClient,
-  { legacyOutcomeOf = () => 'unknown' }: PrismaCallsRepositoryConfig = {},
+  { outcomeOfRawCodes }: PrismaCallsRepositoryConfig = {},
 ): CallsRepository => {
-  const toCall = (record: StoredCall): Call => ({
-    ...record,
-    outcome: isCallOutcome(record.outcome) ? record.outcome : legacyOutcomeOf(record),
-  });
+  const outcomeOf = ({ outcome, cause, state, secondsFullTime }: { outcome: string | null } & RawCodes): CallOutcome => {
+    const hasRawCodes = cause !== null || state !== null;
 
-  const toPassage = ({ cause, state, outcome, ...passage }: StoredPassage): PassageCall => ({
+    if (outcomeOfRawCodes && hasRawCodes) return outcomeOfRawCodes({ cause, state, secondsFullTime });
+
+    return isCallOutcome(outcome) ? outcome : 'unknown';
+  };
+
+  const toCall = (record: StoredCall): Call => ({ ...record, outcome: outcomeOf(record) });
+
+  const toPassage = ({ cause, state, secondsFullTime, outcome, ...passage }: StoredPassage): PassageCall => ({
     ...passage,
-    outcome: isCallOutcome(outcome) ? outcome : legacyOutcomeOf({ cause, state }),
+    outcome: outcomeOf({ outcome, cause, state, secondsFullTime }),
   });
 
   return {
