@@ -9,6 +9,7 @@ import classes from './ViolationsList.module.scss';
 import { useIntl } from 'react-intl';
 import { useMemo } from 'react';
 import { matchesSearch, useListSearch } from '@/sharedLayer/lib/search';
+import { searchableVisitor } from '../../lib/searchableVisitor';
 
 const START_OF_THE_DAY = formatTime(Date.now(), true);
 const DATE_AND_TIME_NOW = formatTime(Date.now(), false);
@@ -27,13 +28,7 @@ export const ViolationsList = () => {
 
   const { query, mode } = useListSearch();
   const found = useMemo(
-    () => Object.entries(violations ?? {}).filter(([key, { aboutUser }]) => matchesSearch({
-      // a caller without an apartment is grouped by the phone number: the key is the number
-      phones: [...(aboutUser.number ?? []), aboutUser.apartmentNumber ? null : key],
-      apartment: aboutUser.apartmentNumber,
-      cars: aboutUser.carNumber,
-      name: aboutUser.name,
-    }, query, mode)),
+    () => Object.entries(violations ?? {}).filter(([key, visits]) => matchesSearch(searchableVisitor(key, visits), query, mode)),
     [violations, query, mode],
   );
 
