@@ -7,6 +7,8 @@ type Dependencies = {
   calls: CallsRepository
   clock: GateClock
   rules?: Partial<ViolationRules>
+  // false: the calls do not come from a telephony (a demo), there is nothing that could be missing
+  tracksCoverage?: boolean
 }
 
 export type ViolationStatsResult = {
@@ -21,14 +23,14 @@ export type ViolationStatsResult = {
 
 // Violations around a chosen day. Reads only the storage: three months of history are never requested
 // from the telephony because somebody opened a page. Missing days are filled by backfillCalls.
-export const createGetViolationStats = ({ calls, clock, rules = {} }: Dependencies) =>
+export const createGetViolationStats = ({ calls, clock, rules = {}, tracksCoverage = true }: Dependencies) =>
   async (chosenDay: string): Promise<ViolationStatsResult> => {
     const periods = statsPeriods(chosenDay);
     const [fromDay, toDay] = periods.whole;
 
     const [passages, filledDays] = await Promise.all([
       calls.findPassagesByTimeRange(`${fromDay} 00:00:00`, `${toDay} 23:59:59`),
-      calls.listFilledDays(fromDay, toDay),
+      tracksCoverage ? calls.listFilledDays(fromDay, toDay) : [],
     ]);
 
     const filled = new Set(filledDays);
@@ -39,6 +41,9 @@ export const createGetViolationStats = ({ calls, clock, rules = {} }: Dependenci
       day: chosenDay,
       periods: { week: periods.week, month: periods.month, threeMonths: periods.threeMonths },
       stats: sumViolationStats(countViolationsByDay(passages, rules, clock.now()), periods),
-      coverage: { pastDays: pastDays.length, missingDays: pastDays.filter(day => !filled.has(day)) },
+      coverage: {
+        pastDays: pastDays.length,
+        missingDays: tracksCoverage ? pastDays.filter(day => !filled.has(day)) : [],
+      },
     };
   };

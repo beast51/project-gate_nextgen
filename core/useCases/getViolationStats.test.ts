@@ -67,4 +67,12 @@ describe('getViolationStats', () => {
     expect(coverage.missingDays).not.toContain('2024-03-11');
     expect(coverage.missingDays).not.toContain('2024-03-13');
   });
+
+  it('has nothing to miss when the calls do not come from a telephony (a demo)', async () => {
+    const { repository } = createFakeCallsRepository();
+
+    const { coverage } = await createGetViolationStats({ calls: repository, clock, tracksCoverage: false })('2024-03-13');
+
+    expect(coverage.missingDays).toEqual([]);
+  });
 });

@@ -7,6 +7,7 @@ import { createFakeGateUsersRepository } from '../__fixtures__/fakeGateUsersRepo
 import { createGetViolations } from '../getViolations';
 import { createCleanupDemoSandboxes } from './cleanupDemoSandboxes';
 import { generateDemoData } from './generateDemoData';
+import { countViolationsByDay, statsPeriods, sumViolationStats } from '../violationStats';
 import { createSeedDemoSandbox } from './seedDemoSandbox';
 
 const NOW = new Date('2024-03-10T14:00:00.000Z'); // 16:00 in Kyiv
@@ -125,5 +126,36 @@ describe('cleanupDemoSandboxes', () => {
 
     expect(removed).toEqual([]);
     expect(drop).not.toHaveBeenCalled();
+  });
+});
+
+describe('generateDemoData (history for the statistics of violations)', () => {
+  const now = new Date('2024-03-13T10:00:00.000Z');
+  const data = generateDemoData('history', now);
+
+  it('covers three calendar months before today', () => {
+    const days = new Set(data.calls.map(call => call.time.slice(0, 10)));
+
+    expect(days.has('2024-01-01')).toBe(true);
+    expect(days.size).toBeGreaterThan(100);
+  });
+
+  it('shows violations in every period, but most visitors have none', () => {
+    const periods = statsPeriods('2024-03-13');
+    // what the storage gives back for stored calls
+    const passages = data.calls.map(call => ({
+      ...call, apartmentNumber: call.apartmentNumber ?? null, isBlackListed: call.isBlackListed ?? false,
+    }));
+    const stats = sumViolationStats(countViolationsByDay(passages, {}, new Date('2024-03-13T12:00:00')), periods);
+    const total = (period: 'week' | 'month' | 'threeMonths') =>
+      Object.values(stats).reduce((sum, s) => sum + s[period].overstays + s[period].openVisits, 0);
+
+    expect(total('week')).toBeGreaterThan(0);
+    expect(total('threeMonths')).toBeGreaterThan(total('month'));
+    expect(Object.keys(stats).length).toBeLessThan(10);
+  });
+
+  it('never lets a visit run over midnight', () => {
+    expect(data.calls.every(call => call.time.slice(11) >= '06:00:00')).toBe(true);
   });
 });

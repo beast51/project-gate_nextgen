@@ -42,6 +42,9 @@ const createRandom = (seed: string) => {
 
 const GATE_USERS_COUNT = 18;
 const DAYS_WITH_CALLS = 3;
+// before the detailed last days: a quieter history, so the statistics of violations (the week, the month,
+// three calendar months) have something to show. Three full months back from any day is at most 123 days.
+const DAYS_OF_HISTORY = 125;
 
 const DEMO_ACTOR: ActivityActor = { id: 'demo', name: 'Demo' };
 
@@ -108,6 +111,24 @@ export const generateDemoData = (
   };
 
   const residents = gateUsers.filter(user => !user.isBlackListed && user.apartmentNumber !== '1');
+
+  for (let daysAgo = DAYS_OF_HISTORY; daysAgo >= DAYS_WITH_CALLS; daysAgo--) {
+    const day = current.clone().subtract(daysAgo, 'days').startOf('day');
+
+    residents.forEach((resident, index) => {
+      if (random.int(0, 2) === 0) return;
+
+      const entry = day.clone().add(7 * 60 + random.int(0, 12 * 60), 'minutes').add(random.int(0, 59), 'seconds');
+      // some residents break the rules now and then, most of them never
+      const careless = index % 4 === 0;
+      const luck = random.int(0, 99);
+
+      callFrom(resident, entry);
+      // entered and the exit was never recorded
+      if (careless && luck < 4) return;
+      callFrom(resident, entry.clone().add(careless && luck < 16 ? random.int(50, 180) : random.int(5, 40), 'minutes'));
+    });
+  }
 
   for (let daysAgo = DAYS_WITH_CALLS - 1; daysAgo >= 0; daysAgo--) {
     const day = current.clone().subtract(daysAgo, 'days').startOf('day');

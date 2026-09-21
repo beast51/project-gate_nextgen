@@ -79,7 +79,7 @@ const assemble = ({
   return {
     getCalls: createGetCalls({ calls, refreshCalls }),
     getViolations: createGetViolations({ calls, refreshCalls, now: clock.now }),
-    getViolationStats: createGetViolationStats({ calls, clock }),
+    getViolationStats: createGetViolationStats({ calls, clock, tracksCoverage: callsSyncIntervalSeconds !== null }),
     // null: there is no telephony to load the history from, or the account may not start it
     backfillCalls: callsSyncIntervalSeconds !== null && mayReadActivity
       ? createBackfillCalls({ calls, syncCalls, today: clock.today, minIntervalSeconds: callsSyncIntervalSeconds })
