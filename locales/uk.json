@@ -54,7 +54,7 @@
   "user unblocked successful": "Користувача розблоковано",
   "call outcome: connectionFailed": "Невдале з'єднання",
   "call outcome: notOpened": "Ворота не відкрились",
-  "call outcome: refused": "Ворота відмовили номеру (так відповідають заблокованим)",
+  "call outcome: refused": "Ворота відмовили: немає права відкривати (заблокований?)",
   "call outcome: operatorError": "Помилка зі сторони оператора",
   "activity: title": "Дії користувачів",
   "activity: filter by user": "Користувач",
@@ -129,7 +129,5 @@
   "resident history: reason": "понад 45 хв ×{overstays} ({minutes} хв), без виїзду ×{openVisits}",
   "resident history: imposed by": "Заблокував(ла) {name}",
   "resident history: restored": "Відновлено зі старих дзвінків",
-  "resident: phones of the apartment": "Телефони квартири",
-  "resident history: restored from refusals": "Відновлено за відмовами воріт",
-  "resident history: term is approximate": "Від першої до останньої відмови; справжній строк не коротший"
+  "resident: phones of the apartment": "Телефони квартири"
 }

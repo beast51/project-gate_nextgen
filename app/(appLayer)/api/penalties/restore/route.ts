@@ -18,13 +18,11 @@ export async function POST(req: Request) {
 
   const response: RestorePenaltiesResponse = {
     blocks: result.blocks,
-    refusals: result.refusals,
     found: result.found,
     written: result.written,
     // no phone numbers: the answer is printed to a terminal
     missing: result.missing.map(penalty => ({
       apartmentNumber: penalty.apartmentNumber,
-      byRefusals: penalty.source === 'restoredFromRefusals',
       phones: penalty.phoneNumbers.length,
       from: penalty.from,
       until: penalty.until,

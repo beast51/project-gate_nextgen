@@ -8,8 +8,7 @@ export type CallOutcome =
   | 'operatorError'
   // the call went through, but the gate did not open: nobody answered, the caller gave up, no money on the account
   | 'notOpened'
-  // The gate refused the caller at once. It is what a blocked gate user gets, but not a proof of a block by
-  // itself: now and then the gate refuses by mistake and lets the same caller in a minute later.
+  // the gate refused the caller at once: the number has no right to open it (a blocked gate user, first of all)
   | 'refused'
   // the provider reported nothing, or something the adapter does not know
   | 'unknown'

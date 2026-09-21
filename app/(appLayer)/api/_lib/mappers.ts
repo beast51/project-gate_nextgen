@@ -35,7 +35,6 @@ export const toPenaltyDto = (penalty: Penalty): PenaltyDto => ({
   reason: penalty.reason,
   lifted: penalty.lifted,
   isRecorded: penalty.source === 'recorded',
-  isTermApproximate: penalty.source === 'restoredFromRefusals',
 });
 
 export const toAccessEventDto = (event: AccessEvent): AccessEventDto => event;

@@ -9,7 +9,6 @@
 //
 // <since>  'YYYY-MM-DD': penalties that started on this day or later
 // Load the history of calls first (scripts/backfill-calls.mjs): the reasons are counted from the stored calls.
-// A line marked with R is a penalty known only by the refusals of the gate: its dates are the first and the last refusal.
 // Safe to run again: a penalty that is already stored (same apartment, same start) is skipped.
 import { PrismaClient } from '@prisma/client';
 import { encode } from 'next-auth/jwt';
@@ -47,9 +46,9 @@ try {
 
   const result = await response.json();
 
-  console.log(`Gate "${account.tenant}", since ${since}: blocks of phones in the "blocked" notes ${result.blocks}; refusals of the gate no note explains ${result.refusals.calls} -> ${result.refusals.penalties} more penalties; penalties of apartments in all ${result.found}, missing in the record ${result.missing.length}`);
+  console.log(`Gate "${account.tenant}", since ${since}: blocks of phones ${result.blocks} -> penalties of apartments ${result.found}, missing in the record ${result.missing.length}`);
   result.missing.forEach(penalty => console.log(
-    `  ${penalty.byRefusals ? 'R' : ' '} кв. ${String(penalty.apartmentNumber ?? '—').padEnd(7)} ${penalty.from} -> ${penalty.until}  ${penalty.inForce ? 'in force' : `lifted ${penalty.liftedHow} ${penalty.liftedAt}`}`
+    `  кв. ${String(penalty.apartmentNumber ?? '—').padEnd(7)} ${penalty.from} -> ${penalty.until}  ${penalty.inForce ? 'in force' : `lifted ${penalty.liftedHow} ${penalty.liftedAt}`}`
     + `  phones ${penalty.phones}  for: over 45 min ×${penalty.overstays} (${penalty.overstayMinutes} min, ${penalty.minutesOverLimit} over the limit), no exit ×${penalty.openVisits}`,
   ));
 

@@ -12,8 +12,7 @@ const OPENED_CAUSE = 17;
 const OPENED_STATE = 'BUSY';
 
 // A number without the right to open the gate is turned away immediately: "no answer" after zero seconds.
-// 96% of the calls that carry the "blocked from .. until" note of 2026 ended exactly like this. The reverse is
-// weaker: a third of such calls WITHOUT the note were followed by a passage of the same phone within two minutes.
+// 96% of the calls that carry the "blocked from .. until" note of 2026 ended exactly like this.
 const REFUSED = { cause: 16, state: 'NOANSWER', seconds: 0 };
 
 const OUTCOME_BY_FAILURE_CAUSE: Record<number, CallOutcome> = {

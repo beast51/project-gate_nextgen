@@ -76,11 +76,8 @@ export const PENALTY_REASON_MAX_DAYS = 92;
 // by an operator before the term, or by the application when the term was over
 export type PenaltyLift = 'manually' | 'expired'
 
-// 'restoredFromCalls': found in the "blocked from .. until" notes the calls keep, from the time before penalties
-// were recorded. 'restoredFromRefusals': no call of that penalty got the note (the calls were loaded after it was
-// lifted), but the gate refused the phone; `from` and `until` are the first and the last refusal, so the real
-// term was at least that long.
-export type PenaltySource = 'recorded' | 'restoredFromCalls' | 'restoredFromRefusals'
+// 'restoredFromCalls': found in the snapshots the calls keep, from the time before penalties were recorded
+export type PenaltySource = 'recorded' | 'restoredFromCalls'
 
 export type NewPenalty = Omit<Penalty, 'id'>
 
