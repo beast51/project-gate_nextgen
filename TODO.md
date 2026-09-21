@@ -61,10 +61,10 @@
 ## Технический долг
 
 - [ ] Удалить зависимость `axios` — в коде больше не импортируется.
+- [ ] `overrides.next-cloudinary` в `package.json`: пакет 4.x объявляет поддержку только Next 12–13.
+      Убрать вместе с обновлением `next-cloudinary` до 6.x.
 - [ ] Обновить Next.js (сейчас 14.1.3) отдельной задачей, когда остальное устоится.
 - [ ] ESLint: включить `eslint:recommended` / `next/core-web-vitals` — сейчас выключены, потому что дают
       110 / 11 ошибок в существующем UI и ломают `next build`.
 - [ ] `README.md` — шаблон create-next-app, описать архитектуру (`core/`, `infrastructure/`, `contracts/`,
       `sharedLayer/api`, `sharedLayer/framework`), тенанты и демо.
-- [ ] В `resolutions` закреплён `jackspeak 2.1.1` — обход бага hoisting в yarn 1; не менять без проверки
-      `yarn install` + `yarn lint` + сборки bcrypt.
