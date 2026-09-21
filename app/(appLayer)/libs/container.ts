@@ -74,7 +74,7 @@ const assemble = ({
   gateUsers, calls, penalties, directory, source, callsSyncIntervalSeconds, timeZone, activityLog, accessLog, actor, mayReadActivity,
 }: Adapters) => {
   const clock = createGateClock(timeZone);
-  const syncCalls = createSyncCalls({ source, calls, gateUsers });
+  const syncCalls = createSyncCalls({ source, calls, gateUsers, penalties });
   const recordActivity = createRecordActivity({ log: activityLog, actor });
   const penaltyRecorder = createPenaltyRecorder({ penalties, calls, actor, now: clock.now });
 

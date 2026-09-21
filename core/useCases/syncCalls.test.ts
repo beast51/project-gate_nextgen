@@ -3,6 +3,7 @@ import { Call, IncomingCall } from '../entities/call';
 import { GateUser } from '../entities/gateUser';
 import { createFakeCallsRepository } from './__fixtures__/fakeCallsRepository';
 import { createFakeGateUsersRepository } from './__fixtures__/fakeGateUsersRepository';
+import { createFakePenaltiesRepository } from './__fixtures__/fakePenaltiesRepository';
 import { createGetCalls } from './getCalls';
 import { createRefreshCalls, createSyncCalls, DEFAULT_SYNC_INTERVAL_SECONDS, toStoredCall } from './syncCalls';
 
@@ -185,6 +186,41 @@ describe('toStoredCall', () => {
     expect(toStoredCall(callAt('2024-03-09 09:00:00'), blocked)).toMatchObject({
       isBlackListed: false, blackListedFrom: '', blackListedTo: '',
     });
+  });
+
+  // the state of the gate user today says nothing about last month; the record of penalties does
+  it('marks a call made during a recorded penalty, whenever it is loaded', async () => {
+    const { repository, state } = createFakeCallsRepository();
+    const penalties = createFakePenaltiesRepository([{
+      id: '1', subjectKey: '12', apartmentNumber: '12', phoneNumbers: [resident.phoneNumber],
+      from: '2024-02-01 10:00:00', until: '2024-02-09 23:50:00', imposedBy: null, ground: null, comment: null, reason: null,
+      lifted: { at: '2024-02-05 12:00:00', how: 'manually', ground: null, comment: null }, source: 'recorded',
+    }]);
+    const source = { getCalls: async () => [callAt('2024-02-03 09:00:00'), callAt('2024-02-06 09:00:00')] };
+
+    await createSyncCalls({ source, calls: repository, gateUsers: gateUsersWith(resident), penalties: penalties.repository })('from', 'to');
+
+    expect(state.calls.map(call => [call.time, call.isBlackListed, call.blackListedFrom])).toEqual([
+      ['2024-02-03 09:00:00', true, '2024-02-01 10:00:00'],
+      // lifted by then
+      ['2024-02-06 09:00:00', false, ''],
+    ]);
+  });
+
+  it('does not trust a penalty restored from old calls: its end is a guess', async () => {
+    const { repository, state } = createFakeCallsRepository();
+    const penalties = createFakePenaltiesRepository([{
+      id: '1', subjectKey: '12', apartmentNumber: '12', phoneNumbers: [resident.phoneNumber],
+      from: '2024-02-01 10:00:00', until: '2024-02-09 23:50:00', imposedBy: null, ground: null, comment: null, reason: null,
+      lifted: { at: '2024-02-09 23:50:00', how: 'expired', ground: null, comment: null }, source: 'restoredFromCalls',
+    }]);
+
+    await createSyncCalls({
+      source: { getCalls: async () => [callAt('2024-02-03 09:00:00')] },
+      calls: repository, gateUsers: gateUsersWith(resident), penalties: penalties.repository,
+    })('from', 'to');
+
+    expect(state.calls[0].isBlackListed).toBe(false);
   });
 
   // until the penalty is lifted the gate stays closed for the caller, whatever the term says

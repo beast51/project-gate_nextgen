@@ -3,6 +3,8 @@ import { GateUser } from '../entities/gateUser';
 import { CallsRepository } from '../ports/callsRepository';
 import { CallsSource } from '../ports/callsSource';
 import { GateUsersRepository } from '../ports/gateUsersRepository';
+import { PenaltiesRepository } from '../ports/penaltiesRepository';
+import { Penalty } from '../entities/penalty';
 import { daysBetween, isDay } from './days';
 import { dayOf } from './violationStats';
 
@@ -13,9 +15,18 @@ export const DEFAULT_SYNC_INTERVAL_SECONDS = 5;
 const wasBlackListedAt = (caller: GateUser | null, time: string) =>
   Boolean(caller?.isBlackListed) && !(caller?.blackListedFrom && time < caller.blackListedFrom);
 
-// A stored call keeps a snapshot of the caller: later changes of the gate user must not rewrite the history
-export const toStoredCall = (call: IncomingCall, caller: GateUser | null): CallToStore => {
-  const isBlackListed = wasBlackListedAt(caller, call.time);
+// The penalty the phone was under at that moment. Only penalties the application recorded itself count: their
+// start and end are facts. A penalty restored from old calls has a guessed end, it proves nothing about other calls.
+const penaltyAt = (penalties: Penalty[], number: string, time: string) =>
+  penalties.find(penalty =>
+    penalty.source === 'recorded'
+    && penalty.phoneNumbers.includes(number) && penalty.from <= time && time <= (penalty.lifted?.at ?? penalty.until));
+
+// A stored call keeps a snapshot of the caller: later changes of the gate user must not rewrite the history.
+// `penalty`: the recorded penalty of the caller at the moment of the call. It is the truth about the past;
+// without it the state of the gate user today is all there is.
+export const toStoredCall = (call: IncomingCall, caller: GateUser | null, penalty?: Penalty): CallToStore => {
+  const isBlackListed = Boolean(penalty) || wasBlackListedAt(caller, call.time);
 
   return {
     number: call.number,
@@ -25,8 +36,8 @@ export const toStoredCall = (call: IncomingCall, caller: GateUser | null): CallT
     apartmentNumber: caller?.apartmentNumber,
     image: caller?.image,
     isBlackListed,
-    blackListedFrom: (isBlackListed && caller?.blackListedFrom) || '',
-    blackListedTo: (isBlackListed && caller?.blackListedTo) || '',
+    blackListedFrom: penalty?.from || (isBlackListed && caller?.blackListedFrom) || '',
+    blackListedTo: penalty?.until || (isBlackListed && caller?.blackListedTo) || '',
     secondsFullTime: call.secondsFullTime,
     outcome: call.outcome,
     cause: call.cause,
@@ -41,10 +52,15 @@ type Dependencies = {
   source: CallsSource
   calls: CallsRepository
   gateUsers: GateUsersRepository
+  // history is loaded later than it happened: the record of penalties tells who was blocked then
+  penalties?: PenaltiesRepository
   now?: () => Date
 }
 
-export const createSyncCalls = ({ source, calls, gateUsers, now = () => new Date() }: Dependencies) =>
+// the longest term of a penalty, with a margin: a penalty that started earlier can not cover the calls
+const LONGEST_PENALTY_DAYS = 45;
+
+export const createSyncCalls = ({ source, calls, gateUsers, penalties, now = () => new Date() }: Dependencies) =>
   // returns how many calls were new
   async (from: string, to: string): Promise<number> => {
     const incomingCalls = await source.getCalls(from, to);
@@ -73,9 +89,19 @@ export const createSyncCalls = ({ source, calls, gateUsers, now = () => new Date
     const callers = await gateUsers.findByPhoneNumbers(Array.from(new Set(newCalls.map(call => call.number))));
     const callerByNumber = new Map(callers.map(caller => [caller.phoneNumber, caller]));
 
+    const newTimes = newCalls.map(call => call.time).sort();
+    const earliest = new Date(new Date(newTimes[0].replace(' ', 'T')).getTime() - LONGEST_PENALTY_DAYS * 24 * 60 * 60 * 1000);
+    const pad = (value: number) => String(value).padStart(2, '0');
+    const recorded = penalties
+      ? await penalties.listStartedBetween(
+        `${earliest.getFullYear()}-${pad(earliest.getMonth() + 1)}-${pad(earliest.getDate())} 00:00:00`,
+        newTimes[newTimes.length - 1],
+      )
+      : [];
+
     await calls.addMany(newCalls.map(call => {
       const caller = callerByNumber.get(call.number) ?? null;
-      return { call: toStoredCall(call, caller), gateUserId: caller?.id };
+      return { call: toStoredCall(call, caller, penaltyAt(recorded, call.number, call.time)), gateUserId: caller?.id };
     }));
 
     return newCalls.length;

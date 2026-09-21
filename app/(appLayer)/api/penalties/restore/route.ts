@@ -27,6 +27,8 @@ export async function POST(req: Request) {
       from: penalty.from,
       until: penalty.until,
       inForce: penalty.lifted === null,
+      liftedAt: penalty.lifted?.at ?? null,
+      liftedHow: penalty.lifted?.how ?? null,
       overstays: penalty.reason?.overstays ?? 0,
       openVisits: penalty.reason?.openVisits ?? 0,
       overstayMinutes: penalty.reason?.overstayMinutes ?? 0,

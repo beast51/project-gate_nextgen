@@ -77,6 +77,8 @@ export type RestoredPenaltyDto = {
   from: string
   until: string
   inForce: boolean
+  liftedAt: string | null
+  liftedHow: 'manually' | 'expired' | null
   overstays: number
   openVisits: number
   overstayMinutes: number

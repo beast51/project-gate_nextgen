@@ -65,6 +65,18 @@ describe('restorePenalties', () => {
     expect(penalties.state.penalties).toEqual([]);
   });
 
+  it('does not guess from the calls how a penalty ended: it is closed by its own term', async () => {
+    const { restore } = setup([
+      call('380960000093', '2026-08-06 09:32:12', blocked('2026-08-05 22:52:06', '2026-08-13 23:50:00')),
+      // the gate opened for the same phone before the end of the term: still not a proof of anything
+      call('380960000093', '2026-08-09 08:15:00'),
+    ]);
+
+    const { missing } = await restore('2026-01-01 00:00:00');
+
+    expect(missing[0].lifted).toMatchObject({ at: '2026-08-13 23:50:00', how: 'expired' });
+  });
+
   it('writes only what is missing, however many times it runs', async () => {
     const { penalties, restore } = setup(history);
 

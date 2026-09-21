@@ -97,7 +97,9 @@ export const createRestorePenalties = ({ calls, gateUsers, penalties, now, rules
       const inForce = blockedNow.some(user =>
         penalty.phoneNumbers.includes(user.phoneNumber) && user.blackListedFrom === penalty.from);
 
-      // when it really ended is unknown: the end of the term is the best guess
+      // The only certain trace of a penalty is the "blocked from .. until" note in a call. When and how it really
+      // ended can not be read from the calls (an unanswered call looks the same for a blocked caller and for
+      // a slow gate), so a restored penalty is closed by its own term.
       if (!inForce) {
         penalty.lifted = { at: penalty.until < localNow ? penalty.until : localNow, how: 'expired', ground: null, comment: null };
       }

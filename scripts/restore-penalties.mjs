@@ -48,7 +48,7 @@ try {
 
   console.log(`Gate "${account.tenant}", since ${since}: blocks of phones ${result.blocks} -> penalties of apartments ${result.found}, missing in the record ${result.missing.length}`);
   result.missing.forEach(penalty => console.log(
-    `  кв. ${String(penalty.apartmentNumber ?? '—').padEnd(7)} ${penalty.from} -> ${penalty.until}${penalty.inForce ? ' (in force)' : ''}`
+    `  кв. ${String(penalty.apartmentNumber ?? '—').padEnd(7)} ${penalty.from} -> ${penalty.until}  ${penalty.inForce ? 'in force' : `lifted ${penalty.liftedHow} ${penalty.liftedAt}`}`
     + `  phones ${penalty.phones}  for: over 45 min ×${penalty.overstays} (${penalty.overstayMinutes} min, ${penalty.minutesOverLimit} over the limit), no exit ×${penalty.openVisits}`,
   ));
 
