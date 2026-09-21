@@ -17,6 +17,9 @@ const PERIODS = [
   ['threeMonths', 'violation stats three months'],
 ] as const;
 
+// from this number on a count is shown in red, like an overstayed visit; below it in the green of the card
+const MANY = 3;
+
 const KINDS = [
   ['overstays', 'violation stats overstays'],
   ['openVisits', 'violation stats open visits'],
@@ -35,7 +38,7 @@ export const ViolationStats: FC<ViolationStatsProps> = memo(({ stats }) => {
   return (
     <div className={classes.stats} role="table" aria-label={$t({ id: 'violation stats title' })}>
       <div className={classes.row} role="row">
-        <span className={classes.title} role="columnheader">{$t({ id: 'violation stats title' })}</span>
+        <span role="columnheader" />
         {PERIODS.map(([period, label]) => (
           <span key={period} className={classes.period} role="columnheader">{$t({ id: label })}</span>
         ))}
@@ -47,7 +50,10 @@ export const ViolationStats: FC<ViolationStatsProps> = memo(({ stats }) => {
             <span
               key={period}
               role="cell"
-              className={cn(classes.count, { [classes.zero]: stats[period][kind] === 0 })}
+              className={cn(classes.count, {
+                [classes.zero]: stats[period][kind] === 0,
+                [classes.many]: stats[period][kind] >= MANY,
+              })}
             >
               {stats[period][kind]}
             </span>

@@ -1,60 +1,60 @@
+// the same white card as a visit time next to it (StayTimerCard): its colors, its corners, red for what is too much
+.stats,
+.none {
+  padding: 8px 12px;
+  border-radius: 12px;
+  background-color: var(--stay-timer-card-bg);
+  color: var(--stay-timer-card-color);
+  font-weight: 500;
+}
+
 .stats {
   display: grid;
-  gap: 2px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(0, 0, 0, .08);
-  color: var(--violations-card-color);
+  gap: 4px;
   font-size: 14px;
 }
 
 .row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) repeat(3, 64px);
+  grid-template-columns: minmax(0, 1fr) repeat(3, 60px);
   align-items: baseline;
   gap: 4px;
 
   @media (min-width: 400px) {
-    grid-template-columns: minmax(0, 1fr) repeat(3, 76px);
+    grid-template-columns: minmax(0, 1fr) repeat(3, 72px);
   }
 }
 
-.title {
-  font-weight: 600;
-}
-
 .period {
+  font-family: sans-serif;
   font-size: 12px;
+  font-weight: 400;
   text-align: right;
-  opacity: .65;
 }
 
 .kind {
-  opacity: .8;
-}
-
-// the penalties are not one more violation, they are what the violations ended with
-.row:last-child {
-  margin-top: 2px;
-  padding-top: 2px;
-  border-top: 1px dashed rgba(0, 0, 0, .1);
+  font-family: sans-serif;
+  font-size: 13px;
+  font-weight: 400;
 }
 
 .count {
   font-size: 16px;
-  font-weight: 600;
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
 .zero {
   font-weight: 400;
-  opacity: .4;
+  opacity: .45;
+}
+
+.many {
+  color: red;
 }
 
 .none {
-  padding-top: 10px;
-  border-top: 1px solid rgba(0, 0, 0, .08);
-  color: var(--violations-card-color);
+  font-family: sans-serif;
   font-size: 13px;
-  opacity: .6;
+  font-weight: 400;
 }
