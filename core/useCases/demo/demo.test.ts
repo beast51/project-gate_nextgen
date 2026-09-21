@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { Account } from '../../entities/account';
 import { AccountsRepository } from '../../ports/accountsRepository';
+import { createFakeActivityLog } from '../__fixtures__/fakeActivityLog';
 import { createFakeCallsRepository } from '../__fixtures__/fakeCallsRepository';
 import { createFakeGateUsersRepository } from '../__fixtures__/fakeGateUsersRepository';
 import { createGetViolations } from '../getViolations';
@@ -50,12 +51,18 @@ describe('seedDemoSandbox', () => {
     vi.setSystemTime(NOW);
     const gateUsers = createFakeGateUsersRepository();
     const calls = createFakeCallsRepository();
+    const activity = createFakeActivityLog();
 
     const seeded = await createSeedDemoSandbox({
-      gateUsers: gateUsers.repository, calls: calls.repository, seed: 'account-1', now: () => NOW,
+      gateUsers: gateUsers.repository, calls: calls.repository, activityLog: activity.log,
+      actor: { id: 'account-1', name: 'Visitor' }, seed: 'account-1', now: () => NOW,
     })();
 
     expect(seeded).toBe(true);
+    // the journal of a fresh sandbox is not empty, and the prepared actions belong to its owner or to the system
+    expect(activity.state.events.length).toBeGreaterThan(3);
+    expect(new Set(activity.state.events.map(event => event.actor.id))).toEqual(new Set(['account-1', 'system']));
+    expect(activity.state.events.every(event => event.at <= NOW.toISOString())).toBe(true);
     expect(gateUsers.state.users).toHaveLength(18);
     expect(calls.state.calls.length).toBeGreaterThan(20);
 
@@ -73,7 +80,8 @@ describe('seedDemoSandbox', () => {
     const gateUsers = createFakeGateUsersRepository();
     const calls = createFakeCallsRepository();
     const seed = createSeedDemoSandbox({
-      gateUsers: gateUsers.repository, calls: calls.repository, seed: 'account-1', now: () => NOW,
+      gateUsers: gateUsers.repository, calls: calls.repository, activityLog: createFakeActivityLog().log,
+      actor: { id: 'account-1', name: 'Visitor' }, seed: 'account-1', now: () => NOW,
     });
 
     await seed();
@@ -87,7 +95,7 @@ describe('seedDemoSandbox', () => {
 
 describe('cleanupDemoSandboxes', () => {
   const account = (id: string, tenant: string | null, usedDaysAgo: number): Account => ({
-    id, name: id, tenant, sandboxLastUsedAt: new Date(NOW.getTime() - usedDaysAgo * 24 * 60 * 60 * 1000),
+    id, name: id, tenant, role: null, sandboxLastUsedAt: new Date(NOW.getTime() - usedDaysAgo * 24 * 60 * 60 * 1000),
   });
 
   const accountsWith = (stored: Account[]): AccountsRepository => ({

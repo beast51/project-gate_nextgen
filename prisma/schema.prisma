@@ -18,6 +18,8 @@ model User {
   hashedPassword String?
   // key of the gate (customer) whose data the user works with; without it the user gets a personal demo sandbox
   tenant            String?
+  // "admin" may see the activity journal of the gate; everybody else works without extra rights
+  role              String?
   // when the personal demo sandbox was used last, null when the user has no sandbox database
   sandboxLastUsedAt DateTime?
   createdAt      DateTime  @default(now())
@@ -104,4 +106,19 @@ model LastCallsRequestFromApi {
 model lastGateUserRequestFromApi {
   id   String @id @default(auto()) @map("_id") @db.ObjectId
   time String
+}
+
+// Journal of what the operators and the scheduled jobs did with the gate users.
+// Lives in the database of the gate, so every customer and every demo sandbox has its own journal.
+// The newest records are read by _id, which grows with time: no extra index is needed.
+model ActivityEvent {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  // ISO 8601, UTC
+  at        String
+  actorId   String
+  actorName String
+  action    String
+  // snapshots of the gate users the action was about
+  subjects  Json
+  details   Json
 }

@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server';
 import { ApiErrorResponse } from '@/contracts';
 import { Account } from '@/core/entities/account';
+import { ActivityActor, SYSTEM_ACTOR } from '@/core/entities/activity';
+import { ActivityLog } from '@/core/ports/activityLog';
 import { CallsRepository } from '@/core/ports/callsRepository';
 import { CallsSource } from '@/core/ports/callsSource';
 import { GateUsersDirectory } from '@/core/ports/gateUsersDirectory';
 import { GateUsersRepository } from '@/core/ports/gateUsersRepository';
+import { createGetActivity, createRecordActivity } from '@/core/useCases/activity';
 import { createAddGateUser } from '@/core/useCases/addGateUser';
 import { createDeleteGateUser } from '@/core/useCases/deleteGateUser';
 import { createCleanupDemoSandboxes } from '@/core/useCases/demo/cleanupDemoSandboxes';
@@ -18,6 +21,7 @@ import { createSyncGateUsers } from '@/core/useCases/syncGateUsers';
 import { createUnblockExpiredPenalties } from '@/core/useCases/unblockExpiredPenalties';
 import { createDemoCallsSource, createDemoGateUsersDirectory } from '@/infrastructure/demo/demoTelephony';
 import { createPrismaAccountsRepository } from '@/infrastructure/prisma/prismaAccountsRepository';
+import { createPrismaActivityLog } from '@/infrastructure/prisma/prismaActivityLog';
 import { createPrismaCallsRepository } from '@/infrastructure/prisma/prismaCallsRepository';
 import { createPrismaGateUsersRepository } from '@/infrastructure/prisma/prismaGateUsersRepository';
 import { unitalkCallOutcome } from '@/infrastructure/unitalk/unitalkCallOutcome';
@@ -44,10 +48,18 @@ type Adapters = {
   source: CallsSource
   // null: the calls are never loaded from the telephony
   callsSyncIntervalSeconds: number | null
+  activityLog: ActivityLog
+  // who the actions are recorded for: the signed in account, or the application for scheduled jobs
+  actor: ActivityActor
+  // the journal shows what every operator did, so only an admin of the gate may read it
+  mayReadActivity: boolean
 }
 
-const assemble = ({ gateUsers, calls, directory, source, callsSyncIntervalSeconds }: Adapters) => {
+const assemble = ({
+  gateUsers, calls, directory, source, callsSyncIntervalSeconds, activityLog, actor, mayReadActivity,
+}: Adapters) => {
   const syncCalls = createSyncCalls({ source, calls, gateUsers });
+  const recordActivity = createRecordActivity({ log: activityLog, actor });
 
   const refreshCalls = callsSyncIntervalSeconds === null
     ? async () => {}
@@ -56,20 +68,24 @@ const assemble = ({ gateUsers, calls, directory, source, callsSyncIntervalSecond
   return {
     getCalls: createGetCalls({ calls, refreshCalls }),
     getViolations: createGetViolations({ calls, refreshCalls }),
-    unblockExpiredPenalties: createUnblockExpiredPenalties({ directory, gateUsers }),
+    unblockExpiredPenalties: createUnblockExpiredPenalties({ directory, gateUsers, recordActivity }),
     listGateUsers: gateUsers.list,
     listBlackListedGateUsers: gateUsers.listBlackListed,
-    syncGateUsers: createSyncGateUsers({ directory, gateUsers }),
-    importGateUsers: createImportGateUsers({ gateUsers }),
-    addGateUser: createAddGateUser({ directory, gateUsers }),
-    editGateUser: createEditGateUser({ directory, gateUsers }),
-    deleteGateUser: createDeleteGateUser({ directory, gateUsers }),
+    syncGateUsers: createSyncGateUsers({ directory, gateUsers, recordActivity }),
+    importGateUsers: createImportGateUsers({ gateUsers, recordActivity }),
+    addGateUser: createAddGateUser({ directory, gateUsers, recordActivity }),
+    editGateUser: createEditGateUser({ directory, gateUsers, recordActivity }),
+    deleteGateUser: createDeleteGateUser({ directory, gateUsers, recordActivity }),
+    // null: the account is not allowed to read the journal
+    activity: mayReadActivity
+      ? { list: createGetActivity({ log: activityLog }), listActors: activityLog.listActors }
+      : null,
   };
 };
 
 export type Container = ReturnType<typeof assemble>
 
-const buildTenantContainer = (tenant: string): Container | null => {
+const buildTenantContainer = (tenant: string, actor: ActivityActor, mayReadActivity: boolean): Container | null => {
   const config = getTenantConfig(tenant);
   if (!config) return null;
 
@@ -82,6 +98,9 @@ const buildTenantContainer = (tenant: string): Container | null => {
     directory: createUnitalkGateUsersDirectory(config.telephony.unitalk),
     source: createUnitalkCallsSource(config.telephony.unitalk),
     callsSyncIntervalSeconds: config.callsSyncIntervalSeconds,
+    activityLog: createPrismaActivityLog(prisma),
+    actor,
+    mayReadActivity,
   });
 };
 
@@ -95,6 +114,8 @@ const buildSandboxContainer = async (account: Account): Promise<Container> => {
   const prisma = getSandboxPrismaClient(account.id);
   const gateUsers = createPrismaGateUsersRepository(prisma);
   const calls = createPrismaCallsRepository(prisma);
+  const activityLog = createPrismaActivityLog(prisma);
+  const actor = { id: account.id, name: account.name };
 
   // once per server instance: fill an empty sandbox and note that it is in use.
   // Simultaneous first requests of one visitor share the same preparation.
@@ -102,7 +123,7 @@ const buildSandboxContainer = async (account: Account): Promise<Container> => {
 
   if (!prepared.has(account.id)) {
     prepared.set(account.id, (async () => {
-      await createSeedDemoSandbox({ gateUsers, calls, seed: account.id })();
+      await createSeedDemoSandbox({ gateUsers, calls, activityLog, actor, seed: account.id })();
       await accounts().markSandboxUsed(account.id, new Date());
     })());
   }
@@ -120,6 +141,10 @@ const buildSandboxContainer = async (account: Account): Promise<Container> => {
     directory: createDemoGateUsersDirectory(),
     source: createDemoCallsSource(),
     callsSyncIntervalSeconds: null,
+    activityLog,
+    actor,
+    // a sandbox has one visitor, its owner: the journal shows only their own actions
+    mayReadActivity: true,
   });
 };
 
@@ -135,7 +160,9 @@ export const getContainer = async (): Promise<Container | null> => {
 
   if (!account) return null;
 
-  return account.tenant ? buildTenantContainer(account.tenant) : buildSandboxContainer(account);
+  return account.tenant
+    ? buildTenantContainer(account.tenant, { id: account.id, name: account.name }, account.role === 'admin')
+    : buildSandboxContainer(account);
 };
 
 // Jobs that run without a user (Vercel cron). Vercel sends `Authorization: Bearer <CRON_SECRET>`
@@ -148,12 +175,16 @@ const isCronRequest = (request: Request) => {
 // containers of all gates: a scheduled job has to serve every customer
 export const getCronContainers = (request: Request): Container[] | null =>
   isCronRequest(request)
-    ? listTenants().map(buildTenantContainer).filter((container): container is Container => Boolean(container))
+    ? listTenants()
+      .map(tenant => buildTenantContainer(tenant, SYSTEM_ACTOR, false))
+      .filter((container): container is Container => Boolean(container))
     : null;
 
 export const getCleanupDemoSandboxes = (request: Request) =>
   isCronRequest(request)
     ? createCleanupDemoSandboxes({ accounts: accounts(), sandboxes: sandboxStorage })
     : null;
+
+export const forbidden = () => NextResponse.json<ApiErrorResponse>({ error: 'Forbidden' }, { status: 403 });
 
 export const unauthorized = () => NextResponse.json<ApiErrorResponse>({ error: 'Unauthorized' }, { status: 401 });

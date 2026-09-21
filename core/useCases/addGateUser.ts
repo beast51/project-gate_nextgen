@@ -1,15 +1,17 @@
 import { NewGateUser, parseCarNumbers } from '../entities/gateUser';
 import { GateUsersDirectory } from '../ports/gateUsersDirectory';
 import { GateUsersRepository } from '../ports/gateUsersRepository';
+import { RecordActivity } from './activity';
 
 type Dependencies = {
   directory: GateUsersDirectory
   gateUsers: GateUsersRepository
+  recordActivity: RecordActivity
 }
 
 // The telephony is the source of truth for the gate: the person is registered there first,
 // then stored together with the id the telephony has assigned.
-export const createAddGateUser = ({ directory, gateUsers }: Dependencies) =>
+export const createAddGateUser = ({ directory, gateUsers, recordActivity }: Dependencies) =>
   async (newUser: NewGateUser): Promise<void> => {
     await directory.add(newUser);
 
@@ -19,7 +21,7 @@ export const createAddGateUser = ({ directory, gateUsers }: Dependencies) =>
       throw new Error(`Gate user ${newUser.phoneNumber} was not found in the directory after adding`);
     }
 
-    await gateUsers.addMissing([{
+    const user = {
       externalId: entry.externalId,
       name: newUser.name,
       phoneNumber: newUser.phoneNumber,
@@ -30,5 +32,8 @@ export const createAddGateUser = ({ directory, gateUsers }: Dependencies) =>
       isBlackListed: false,
       blackListedFrom: '',
       blackListedTo: '',
-    }]);
+    };
+
+    await gateUsers.addMissing([user]);
+    await recordActivity('gateUserAdded', [user]);
   };

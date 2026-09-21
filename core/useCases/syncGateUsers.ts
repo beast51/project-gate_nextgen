@@ -1,6 +1,7 @@
 import { GateUser } from '../entities/gateUser';
 import { DirectoryEntry, GateUsersDirectory } from '../ports/gateUsersDirectory';
 import { GateUsersRepository } from '../ports/gateUsersRepository';
+import { RecordActivity } from './activity';
 
 // The directory API is rate limited as well: a full download not more often than once per 2 minutes
 export const DEFAULT_DIRECTORY_SYNC_INTERVAL_SECONDS = 120;
@@ -17,6 +18,7 @@ const toGateUser = (entry: DirectoryEntry): GateUser => ({
 type Dependencies = {
   directory: GateUsersDirectory
   gateUsers: GateUsersRepository
+  recordActivity: RecordActivity
   minIntervalSeconds?: number
   now?: () => Date
 }
@@ -30,6 +32,7 @@ export type SyncGateUsersResult =
 export const createSyncGateUsers = ({
   directory,
   gateUsers,
+  recordActivity,
   minIntervalSeconds = DEFAULT_DIRECTORY_SYNC_INTERVAL_SECONDS,
   now = () => new Date(),
 }: Dependencies) =>
@@ -40,6 +43,11 @@ export const createSyncGateUsers = ({
 
     const entries = await directory.find();
     const added = await gateUsers.addMissing(entries.map(toGateUser));
+
+    // a synchronization that found nobody new changed nothing, it is not worth a record
+    if (added > 0) {
+      await recordActivity('gateUsersSyncedFromDirectory', [], { received: entries.length, added });
+    }
 
     return { status: 'synced', found: entries.length, added };
   };

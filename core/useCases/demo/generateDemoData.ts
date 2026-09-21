@@ -1,4 +1,5 @@
 import moment from 'moment-timezone';
+import { ActivityActor, NewActivityEvent, SYSTEM_ACTOR, toActivitySubject } from '../../entities/activity';
 import { CallOutcome, CallToStore, UNREGISTERED_CALLER_NAME } from '../../entities/call';
 import { GateUser } from '../../entities/gateUser';
 
@@ -17,6 +18,8 @@ export type DemoData = {
   gateUsers: GateUser[]
   // oldest first; a call is linked with a gate user by the phone number
   calls: CallToStore[]
+  // oldest first: what the owner of the sandbox and the scheduled job "did" before the visitor came
+  activity: NewActivityEvent[]
 }
 
 // mulberry32: a tiny deterministic generator, the quality is more than enough for demo data
@@ -40,7 +43,14 @@ const createRandom = (seed: string) => {
 const GATE_USERS_COUNT = 18;
 const DAYS_WITH_CALLS = 3;
 
-export const generateDemoData = (seed: string, now: Date, timeZone = 'Europe/Kiev'): DemoData => {
+const DEMO_ACTOR: ActivityActor = { id: 'demo', name: 'Demo' };
+
+export const generateDemoData = (
+  seed: string,
+  now: Date,
+  timeZone = 'Europe/Kiev',
+  actor: ActivityActor = DEMO_ACTOR,
+): DemoData => {
   const random = createRandom(seed);
   const current = moment(now).tz(timeZone);
   const format = (time: moment.Moment) => time.format(TIME_FORMAT);
@@ -129,5 +139,24 @@ export const generateDemoData = (seed: string, now: Date, timeZone = 'Europe/Kie
 
   calls.sort((a, b) => a.time.localeCompare(b.time));
 
-  return { gateUsers, calls };
+  const blocked = gateUsers[GATE_USERS_COUNT - 1];
+  const penaltyExpired = gateUsers[GATE_USERS_COUNT - 2];
+  const event = (ago: [number, moment.unitOfTime.DurationConstructor], by: ActivityActor, action: NewActivityEvent['action'], subjects: GateUser[], details: NewActivityEvent['details'] = {}): NewActivityEvent => ({
+    at: current.clone().subtract(...ago).toISOString(),
+    actor: by,
+    action,
+    subjects: subjects.map(toActivitySubject),
+    details,
+  });
+
+  const activity = [
+    event([9, 'days'], actor, 'gateUsersImported', [], { received: GATE_USERS_COUNT, added: GATE_USERS_COUNT, skipped: 0 }),
+    event([8, 'days'], actor, 'gateUserBlocked', [penaltyExpired], { blockedUntil: penaltyExpired.blackListedTo, changedFields: [] }),
+    event([3, 'days'], actor, 'gateUserChanged', [gateUsers[3]], { changedFields: ['carNumber'] }),
+    event([2, 'days'], actor, 'gateUserBlocked', [blocked], { blockedUntil: blocked.blackListedTo, changedFields: [] }),
+    event([1, 'days'], SYSTEM_ACTOR, 'expiredPenaltiesUnblocked', [gateUsers[4], gateUsers[5]]),
+    event([5, 'hours'], actor, 'gateUserAdded', [gateUsers[6]]),
+  ];
+
+  return { gateUsers, calls, activity };
 };

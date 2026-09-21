@@ -1,3 +1,4 @@
+import { noActivity } from './__fixtures__/fakeActivityLog';
 import { describe, expect, it, vi } from 'vitest';
 import { GateUser } from '../entities/gateUser';
 import { GateUsersDirectory } from '../ports/gateUsersDirectory';
@@ -57,7 +58,7 @@ describe('addGateUser', () => {
   it('registers the user in the directory first and stores it with the id assigned there', async () => {
     const { directory, gateUsers, log } = createFakes();
 
-    await createAddGateUser({ directory, gateUsers })({
+    await createAddGateUser({ directory, gateUsers, recordActivity: noActivity })({
       name: 'Ivan',
       phoneNumber: '380501111111',
       carNumber: 'aa 1111 aa,bb2222bb',
@@ -84,7 +85,7 @@ describe('addGateUser', () => {
     const { directory, gateUsers } = createFakes();
     directory.find = vi.fn(async () => []);
 
-    await expect(createAddGateUser({ directory, gateUsers })({
+    await expect(createAddGateUser({ directory, gateUsers, recordActivity: noActivity })({
       name: 'Ivan',
       phoneNumber: '380501111111',
       carNumber: '',
@@ -99,7 +100,7 @@ describe('editGateUser', () => {
   it('updates the directory, then the storage, and does not erase images with empty values', async () => {
     const { directory, gateUsers, log } = createFakes();
 
-    await createEditGateUser({ directory, gateUsers })(user);
+    await createEditGateUser({ directory, gateUsers, recordActivity: noActivity })(user);
 
     expect(log).toEqual(['directory.update', 'gateUsers.update']);
     expect(directory.update).toHaveBeenCalledWith({
@@ -125,7 +126,7 @@ describe('editGateUser', () => {
   it('passes new images to the storage', async () => {
     const { directory, gateUsers } = createFakes();
 
-    await createEditGateUser({ directory, gateUsers })({ ...user, image: 'a.png', additionalImages: ['b.png'] });
+    await createEditGateUser({ directory, gateUsers, recordActivity: noActivity })({ ...user, image: 'a.png', additionalImages: ['b.png'] });
 
     expect(gateUsers.update).toHaveBeenCalledWith(expect.objectContaining({
       image: 'a.png',
@@ -138,7 +139,7 @@ describe('deleteGateUser', () => {
   it('removes the user from the storage, then from the directory', async () => {
     const { directory, gateUsers, log } = createFakes();
 
-    await createDeleteGateUser({ directory, gateUsers })({ phoneNumber: '380501111111', externalId: '777' });
+    await createDeleteGateUser({ directory, gateUsers, recordActivity: noActivity })({ phoneNumber: '380501111111', externalId: '777' });
 
     expect(log).toEqual(['gateUsers.remove', 'directory.remove']);
     expect(gateUsers.remove).toHaveBeenCalledWith('380501111111');

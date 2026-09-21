@@ -1,15 +1,37 @@
 import { GateUser } from '../entities/gateUser';
 import { GateUsersDirectory } from '../ports/gateUsersDirectory';
 import { GateUserChanges, GateUsersRepository } from '../ports/gateUsersRepository';
+import { RecordActivity } from './activity';
 
 type Dependencies = {
   directory: GateUsersDirectory
   gateUsers: GateUsersRepository
+  recordActivity: RecordActivity
 }
 
 // Black listing is a part of editing: a black listed user stays in the directory without the right to open the gate
-export const createEditGateUser = ({ directory, gateUsers }: Dependencies) =>
+const DESCRIPTIVE_FIELDS = ['name', 'carNumber', 'apartmentNumber', 'image', 'additionalImages'] as const;
+
+// fields the edit really changes; an empty image never erases the stored one, so it is not a change
+export const changedFieldsOf = (before: GateUser | undefined, after: GateUser): string[] => {
+  if (!before) return [];
+
+  return DESCRIPTIVE_FIELDS.filter(field => {
+    const next = after[field];
+    if ((field === 'image' || field === 'additionalImages') && (next === undefined || next === null || next.length === 0)) {
+      return false;
+    }
+    return JSON.stringify(before[field] ?? null) !== JSON.stringify(next ?? null);
+  });
+};
+
+export const createEditGateUser = ({ directory, gateUsers, recordActivity }: Dependencies) =>
   async (user: GateUser): Promise<void> => {
+    // the state before the edit tells what the edit was: a penalty, its removal or a change of data
+    const [before] = await gateUsers.list({ phoneNumber: user.phoneNumber });
+    const changedFields = changedFieldsOf(before, user);
+    const wasBlackListed = Boolean(before?.isBlackListed);
+
     await directory.update({
       externalId: user.externalId,
       name: user.name,
@@ -39,4 +61,12 @@ export const createEditGateUser = ({ directory, gateUsers }: Dependencies) =>
     }
 
     await gateUsers.update(changes);
+
+    if (!wasBlackListed && user.isBlackListed) {
+      await recordActivity('gateUserBlocked', [user], { blockedUntil: user.blackListedTo, changedFields });
+    } else if (wasBlackListed && !user.isBlackListed) {
+      await recordActivity('gateUserUnblocked', [user], { changedFields });
+    } else if (changedFields.length > 0) {
+      await recordActivity('gateUserChanged', [user], { changedFields });
+    }
   };

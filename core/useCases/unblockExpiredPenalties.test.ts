@@ -1,3 +1,4 @@
+import { noActivity } from './__fixtures__/fakeActivityLog';
 import { describe, expect, it, vi } from 'vitest';
 import { GateUser } from '../entities/gateUser';
 import { GateUsersDirectory } from '../ports/gateUsersDirectory';
@@ -59,7 +60,7 @@ describe('unblockExpiredPenalties', () => {
       blackListed('380502222222', '2024-03-12 10:00:00'),
     ]);
 
-    const unblocked = await createUnblockExpiredPenalties({ directory, gateUsers })(NOW);
+    const unblocked = await createUnblockExpiredPenalties({ directory, gateUsers, recordActivity: noActivity })(NOW);
 
     expect(unblocked).toEqual(['380501111111']);
     expect(directory.update).toHaveBeenCalledTimes(1);
@@ -88,7 +89,7 @@ describe('unblockExpiredPenalties', () => {
       .mockRejectedValueOnce(new Error('telephony is down'))
       .mockResolvedValueOnce(undefined);
 
-    const unblocked = await createUnblockExpiredPenalties({ directory, gateUsers })(NOW);
+    const unblocked = await createUnblockExpiredPenalties({ directory, gateUsers, recordActivity: noActivity })(NOW);
 
     expect(unblocked).toEqual(['380502222222']);
     expect(gateUsers.update).toHaveBeenCalledTimes(1);

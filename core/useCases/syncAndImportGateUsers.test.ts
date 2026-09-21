@@ -1,3 +1,4 @@
+import { noActivity } from './__fixtures__/fakeActivityLog';
 import { describe, expect, it, vi } from 'vitest';
 import { GateUser } from '../entities/gateUser';
 import { DirectoryEntry, GateUsersDirectory } from '../ports/gateUsersDirectory';
@@ -36,7 +37,7 @@ describe('syncGateUsers', () => {
     const { repository, state } = createFakeGateUsersRepository([stored('380501111111', { name: 'Edited by operator' })]);
     const directory = directoryWith([entry('380501111111'), entry('380502222222', { isBlackListed: true })]);
 
-    const result = await createSyncGateUsers({ directory, gateUsers: repository })();
+    const result = await createSyncGateUsers({ directory, gateUsers: repository, recordActivity: noActivity })();
 
     expect(result).toEqual({ status: 'synced', found: 2, added: 1 });
     expect(state.users[0].name).toBe('Edited by operator');
@@ -56,13 +57,13 @@ describe('syncGateUsers', () => {
     const directory = directoryWith([]);
 
     const early = await createSyncGateUsers({
-      directory, gateUsers: repository, now: () => new Date('2024-03-10T12:01:59.000Z'),
+      directory, gateUsers: repository, recordActivity: noActivity, now: () => new Date('2024-03-10T12:01:59.000Z'),
     })();
     expect(early).toEqual({ status: 'skipped', reason: 'rate limit' });
     expect(directory.find).not.toHaveBeenCalled();
 
     const later = await createSyncGateUsers({
-      directory, gateUsers: repository, now: () => new Date('2024-03-10T12:02:01.000Z'),
+      directory, gateUsers: repository, recordActivity: noActivity, now: () => new Date('2024-03-10T12:02:01.000Z'),
     })();
     expect(later.status).toBe('synced');
   });
@@ -70,7 +71,7 @@ describe('syncGateUsers', () => {
   it('lets only one of simultaneous synchronizations through', async () => {
     const { repository } = createFakeGateUsersRepository();
     const directory = directoryWith([entry('380501111111')]);
-    const syncGateUsers = createSyncGateUsers({ directory, gateUsers: repository });
+    const syncGateUsers = createSyncGateUsers({ directory, gateUsers: repository, recordActivity: noActivity });
 
     const results = await Promise.all([syncGateUsers(), syncGateUsers(), syncGateUsers()]);
 
@@ -89,7 +90,7 @@ describe('importGateUsers', () => {
       blackListedTo: '2024-03-08 10:00:00',
     });
 
-    const result = await createImportGateUsers({ gateUsers: repository })([stored('380501111111'), penalized]);
+    const result = await createImportGateUsers({ gateUsers: repository, recordActivity: noActivity })([stored('380501111111'), penalized]);
 
     expect(result).toEqual({ received: 2, added: 1, skipped: 1 });
     expect(state.users[0].name).toBe('Current');
@@ -99,7 +100,7 @@ describe('importGateUsers', () => {
 
   it('imports nothing from a damaged backup', async () => {
     const { repository, state } = createFakeGateUsersRepository();
-    const importGateUsers = createImportGateUsers({ gateUsers: repository });
+    const importGateUsers = createImportGateUsers({ gateUsers: repository, recordActivity: noActivity });
 
     await expect(importGateUsers([stored('380501111111'), { name: 'No phone' }])).rejects.toThrow('Record 1');
     await expect(importGateUsers({} as never)).rejects.toThrow('list of gate users');

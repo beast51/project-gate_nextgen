@@ -1,8 +1,10 @@
 import { GateUser } from '../entities/gateUser';
 import { GateUsersRepository } from '../ports/gateUsersRepository';
+import { RecordActivity } from './activity';
 
 type Dependencies = {
   gateUsers: GateUsersRepository
+  recordActivity: RecordActivity
 }
 
 export type ImportGateUsersResult = { received: number, added: number, skipped: number }
@@ -15,7 +17,7 @@ const isRestorable = (user: Partial<GateUser>): user is GateUser =>
 
 // Restores gate users from a backup made by the export (the list of all gate users).
 // Only the storage is restored: the telephony directory is not touched, stored users are not overwritten.
-export const createImportGateUsers = ({ gateUsers }: Dependencies) =>
+export const createImportGateUsers = ({ gateUsers, recordActivity }: Dependencies) =>
   async (backup: Partial<GateUser>[]): Promise<ImportGateUsersResult> => {
     if (!Array.isArray(backup)) {
       throw new Error('A backup must be a list of gate users');
@@ -37,5 +39,9 @@ export const createImportGateUsers = ({ gateUsers }: Dependencies) =>
 
     const added = await gateUsers.addMissing(users);
 
-    return { received: users.length, added, skipped: users.length - added };
+    const result = { received: users.length, added, skipped: users.length - added };
+
+    await recordActivity('gateUsersImported', [], result);
+
+    return result;
   };
