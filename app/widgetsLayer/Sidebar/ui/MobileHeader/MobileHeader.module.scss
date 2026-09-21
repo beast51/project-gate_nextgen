@@ -34,8 +34,12 @@
   gap: 24px;
 }
 
-.unlockButton {
+// Nested on purpose: AppLink centers its content with the same specificity and its styles load later,
+// so a single class here loses to it.
+.headerWrapper .unlockButton {
   justify-content: flex-start;
+  // the button starts at the same left edge as the date field of the neighbouring pages
+  padding-left: 0;
 }
 
 @media (min-width: 1024px) {
