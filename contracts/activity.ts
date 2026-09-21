@@ -42,8 +42,11 @@ export type ActivityEventDto = {
 
 // GET /api/activity — the newest first; 403 for accounts that may not read the journal
 export type ActivityQuery = {
-  // 10 by default, 100 at most
+  // without a period: 10 by default; with a period: everything that happened in it; 100 at most
   limit?: number
+  // a period, both borders ISO 8601 and inclusive. A day of an operator is computed in the time zone of the browser.
+  from?: string
+  to?: string
   // ActivityActorDto.id
   actor?: string
 }

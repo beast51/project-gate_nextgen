@@ -70,9 +70,13 @@ export const createPrismaAccessLog = (
     });
   },
 
-  list: async ({ limit, actorId }) => {
+  list: async ({ limit, actorId, period }) => {
     const records = await prisma.accessEvent.findMany({
-      where: actorId ? { actorId } : {},
+      where: {
+        ...(actorId ? { actorId } : {}),
+        // served by the retention index on `at`
+        ...(period ? { at: { gte: new Date(period.from), lte: new Date(period.to) } } : {}),
+      },
       orderBy: { id: 'desc' },
       take: limit,
     });

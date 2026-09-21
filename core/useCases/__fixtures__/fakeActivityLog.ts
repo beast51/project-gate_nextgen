@@ -13,10 +13,11 @@ export const createFakeActivityLog = (stored: ActivityEvent[] = []) => {
     record: async (event: NewActivityEvent) => {
       state.events.push({ ...event, id: String(state.events.length + 1) });
     },
-    list: async ({ limit, actorId }) =>
+    list: async ({ limit, actorId, period }) =>
       [...state.events]
         .reverse()
         .filter(event => !actorId || event.actor.id === actorId)
+        .filter(event => !period || (event.at >= period.from && event.at <= period.to))
         .slice(0, limit),
     listActors: async () => {
       const actors = new Map<string, ActivityActor>();

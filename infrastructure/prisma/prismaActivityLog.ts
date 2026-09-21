@@ -41,10 +41,14 @@ export const createPrismaActivityLog = (prisma: PrismaClient): ActivityLog => ({
     });
   },
 
-  list: async ({ limit, actorId }) => {
+  list: async ({ limit, actorId, period }) => {
     // _id of MongoDB grows with time, so it orders the journal without an index of its own
     const records = await prisma.activityEvent.findMany({
-      where: actorId ? { actorId } : {},
+      where: {
+        ...(actorId ? { actorId } : {}),
+        // `at` is an ISO string in UTC: comparing the text compares the moments
+        ...(period ? { at: { gte: period.from, lte: period.to } } : {}),
+      },
       orderBy: { id: 'desc' },
       take: limit,
     });

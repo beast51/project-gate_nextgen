@@ -3,7 +3,7 @@ import { AccessResponse } from "@/contracts";
 import { forbidden, getContainer, unauthorized } from "@/appLayer/libs/container";
 import { toAccessEventDto } from "../_lib/mappers";
 
-// GET /api/access?limit=30&actor=<account id>, see contracts/access.ts
+// GET /api/access?limit=30&actor=<account id>&from=<ISO>&to=<ISO>, see contracts/access.ts
 export async function GET(req: Request) {
   const container = await getContainer()
   if (!container) return unauthorized()
@@ -14,6 +14,8 @@ export async function GET(req: Request) {
   const events = await container.access.list({
     limit: Number(searchParams.get('limit')) || undefined,
     actorId: searchParams.get('actor') || undefined,
+    from: searchParams.get('from'),
+    to: searchParams.get('to'),
   })
 
   const response: AccessResponse = events.map(toAccessEventDto)

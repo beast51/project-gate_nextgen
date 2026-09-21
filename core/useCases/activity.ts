@@ -1,5 +1,6 @@
 import { ActivityAction, ActivityActor, ActivityDetails, ActivitySubject, toActivitySubject } from '../entities/activity';
 import { ActivityLog } from '../ports/activityLog';
+import { parsePeriod } from './period';
 
 export type RecordActivity = (action: ActivityAction, subjects: ActivitySubject[], details?: ActivityDetails) => Promise<void>
 
@@ -30,8 +31,14 @@ export const DEFAULT_ACTIVITY_LIMIT = 10;
 const MAX_ACTIVITY_LIMIT = 100;
 
 export const createGetActivity = ({ log }: { log: ActivityLog }) =>
-  (query: { limit?: number, actorId?: string } = {}) =>
-    log.list({
-      limit: Math.min(Math.max(Math.trunc(query.limit || DEFAULT_ACTIVITY_LIMIT), 1), MAX_ACTIVITY_LIMIT),
+  (query: { limit?: number, actorId?: string, from?: unknown, to?: unknown } = {}) => {
+    const period = parsePeriod(query.from, query.to);
+    // the latest records by default; a chosen day shows everything that happened that day
+    const limit = query.limit || (period ? MAX_ACTIVITY_LIMIT : DEFAULT_ACTIVITY_LIMIT);
+
+    return log.list({
+      limit: Math.min(Math.max(Math.trunc(limit), 1), MAX_ACTIVITY_LIMIT),
       actorId: query.actorId || undefined,
+      period,
     });
+  };

@@ -1,6 +1,7 @@
 import { ClientInfo, normalizePagePath } from '../entities/access';
 import { ActivityActor } from '../entities/activity';
 import { AccessLog } from '../ports/accessLog';
+import { parsePeriod } from './period';
 
 type Dependencies = {
   log: AccessLog
@@ -46,8 +47,13 @@ export const DEFAULT_ACCESS_LIMIT = 30;
 const MAX_ACCESS_LIMIT = 200;
 
 export const createGetAccessLog = ({ log }: { log: AccessLog }) =>
-  (query: { limit?: number, actorId?: string } = {}) =>
-    log.list({
-      limit: Math.min(Math.max(Math.trunc(query.limit || DEFAULT_ACCESS_LIMIT), 1), MAX_ACCESS_LIMIT),
+  (query: { limit?: number, actorId?: string, from?: unknown, to?: unknown } = {}) => {
+    const period = parsePeriod(query.from, query.to);
+    const limit = query.limit || (period ? MAX_ACCESS_LIMIT : DEFAULT_ACCESS_LIMIT);
+
+    return log.list({
+      limit: Math.min(Math.max(Math.trunc(limit), 1), MAX_ACCESS_LIMIT),
       actorId: query.actorId || undefined,
+      period,
     });
+  };

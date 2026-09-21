@@ -80,5 +80,7 @@
   "activity tab: access": "Sign ins and pages",
   "access: signed in": "Signed in",
   "access: unknown address": "address unknown",
-  "access: retention": "Records are kept for 30 days"
+  "access: retention": "Records are kept for 30 days",
+  "activity: latest": "Latest",
+  "activity: empty day": "Nothing happened on this day"
 }

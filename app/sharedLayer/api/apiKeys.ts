@@ -7,9 +7,9 @@ export const apiKeys = {
   violations: ({ from, to }: PeriodQuery) => ['violations', from, to] as const,
   gateUsers: ({ phoneNumber = '', blackListed = false }: GateUsersQuery = {}) =>
     ['gateUsers', phoneNumber, blackListed] as const,
-  activity: ({ limit = 10, actor = '' }: ActivityQuery = {}) => ['activity', limit, actor] as const,
+  activity: ({ limit = 0, actor = '', from = '', to = '' }: ActivityQuery = {}) => ['activity', limit, actor, from, to] as const,
   activityActors: () => ['activity', 'actors'] as const,
-  access: ({ limit = 30, actor = '' }: AccessQuery = {}) => ['access', limit, actor] as const,
+  access: ({ limit = 0, actor = '', from = '', to = '' }: AccessQuery = {}) => ['access', limit, actor, from, to] as const,
   accessActors: () => ['access', 'actors'] as const,
 };
 

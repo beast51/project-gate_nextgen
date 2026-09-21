@@ -80,5 +80,7 @@
   "activity tab: access": "Входи та сторінки",
   "access: signed in": "Вхід у сервіс",
   "access: unknown address": "адреса невідома",
-  "access: retention": "Записи зберігаються 30 днів"
+  "access: retention": "Записи зберігаються 30 днів",
+  "activity: latest": "Останні",
+  "activity: empty day": "Цього дня нічого не відбувалося"
 }

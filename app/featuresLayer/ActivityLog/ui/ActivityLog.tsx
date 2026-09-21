@@ -7,6 +7,7 @@ import { MenuItem } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { AccessEventDto, ActivityActorDto, ActivityEventDto } from '@/contracts';
 import { ApiError, useAccessActors, useAccessLog, useActivity, useActivityActors } from '@/sharedLayer/api';
+import { DatePicker } from '@/sharedLayer/ui/DatePicker';
 import { Select } from '@/sharedLayer/ui/Select';
 import { formatPhoneNumber } from '@/sharedLayer/utils/formatPhoneNumber';
 import classes from './ActivityLog.module.scss';
@@ -27,12 +28,20 @@ export const ActivityLog: FC = () => {
   const { $t } = useIntl();
   const [tab, setTab] = useState<Tab>('actions');
   const [actor, setActor] = useState(EVERYBODY);
-  const selectedActor = actor === EVERYBODY ? undefined : actor;
+  // null: the latest records, whatever the day
+  const [day, setDay] = useState<moment.Moment | null>(null);
+
+  // "the 21st" is the day of the operator: its borders are computed in the time zone of the browser
+  const query = useMemo(() => ({
+    actor: actor === EVERYBODY ? undefined : actor,
+    from: day ? day.clone().startOf('day').toISOString() : undefined,
+    to: day ? day.clone().endOf('day').toISOString() : undefined,
+  }), [actor, day]);
 
   const { data: activityActors = [] } = useActivityActors();
   const { data: accessActors = [] } = useAccessActors();
-  const activity = useActivity({ actor: selectedActor });
-  const access = useAccessLog({ actor: selectedActor });
+  const activity = useActivity(query);
+  const access = useAccessLog(query);
 
   // somebody may have only looked around and done nothing, or the other way round
   const actors = useMemo(() => {
@@ -75,12 +84,25 @@ export const ActivityLog: FC = () => {
             <MenuItem key={item.id} value={item.id}>{actorName(item)}</MenuItem>
           ))}
         </Select>
+        <div className={classes.day}>
+          <DatePicker
+            label={$t({ id: 'Select date' })}
+            selectedDate={day}
+            // the picker hands over a moment object, whatever its prop type says
+            onAccept={(value) => setDay(value ? moment(value as moment.MomentInput) : null)}
+          />
+          <button type="button" className={classes.tab} disabled={!day} onClick={() => setDay(null)}>
+            {$t({ id: 'activity: latest' })}
+          </button>
+        </div>
       </div>
 
       <div className={classes.body}>
         {current.isLoading && <p className={classes.note}>{$t({ id: 'activity: loading' })}</p>}
         {current.error && <p className={classes.note}>{$t({ id: 'something went wrong' })}</p>}
-        {current.data && current.data.length === 0 && <p className={classes.note}>{$t({ id: 'activity: empty' })}</p>}
+        {current.data && current.data.length === 0 && (
+          <p className={classes.note}>{$t({ id: day ? 'activity: empty day' : 'activity: empty' })}</p>
+        )}
 
         <ul className={classes.list}>
           {tab === 'actions'

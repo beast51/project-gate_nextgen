@@ -24,8 +24,11 @@ export type PageViewRequest = {
 
 // GET /api/access — the newest first; 403 for accounts that may not read the journals
 export type AccessQuery = {
-  // 30 by default, 200 at most
+  // without a period: 30 by default; with a period: everything that happened in it; 200 at most
   limit?: number
+  // a period, both borders ISO 8601 and inclusive
+  from?: string
+  to?: string
   actor?: string
 }
 export type AccessResponse = AccessEventDto[]

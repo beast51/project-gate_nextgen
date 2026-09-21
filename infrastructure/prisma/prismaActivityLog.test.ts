@@ -52,6 +52,18 @@ describe('prismaActivityLog', () => {
     expect(activityEvent.findMany).toHaveBeenCalledWith({ where: { actorId: 'account-7' }, orderBy: { id: 'desc' }, take: 10 });
   });
 
+  it('asks for the records of a period', async () => {
+    const { prisma, activityEvent } = prismaWith([]);
+
+    await createPrismaActivityLog(prisma).list({
+      limit: 100, period: { from: '2024-03-09T22:00:00.000Z', to: '2024-03-10T21:59:59.999Z' },
+    });
+
+    expect(activityEvent.findMany).toHaveBeenCalledWith({
+      where: { at: { gte: '2024-03-09T22:00:00.000Z', lte: '2024-03-10T21:59:59.999Z' } }, orderBy: { id: 'desc' }, take: 100,
+    });
+  });
+
   it('skips a record of an action it does not know instead of showing it as something else', async () => {
     const { prisma } = prismaWith([record({ action: 'somethingFromTheFuture' }), record()]);
 

@@ -52,4 +52,18 @@ describe('prismaAccessLog', () => {
     expect(stub.accessEvent.findMany).toHaveBeenCalledWith({ where: { actorId: 'account-7' }, orderBy: { id: 'desc' }, take: 30 });
     expect(events).toEqual([{ id: '1', at: event.at, actor: { id: 'account-7', name: 'Yuriy' }, kind: 'pageView', path: '/calls', ip: '203.0.113.7', device: null }]);
   });
+
+  it('asks for the records of a period by real dates', async () => {
+    const { prisma, stub } = prismaStub();
+
+    await createPrismaAccessLog(prisma).list({
+      limit: 200, period: { from: '2024-03-09T22:00:00.000Z', to: '2024-03-10T21:59:59.999Z' },
+    });
+
+    expect(stub.accessEvent.findMany).toHaveBeenCalledWith({
+      where: { at: { gte: new Date('2024-03-09T22:00:00.000Z'), lte: new Date('2024-03-10T21:59:59.999Z') } },
+      orderBy: { id: 'desc' },
+      take: 200,
+    });
+  });
 });
