@@ -11,20 +11,21 @@ import { ToggleTheme } from '@/sharedLayer/ui/Toggle';
 type SettingsPageProps = {
   // extra content of a section, shown between the switchers and the exit button
   children?: React.ReactNode;
-  // false for a page that is about its content only: the language and the theme are changed elsewhere
-  showSwitchers?: boolean;
+  // A page that is about its content only shows neither the switchers of the language and the theme
+  // nor the exit button: all of that lives on the other settings pages.
+  contentOnly?: boolean;
 };
 
-export const SettingsPage = ({ children, showSwitchers = true }: SettingsPageProps) => {
+export const SettingsPage = ({ children, contentOnly = false }: SettingsPageProps) => {
   const { $t } = useIntl();
   return (
     <div
       className={cn(styles.settings, {
-        [styles.withContent]: Boolean(children) && showSwitchers,
-        [styles.contentOnly]: Boolean(children) && !showSwitchers,
+        [styles.withContent]: Boolean(children) && !contentOnly,
+        [styles.contentOnly]: contentOnly,
       })}
     >
-      {showSwitchers && (
+      {!contentOnly && (
       <div className={styles.wrapper}>
         <div className={styles.switchers}>
           <LangSwitcher />
@@ -34,12 +35,14 @@ export const SettingsPage = ({ children, showSwitchers = true }: SettingsPagePro
       </div>
       )}
       {children}
-      <Button
-        className={styles.button}
-        onClick={() => signOut('/')}
-      >
-        {$t({ id: 'Exit' })}
-      </Button>
+      {!contentOnly && (
+        <Button
+          className={styles.button}
+          onClick={() => signOut('/')}
+        >
+          {$t({ id: 'Exit' })}
+        </Button>
+      )}
     </div>
   );
 };
