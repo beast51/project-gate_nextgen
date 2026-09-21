@@ -135,7 +135,7 @@ model Penalty {
   // why it was lifted: core PenaltyLiftGround and the words of the operator
   liftedGround    String?
   liftedComment   String?
-  // 'recorded' | 'restoredFromCalls'
+  // 'recorded' | 'restoredFromCalls' | 'restoredFromRefusals'
   source          String
   createdAt       DateTime @default(now())
 

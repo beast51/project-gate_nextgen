@@ -49,7 +49,8 @@ export const PenaltyHistory: FC<PenaltyHistoryProps> = ({ penalties }) => {
 
             <p className={classes.state}>
               {!penalty.lifted && $t({ id: 'resident history: in force' })}
-              {penalty.lifted?.how === 'expired' && $t({ id: 'resident history: term is over' })}
+              {penalty.lifted?.how === 'expired' && !penalty.isTermApproximate && $t({ id: 'resident history: term is over' })}
+              {penalty.lifted?.how === 'expired' && penalty.isTermApproximate && $t({ id: 'resident history: term is approximate' })}
               {penalty.lifted?.how === 'manually' && $t({ id: 'resident history: lifted early' }, { at: formatTime(penalty.lifted.at) })}
               {penalty.lifted?.how === 'manually' && (liftGround || penalty.lifted.comment) && (
                 <> — {[liftGround, penalty.lifted.comment].filter((text, index, all) => text && all.indexOf(text) === index).join('. ')}</>
@@ -78,7 +79,7 @@ export const PenaltyHistory: FC<PenaltyHistoryProps> = ({ penalties }) => {
             <p className={classes.meta}>
               {penalty.isRecorded
                 ? penalty.imposedBy && $t({ id: 'resident history: imposed by' }, { name: penalty.imposedBy })
-                : $t({ id: 'resident history: restored' })}
+                : $t({ id: penalty.isTermApproximate ? 'resident history: restored from refusals' : 'resident history: restored' })}
             </p>
           </li>
         );

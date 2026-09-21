@@ -103,4 +103,78 @@ describe('restorePenalties', () => {
 
     expect((await restore('2026-01-01 00:00:00')).found).toBe(0);
   });
+
+  describe('penalties no note tells about', () => {
+    const refused = (number: string, time: string, overrides: Partial<Call> = {}) => call(number, time, { outcome: 'refused', ...overrides });
+
+    // the calls were loaded after the penalty was lifted, so none of them got the note
+    it('finds a penalty by the refusals of the gate, from the first to the last one', async () => {
+      const { restore } = setup([
+        call('380960000093', '2026-03-01 09:00:00'),
+        refused('380960000093', '2026-03-03 08:00:00'),
+        refused('380960000093', '2026-03-03 08:00:40'),
+        refused('380680000035', '2026-03-04 19:00:00'),        // the other phone of the apartment: the same penalty
+        refused('380960000093', '2026-03-09 18:30:00'),
+        call('380960000093', '2026-03-11 09:00:00'),            // the gate opens again
+      ]);
+
+      const result = await restore('2026-01-01 00:00:00');
+
+      expect(result.refusals).toEqual({ calls: 4, penalties: 1 });
+      expect(result.missing).toHaveLength(1);
+      expect(result.missing[0]).toMatchObject({
+        subjectKey: '485',
+        phoneNumbers: ['380960000093', '380680000035'],
+        from: '2026-03-03 08:00:00',
+        until: '2026-03-09 18:30:00',
+        source: 'restoredFromRefusals',
+        lifted: { at: '2026-03-09 18:30:00', how: 'expired' },
+      });
+    });
+
+    it('separates two penalties by the gate opening between them, or by a long silence', async () => {
+      const { restore } = setup([
+        refused('380960000093', '2026-03-03 08:00:00'),
+        call('380960000093', '2026-03-05 09:00:00'),
+        refused('380960000093', '2026-03-06 08:00:00'),
+        refused('380960000093', '2026-05-20 08:00:00'),
+      ]);
+
+      expect((await restore('2026-01-01 00:00:00')).missing.map(penalty => penalty.from))
+        .toEqual(['2026-03-03 08:00:00', '2026-03-06 08:00:00', '2026-05-20 08:00:00']);
+    });
+
+    // real calls of 22.08.2026: refused at 11:37:18, let in at 11:38:08. Nobody lifts a penalty in 50 seconds.
+    it('does not take a refusal for a block when the gate opened for the same phone soon after', async () => {
+      const { restore } = setup([
+        call('380960000093', '2026-08-22 11:30:15'),
+        refused('380960000093', '2026-08-22 11:37:18'),
+        call('380960000093', '2026-08-22 11:38:08'),
+        refused('380960000093', '2026-08-25 10:00:00'),
+        call('380960000093', '2026-08-26 09:59:00'),            // 23 hours 59 minutes later: still not enough
+      ]);
+
+      expect((await restore('2026-01-01 00:00:00')).found).toBe(0);
+    });
+
+    it('does not repeat a penalty a note already tells about', async () => {
+      const { restore } = setup([
+        refused('380960000093', '2026-08-06 09:32:12', blocked('2026-08-05 22:52:06', '2026-08-13 23:50:00')),
+        // loaded later, without the note, but inside the same term
+        refused('380960000093', '2026-08-07 17:17:44'),
+        refused('380960000093', '2026-08-10 18:52:55'),
+      ]);
+
+      const result = await restore('2026-01-01 00:00:00');
+
+      expect(result.refusals.penalties).toBe(0);
+      expect(result.missing.map(penalty => penalty.source)).toEqual(['restoredFromCalls']);
+    });
+
+    it('does not take a stranger for a blocked resident', async () => {
+      const { restore } = setup([refused('380990000000', '2026-03-03 08:00:00', { callerName: 'Not registered', apartmentNumber: null })]);
+
+      expect((await restore('2026-01-01 00:00:00')).found).toBe(0);
+    });
+  });
 });

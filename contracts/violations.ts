@@ -88,8 +88,11 @@ export type PenaltyDto = {
   reason: { since: string, overstays: number, openVisits: number, overstayMinutes: number, minutesOverLimit: number } | null
   // null: still in force; `ground` is a PenaltyLiftGroundDto
   lifted: { at: string, how: 'manually' | 'expired', ground: string | null, comment: string | null } | null
-  // false: found later in the "blocked from .. until" notes of old calls, its end is the end of the term
+  // false: found later in old calls, its end is the end of the term
   isRecorded: boolean
+  // true: found only by the refusals of the gate; `from` and `until` are the first and the last refusal,
+  // the real term was at least that long
+  isTermApproximate: boolean
 }
 
 export type ViolationHistoryQuery = { subject: string }
@@ -117,6 +120,8 @@ export type RestorePenaltiesRequest = { since: string, apply?: boolean }
 
 export type RestoredPenaltyDto = {
   apartmentNumber: string | null
+  // true: no call carries its "blocked" note, it is known by the refusals of the gate; the term is approximate
+  byRefusals: boolean
   phones: number
   from: string
   until: string
@@ -129,7 +134,13 @@ export type RestoredPenaltyDto = {
   minutesOverLimit: number
 }
 
-export type RestorePenaltiesResponse = { blocks: number, found: number, written: number, missing: RestoredPenaltyDto[] }
+export type RestorePenaltiesResponse = {
+  blocks: number
+  refusals: { calls: number, penalties: number }
+  found: number
+  written: number
+  missing: RestoredPenaltyDto[]
+}
 
 // POST /api/violations/unblock_expired_penalties_users
 export type UnblockExpiredPenaltiesResponse = { message: string }

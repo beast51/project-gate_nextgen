@@ -54,7 +54,7 @@
   "user unblocked successful": "User unblocked",
   "call outcome: connectionFailed": "Connection failed",
   "call outcome: notOpened": "The gate did not open",
-  "call outcome: refused": "The gate refused: no right to open (blocked?)",
+  "call outcome: refused": "The gate refused the number (what a blocked one gets)",
   "call outcome: operatorError": "Operator side error",
   "activity: title": "Actions of users",
   "activity: filter by user": "User",
@@ -129,5 +129,7 @@
   "resident history: reason": "over 45 min ×{overstays} ({minutes} min), no exit ×{openVisits}",
   "resident history: imposed by": "Blocked by {name}",
   "resident history: restored": "Restored from old calls",
-  "resident: phones of the apartment": "Phones of the apartment"
+  "resident: phones of the apartment": "Phones of the apartment",
+  "resident history: restored from refusals": "Restored from the refusals of the gate",
+  "resident history: term is approximate": "From the first to the last refusal; the real term was not shorter"
 }

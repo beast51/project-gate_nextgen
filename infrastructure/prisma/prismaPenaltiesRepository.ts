@@ -19,7 +19,7 @@ const toPenalty = (record: PenaltyRecord): Penalty => ({
     ground: isPenaltyLiftGround(record.liftedGround) ? record.liftedGround : null,
     comment: record.liftedComment,
   } : null,
-  source: record.source === 'restoredFromCalls' ? 'restoredFromCalls' : 'recorded',
+  source: record.source === 'restoredFromCalls' || record.source === 'restoredFromRefusals' ? record.source : 'recorded',
 });
 
 export const createPrismaPenaltiesRepository = (prisma: PrismaClient): PenaltiesRepository => ({
