@@ -23,12 +23,18 @@
   // top/bottom instead of a height in vh: the browser bar of a phone does not cut the bottom off.
   position: fixed;
   top: 64px;
-  bottom: 0;
+  // the navigation of the section stays visible: a bar of 65px at the bottom of a phone...
+  bottom: 65px;
   left: 0;
   right: 0;
   height: auto;
-  // taken out of the flow, the panel is no longer covered by the background of its wrapper:
-  // without its own one the footer of the section layout shows through
+
+  // ...and a rail of 80px on the left of a wide screen
+  @media (min-width: 1024px) {
+    bottom: 0;
+    left: 80px;
+  }
+  // the panel ends where the navigation begins, so nothing of the page shows through the list
   background: var(--background-color);
   padding: 8px 8px 24px;
 

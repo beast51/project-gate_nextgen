@@ -19,18 +19,22 @@ export async function Sidebar({
     | 'violationsManagement';
   children: React.ReactNode;
 }) {
-  const isOverlay = type === 'settings' || type === 'journal';
+  // A settings page covers the whole section, its navigation included. The journals page is nested the same
+  // way but keeps the navigation of the section visible, so it is not an overlay; the footer it shows
+  // is the one of the section layout around it.
+  const isOverlay = type === 'settings';
+  const hasOwnFooter = type !== 'settings' && type !== 'journal';
 
   return (
     <>
       <div
         className={cn(
-          { 'full-height': !isOverlay },
+          { 'full-height': hasOwnFooter },
           { [classes.settings]: isOverlay },
         )}
       >
         {type !== 'usersList' && <MobileHeader title={title} type={type} />}
-        {!isOverlay && <MobileFooter />}
+        {hasOwnFooter && <MobileFooter />}
         <>{children}</>
       </div>
     </>
