@@ -200,9 +200,13 @@ export const getContainerOfAccount = async (accountId: string): Promise<Containe
 
   if (!account) return null;
 
-  return account.tenant
-    ? buildTenantContainer(account.tenant, { id: account.id, name: account.name }, account.role === 'admin')
-    : buildSandboxContainer(account);
+  if (account.tenant) {
+    return buildTenantContainer(account.tenant, { id: account.id, name: account.name }, account.role === 'admin');
+  }
+
+  // A deployment without a demo cluster has no sandboxes: an account without a gate gets no access at all
+  // (401), instead of failing on the missing database.
+  return process.env.DEMO_DATABASE_URL ? buildSandboxContainer(account) : null;
 };
 
 // Jobs that run without a user (Vercel cron). Vercel sends `Authorization: Bearer <CRON_SECRET>`
