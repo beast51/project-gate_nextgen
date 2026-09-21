@@ -36,14 +36,14 @@
   }
   // the panel ends where the navigation begins, so nothing of the page shows through the list
   background: var(--background-color);
-  padding: 8px 8px 24px;
+  padding: 8px;
 
   @media (min-width: 400px) {
-    padding: 8px 16px 24px;
+    padding: 8px 16px;
   }
 
   @media (min-width: 1024px) {
-    padding: 16px 16px 24px;
+    padding: 16px 16px 8px;
   }
 }
 
