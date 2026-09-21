@@ -39,7 +39,7 @@ export const ViolationsCard: React.FC<ViolationsCardPropsType> = ({
               {apartmentNumber === null
                 ? formatPhoneNumber(phoneNumberOrApartment)
                 : number?.map((num) => {
-                    return <p>{formatPhoneNumber(num)}</p>;
+                    return <p key={num}>{formatPhoneNumber(num)}</p>;
                   })}
               {apartmentNumber === null && name && (
                 <p className={classes.name}>{name}</p>

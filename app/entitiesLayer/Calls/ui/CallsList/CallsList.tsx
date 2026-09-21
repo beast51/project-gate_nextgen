@@ -53,7 +53,7 @@ export const CallsList: FC<CallsListPropsType> = () => {
             <CallsCard
               call={call}
               onDoubleClick={showCallsFromPhonenumber}
-              key={call.time}
+              key={`${call.number}|${call.time}`}
             />
           );
         })}
