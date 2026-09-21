@@ -20,16 +20,15 @@ describe('countViolationsByDay', () => {
   it('never closes an open visit of one day with the first call of the next day', () => {
     const calls = [
       call('2024-03-10 22:00:00'),                      // entered in the evening, no exit that day
-      call('2024-03-11 08:00:00'),                      // the next morning: a NEW entry, not the exit of yesterday
-      call('2024-03-11 08:20:00'),
+      call('2024-03-11 08:00:00'),                      // the next morning, the only call of that day: a train again
     ];
 
     const asOnePeriod = countViolations(calls, {}, NOW)['12'];
-    expect(asOnePeriod).toEqual({ overstays: 1, openVisits: 1 });   // 22:00 -> 08:00 "parked for 600 minutes": wrong
+    expect(asOnePeriod).toEqual({ overstays: 1, openVisits: 0 });   // 22:00 -> 08:00 "parked for 600 minutes": wrong
 
     const byDay = countViolationsByDay(calls, {}, NOW);
     expect(byDay.get('2024-03-10')).toEqual({ '12': { overstays: 0, openVisits: 1 } });
-    expect(byDay.get('2024-03-11')).toEqual({ '12': { overstays: 0, openVisits: 0 } });
+    expect(byDay.get('2024-03-11')).toEqual({ '12': { overstays: 0, openVisits: 1 } });
   });
 
   it('keeps the two kinds of violations apart', () => {

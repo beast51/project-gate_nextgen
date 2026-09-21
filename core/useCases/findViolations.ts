@@ -105,15 +105,51 @@ const groupByPhoneNumber = (calls: PassageCall[], rules: ViolationRules) => {
   return grouped;
 };
 
-// Passages go in pairs: entry, exit, entry, exit...
+const minutesBetween = (from: string, to: string) =>
+  Math.floor((new Date(to).getTime() - new Date(from).getTime()) / (1000 * 60));
+
+// Passages go in pairs: entry, exit, entry, exit... An odd number of them means that one passage has no pair:
+// the car got in or out behind somebody else, without a call ("a train"), or it is still inside.
+// Which one? The pairs used to be made in order, so the last passage was left alone. But a train in the morning
+// shifts every pair of the day: a visit of 9 minutes in the evening turned into "parked for 449 minutes".
+// The passage without a pair is the one whose absence gives the most plausible day: the fewest overstays, then
+// the fewest minutes inside (95% of ordinary visits are shorter than the limit, their median is 12 minutes).
+// When the readings are equal it is the last one, as before. Returns -1 for an even number of passages.
+export const unpairedPassageIndex = (times: string[], rules: ViolationRules): number => {
+  if (times.length % 2 === 0) return -1;
+
+  let best = { index: times.length - 1, overstays: Infinity, minutes: Infinity };
+
+  times.forEach((_, index) => {
+    const rest = times.filter((__, other) => other !== index);
+    let overstays = 0;
+    let minutes = 0;
+
+    for (let i = 0; i < rest.length; i += 2) {
+      const duration = minutesBetween(rest[i], rest[i + 1]);
+      minutes += duration;
+      if (duration >= rules.limitMinutes) overstays++;
+    }
+
+    // `<=`: of equal readings the later passage wins
+    if (overstays < best.overstays || (overstays === best.overstays && minutes <= best.minutes)) {
+      best = { index, overstays, minutes };
+    }
+  });
+
+  return best.index;
+};
+
 const toVisits = (times: string[], rules: ViolationRules, now: Date) => {
   // a car stayed longer than the limit / a car entered and its exit was never seen
   const counts: ViolationCounts = { overstays: 0, openVisits: 0 };
   const visits: VisitInfo[] = [];
+  const unpaired = unpairedPassageIndex(times, rules);
 
-  for (let i = 0; i < times.length; i += 2) {
+  for (let i = 0; i < times.length;) {
+    const isUnpaired = i === unpaired;
     const inTime = new Date(times[i]);
-    const outTime = times[i + 1] ? new Date(times[i + 1]) : null;
+    const outTime = isUnpaired ? null : new Date(times[i + 1]);
     const visit: VisitInfo = {
       timeIn: moment(inTime).format(TIME_FORMAT),
       timeOut: null,
@@ -129,7 +165,7 @@ const toVisits = (times: string[], rules: ViolationRules, now: Date) => {
     } else if (outTime) {
       visit.timeOut = moment(outTime).format(TIME_FORMAT);
       // If the time difference is greater than or equal to the limit, we consider it a violation.
-      const differenceInMinutes = Math.floor((outTime.getTime() - inTime.getTime()) / (1000 * 60));
+      const differenceInMinutes = minutesBetween(times[i], times[i + 1]);
       visit.violationTime = differenceInMinutes;
       if (differenceInMinutes >= rules.limitMinutes) {
         visit.violation = `has been parked for ${differenceInMinutes} minutes`;
@@ -140,6 +176,7 @@ const toVisits = (times: string[], rules: ViolationRules, now: Date) => {
     }
 
     visits.push(visit);
+    i += isUnpaired ? 1 : 2;
   }
 
   return { visits, counts, violationCount: counts.overstays + counts.openVisits };
