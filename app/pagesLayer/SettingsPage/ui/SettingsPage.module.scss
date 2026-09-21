@@ -13,6 +13,12 @@
   gap: 24px;
 }
 
+// the same without the switchers: the content starts at the top
+.contentOnly {
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 24px;
+}
+
 .button {
   align-self: flex-end;
 }

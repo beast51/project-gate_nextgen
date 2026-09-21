@@ -1,12 +1,7 @@
 import { SettingsPage } from '@/app/pagesLayer/SettingsPage';
-import { ActivityLog } from '@/featuresLayer/ActivityLog';
 
 const Settings = () => {
-  return (
-    <SettingsPage>
-      <ActivityLog />
-    </SettingsPage>
-  );
+  return <SettingsPage />;
 };
 
 export default Settings;
