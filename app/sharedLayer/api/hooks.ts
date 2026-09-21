@@ -2,7 +2,8 @@
 
 import useSWR, { useSWRConfig } from 'swr';
 import {
-  AccessQuery, ActivityQuery, GateUserDto, GateUsersQuery, GateUsersResponse, PeriodQuery, ViolationStatsQuery,
+  AccessQuery, ActivityQuery, GateUserDto, GateUsersQuery, GateUsersResponse, PeriodQuery, ViolationHistoryQuery,
+  ViolationStatsQuery,
 } from '@/contracts';
 import { apiKeys, isKeyOf } from './apiKeys';
 import { api } from './browserApi';
@@ -23,6 +24,10 @@ const SLOW_HISTORY = { dedupingInterval: 5 * 60 * 1000, revalidateOnFocus: false
 
 export const useViolationStats = (query: ViolationStatsQuery | null) =>
   useSWR(query && apiKeys.violationStats(query), () => api.getViolationStats(query!), SLOW_HISTORY);
+
+// null: the subject is not known yet, nothing is requested
+export const useViolationHistory = (query: ViolationHistoryQuery | null) =>
+  useSWR(query && apiKeys.violationHistory(query), () => api.getViolationHistory(query!), SLOW_HISTORY);
 
 // `initial` is the list a server rendered page already has, so the first paint needs no request.
 // The list is still confirmed by the server after mounting: the page may come from the router cache

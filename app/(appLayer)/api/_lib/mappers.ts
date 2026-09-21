@@ -1,3 +1,5 @@
+import { PenaltyDto } from '@/contracts';
+import { Penalty } from '@/core/entities/penalty';
 import { AccessEventDto, ActivityEventDto, CallDto, GateUserDto, ViolationsResponse } from '@/contracts';
 import { AccessEvent } from '@/core/entities/access';
 import { ActivityEvent } from '@/core/entities/activity';
@@ -20,6 +22,20 @@ export const fromGateUserDto = ({ idInApi, ...dto }: GateUserDto): GateUser => (
 });
 
 export const toCallDto = (call: Call): CallDto => call;
+
+export const toPenaltyDto = (penalty: Penalty): PenaltyDto => ({
+  id: penalty.id,
+  phoneNumbers: penalty.phoneNumbers,
+  from: penalty.from,
+  until: penalty.until,
+  // the name only: who the account is stays on the server
+  imposedBy: penalty.imposedBy?.name ?? null,
+  ground: penalty.ground,
+  comment: penalty.comment,
+  reason: penalty.reason,
+  lifted: penalty.lifted,
+  isRecorded: penalty.source === 'recorded',
+});
 
 export const toAccessEventDto = (event: AccessEvent): AccessEventDto => event;
 

@@ -16,6 +16,8 @@ import {
   PeriodQuery,
   RegisterRequest,
   UnblockExpiredPenaltiesResponse,
+  ViolationHistoryQuery,
+  ViolationHistoryResponse,
   ViolationsResponse,
   ViolationStatsQuery,
   ViolationStatsResponse,
@@ -83,6 +85,8 @@ export const createApiClient = ({ fetch: send, baseUrl = '', headers, onUnauthor
     getViolations: (period: PeriodQuery) => request<ViolationsResponse>(API_ROUTES.violations, { query: period }),
     getViolationStats: (query: ViolationStatsQuery) =>
       request<ViolationStatsResponse>(API_ROUTES.violationStats, { query }),
+    getViolationHistory: (query: ViolationHistoryQuery) =>
+      request<ViolationHistoryResponse>(API_ROUTES.violationHistory, { query }),
     unblockExpiredPenalties: () =>
       request<UnblockExpiredPenaltiesResponse>(API_ROUTES.unblockExpiredPenalties, { body: {} }),
 

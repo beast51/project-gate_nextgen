@@ -4,6 +4,7 @@ export const API_ROUTES = {
   backfillCalls: '/api/calls/backfill',
   violations: '/api/violations',
   violationStats: '/api/violations/stats',
+  violationHistory: '/api/violations/history',
   unblockExpiredPenalties: '/api/violations/unblock_expired_penalties_users',
   restorePenalties: '/api/penalties/restore',
   gateUsers: '/api/users',

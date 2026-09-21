@@ -111,5 +111,21 @@
   "penalty ground: rarelyViolates": "Дуже мало порушує",
   "penalty ground: recruitmentOffice": "ТЦК",
   "penalty ground: delivery": "Доставка",
-  "penalty ground: termExpired": "Час блокування вийшов"
+  "penalty ground: termExpired": "Час блокування вийшов",
+  "resident history: loading": "Завантажуємо історію квартири…",
+  "resident history: violations title": "Порушення за 3 місяці",
+  "resident history: penalties title": "Блокування",
+  "resident history: no violations": "За 3 місяці порушень немає",
+  "resident history: no penalties": "Квартиру ще не блокували",
+  "resident history: show more": "Показати ще ({days} дн.)",
+  "resident history: days": "{days} дн.",
+  "resident history: in force": "Діє",
+  "resident history: term is over": "Строк вийшов",
+  "resident history: lifted early": "Знято достроково, {at}",
+  "resident history: ground": "Причина:",
+  "resident history: what for": "За що:",
+  "resident history: reason": "понад 45 хв ×{overstays} ({minutes} хв), без виїзду ×{openVisits}",
+  "resident history: imposed by": "Заблокував(ла) {name}",
+  "resident history: restored": "Відновлено зі старих дзвінків",
+  "resident: phones of the apartment": "Телефони квартири"
 }

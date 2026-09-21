@@ -18,6 +18,8 @@ export type GateUserDto = {
 // GET /api/users
 export type GateUsersQuery = {
   phoneNumber?: string
+  // everybody of one apartment
+  apartmentNumber?: string
   // true: only users with a penalty, ordered by apartment
   blackListed?: boolean
 }

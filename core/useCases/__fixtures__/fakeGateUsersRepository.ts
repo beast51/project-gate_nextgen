@@ -7,7 +7,10 @@ export const createFakeGateUsersRepository = (stored: GateUser[] = [], lastDirec
 
   const repository: GateUsersRepository = {
     list: async (filter = {}) =>
-      state.users.filter(user => !filter.phoneNumber || user.phoneNumber === filter.phoneNumber).map(user => ({ ...user })),
+      state.users
+        .filter(user => !filter.phoneNumber || user.phoneNumber === filter.phoneNumber)
+        .filter(user => !filter.apartmentNumber || user.apartmentNumber === filter.apartmentNumber)
+        .map(user => ({ ...user })),
     listBlackListed: async () => state.users.filter(user => user.isBlackListed).map(user => ({ ...user })),
     findByPhoneNumbers: async (phoneNumbers) => state.users.filter(user => phoneNumbers.includes(user.phoneNumber)),
     addMissing: async (users) => {

@@ -16,4 +16,7 @@ const load = async (query: GateUsersQuery): Promise<GateUsersResponse> => {
 
 export const loadGateUsers = (phoneNumber = '') => load(phoneNumber ? { phoneNumber } : {});
 
+// everybody who lives in the apartment
+export const loadGateUsersOfApartment = (apartmentNumber: string) => load({ apartmentNumber });
+
 export const loadBlackListedGateUsers = () => load({ blackListed: true });

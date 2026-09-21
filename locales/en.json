@@ -111,5 +111,21 @@
   "penalty ground: rarelyViolates": "Rarely breaks the rules",
   "penalty ground: recruitmentOffice": "Recruitment office",
   "penalty ground: delivery": "Delivery",
-  "penalty ground: termExpired": "Block term is over"
+  "penalty ground: termExpired": "Block term is over",
+  "resident history: loading": "Loading the history of the apartment…",
+  "resident history: violations title": "Violations in 3 months",
+  "resident history: penalties title": "Blocks",
+  "resident history: no violations": "No violations in 3 months",
+  "resident history: no penalties": "The apartment was never blocked",
+  "resident history: show more": "Show more ({days} d.)",
+  "resident history: days": "{days} d.",
+  "resident history: in force": "In force",
+  "resident history: term is over": "The term is over",
+  "resident history: lifted early": "Lifted early, {at}",
+  "resident history: ground": "Why:",
+  "resident history: what for": "For:",
+  "resident history: reason": "over 45 min ×{overstays} ({minutes} min), no exit ×{openVisits}",
+  "resident history: imposed by": "Blocked by {name}",
+  "resident history: restored": "Restored from old calls",
+  "resident: phones of the apartment": "Phones of the apartment"
 }

@@ -1,0 +1,78 @@
+.info {
+  display: grid;
+  gap: 12px;
+  padding-bottom: 16px;
+  color: var(--violations-card-color);
+}
+
+.withAvatar {
+  grid-template-columns: 100px minmax(0, 1fr);
+}
+
+.details {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--gate-user-card-name);
+  overflow-wrap: anywhere;
+}
+
+.apartment {
+  flex-shrink: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.phone {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.cars {
+  gap: 4px;
+}
+
+.others {
+  display: grid;
+  gap: 2px;
+  padding-top: 4px;
+}
+
+.label {
+  font-size: 12px;
+  opacity: .65;
+}
+
+.phones {
+  display: grid;
+  gap: 2px;
+}
+
+.otherPhone {
+  font-size: 16px;
+  font-weight: 500;
+  color: #11a694;
+}
+
+.blocked {
+  color: red;
+}
+
+.otherName {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--gate-user-card-name);
+}

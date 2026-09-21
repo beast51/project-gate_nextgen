@@ -59,6 +59,50 @@ export type ViolationStatsResponse = {
   coverage: { pastDays: number, missingDays: string[] }
 }
 
+// One violation of an apartment (or of a caller without an apartment)
+export type SubjectViolationDto = {
+  // 'YYYY-MM-DD'
+  day: string
+  // 'YYYY-MM-DD HH:mm:ss'
+  timeIn: string
+  // null: no exit was seen that day
+  timeOut: string | null
+  // how long the visit lasted; null for a visit without an exit
+  minutes: number | null
+  kind: 'overstay' | 'openVisit'
+}
+
+// A penalty as the page of a resident shows it
+export type PenaltyDto = {
+  id: string
+  phoneNumbers: string[]
+  // 'YYYY-MM-DD HH:mm:ss', the local time of the gate
+  from: string
+  until: string
+  // null: nobody knows any more (restored from old calls)
+  imposedBy: string | null
+  // PenaltyGroundDto, see gateUsers.ts
+  ground: string | null
+  comment: string | null
+  // what it was for: the violations of the apartment since its previous penalty ended
+  reason: { since: string, overstays: number, openVisits: number, overstayMinutes: number, minutesOverLimit: number } | null
+  // null: still in force; `ground` is a PenaltyLiftGroundDto
+  lifted: { at: string, how: 'manually' | 'expired', ground: string | null, comment: string | null } | null
+  // false: found later in the "blocked from .. until" notes of old calls, its end is the end of the term
+  isRecorded: boolean
+}
+
+export type ViolationHistoryQuery = { subject: string }
+
+// GET /api/violations/history?subject=174 — what an apartment (or, for a caller without an apartment, a phone
+// number) has done in the last three months and every penalty it has got. The newest first.
+export type ViolationHistoryResponse = {
+  subject: string
+  period: DayPeriodDto
+  violations: SubjectViolationDto[]
+  penalties: PenaltyDto[]
+}
+
 // POST /api/calls/backfill — loads ONE missing day of history from the telephony. Admins only.
 export type BackfillCallsRequest = { from: string, to: string }
 

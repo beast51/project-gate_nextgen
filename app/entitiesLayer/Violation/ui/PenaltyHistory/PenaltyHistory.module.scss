@@ -1,0 +1,61 @@
+.list {
+  display: grid;
+  gap: 8px;
+}
+
+// the same white card as a visit time
+.penalty {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background-color: var(--stay-timer-card-bg);
+  color: var(--violations-card-color);
+  font-size: 14px;
+}
+
+.inForce {
+  outline: 2px solid rgba(255, 0, 0, .45);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+
+.term {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.days,
+.meta {
+  font-size: 12px;
+  opacity: .65;
+}
+
+.state {
+  color: var(--stay-timer-card-color);
+  font-weight: 500;
+
+  .inForce & {
+    color: red;
+  }
+}
+
+.line {
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.label {
+  opacity: .65;
+}
+
+.none {
+  font-size: 14px;
+  opacity: .7;
+}

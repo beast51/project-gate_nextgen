@@ -51,6 +51,19 @@ export type ViolationCounts = {
   openVisits: number
 }
 
+// One violation of an apartment (or of a caller without an apartment), for the history on the page of a resident
+export type SubjectViolation = {
+  // 'YYYY-MM-DD'
+  day: string
+  // 'YYYY-MM-DD HH:mm:ss'
+  timeIn: string
+  // null: no exit was seen that day
+  timeOut: string | null
+  // how long the visit lasted; null for a visit without an exit
+  minutes: number | null
+  kind: 'overstay' | 'openVisit'
+}
+
 // what a period of the statistics shows: the violations and how many times they were really punished
 export type PeriodCounts = ViolationCounts & {
   // penalties that started in the period

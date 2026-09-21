@@ -15,4 +15,9 @@
     grid-template-columns: 600px 400px;
     gap: 24px;
   }
+
+  // nothing to show on the left: one column instead of an empty half of the page
+  .withoutPhotos {
+    grid-template-columns: minmax(0, 520px);
+  }
 }

@@ -12,7 +12,10 @@ export const createPrismaGateUsersRepository = (prisma: PrismaClient): GateUsers
   list: async (filter = {}) => {
     try {
       const records = await prisma.gateUser.findMany({
-        where: filter.phoneNumber ? { phoneNumber: filter.phoneNumber } : {},
+        where: {
+          ...(filter.phoneNumber && { phoneNumber: filter.phoneNumber }),
+          ...(filter.apartmentNumber && { apartmentNumber: filter.apartmentNumber }),
+        },
       });
       return records.map(toGateUser);
     } catch (error) {

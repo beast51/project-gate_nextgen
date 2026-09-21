@@ -20,6 +20,7 @@ import { createSeedDemoSandbox } from '@/core/useCases/demo/seedDemoSandbox';
 import { createEditGateUser } from '@/core/useCases/editGateUser';
 import { createGetCalls } from '@/core/useCases/getCalls';
 import { createGetViolations } from '@/core/useCases/getViolations';
+import { createGetSubjectHistory } from '@/core/useCases/getSubjectHistory';
 import { createGetViolationStats } from '@/core/useCases/getViolationStats';
 import { createImportGateUsers } from '@/core/useCases/importGateUsers';
 import { createPenaltyRecorder } from '@/core/useCases/penalties';
@@ -85,6 +86,7 @@ const assemble = ({
   return {
     getCalls: createGetCalls({ calls, refreshCalls }),
     getViolations: createGetViolations({ calls, refreshCalls, now: clock.now }),
+    getSubjectHistory: createGetSubjectHistory({ calls, penalties, clock }),
     getViolationStats: createGetViolationStats({ calls, penalties, clock, tracksCoverage: callsSyncIntervalSeconds !== null }),
     // null: there is no telephony to load the history from, or the account may not start it
     backfillCalls: callsSyncIntervalSeconds !== null && mayReadActivity
