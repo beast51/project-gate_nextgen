@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { PassageCall } from '../entities/call';
-import { ViolationCounts, ViolationRules, ViolationStats } from '../entities/violation';
+import { PeriodCounts, ViolationCounts, ViolationRules, ViolationStats } from '../entities/violation';
 import { countViolations } from './findViolations';
 
 const DAY_FORMAT = 'YYYY-MM-DD';
@@ -60,13 +60,26 @@ export const statsPeriods = (chosenDay: string): StatsPeriods => {
   return { week, month, threeMonths, whole };
 };
 
-const NOTHING: ViolationCounts = { overstays: 0, openVisits: 0 };
+const NOTHING: PeriodCounts = { overstays: 0, openVisits: 0, penalties: 0 };
 
+const PERIODS = ['week', 'month', 'threeMonths'] as const;
+
+// `penaltyDays`: apartment or phone -> the days its penalties started on
 export const sumViolationStats = (
   byDay: Map<string, Record<string, ViolationCounts>>,
   periods: StatsPeriods,
+  penaltyDays: Record<string, string[]> = {},
 ): Record<string, ViolationStats> => {
   const stats: Record<string, ViolationStats> = {};
+
+  Object.entries(penaltyDays).forEach(([key, days]) => {
+    days.forEach(day => PERIODS.forEach(period => {
+      const [from, to] = periods[period];
+      if (day < from || day > to) return;
+      stats[key] ??= { week: { ...NOTHING }, month: { ...NOTHING }, threeMonths: { ...NOTHING } };
+      stats[key][period].penalties += 1;
+    }));
+  });
 
   byDay.forEach((byKey, day) => {
     Object.entries(byKey).forEach(([key, counts]) => {
@@ -74,7 +87,7 @@ export const sumViolationStats = (
 
       stats[key] ??= { week: { ...NOTHING }, month: { ...NOTHING }, threeMonths: { ...NOTHING } };
 
-      (['week', 'month', 'threeMonths'] as const).forEach(period => {
+      PERIODS.forEach(period => {
         const [from, to] = periods[period];
         if (day < from || day > to) return;
         stats[key][period].overstays += counts.overstays;

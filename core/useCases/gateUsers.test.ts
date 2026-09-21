@@ -1,3 +1,4 @@
+import { noPenalties } from './__fixtures__/fakePenaltiesRepository';
 import { noActivity } from './__fixtures__/fakeActivityLog';
 import { describe, expect, it, vi } from 'vitest';
 import { GateUser } from '../entities/gateUser';
@@ -100,7 +101,7 @@ describe('editGateUser', () => {
   it('updates the directory, then the storage, and does not erase images with empty values', async () => {
     const { directory, gateUsers, log } = createFakes();
 
-    await createEditGateUser({ directory, gateUsers, recordActivity: noActivity })(user);
+    await createEditGateUser({ directory, gateUsers, recordActivity: noActivity, penalties: noPenalties })(user);
 
     expect(log).toEqual(['directory.update', 'gateUsers.update']);
     expect(directory.update).toHaveBeenCalledWith({
@@ -126,7 +127,7 @@ describe('editGateUser', () => {
   it('passes new images to the storage', async () => {
     const { directory, gateUsers } = createFakes();
 
-    await createEditGateUser({ directory, gateUsers, recordActivity: noActivity })({ ...user, image: 'a.png', additionalImages: ['b.png'] });
+    await createEditGateUser({ directory, gateUsers, recordActivity: noActivity, penalties: noPenalties })({ ...user, image: 'a.png', additionalImages: ['b.png'] });
 
     expect(gateUsers.update).toHaveBeenCalledWith(expect.objectContaining({
       image: 'a.png',

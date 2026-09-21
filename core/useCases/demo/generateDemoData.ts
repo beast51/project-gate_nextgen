@@ -1,6 +1,7 @@
 import moment from 'moment-timezone';
 import { ActivityActor, NewActivityEvent, SYSTEM_ACTOR, toActivitySubject } from '../../entities/activity';
 import { CallOutcome, CallToStore, UNREGISTERED_CALLER_NAME } from '../../entities/call';
+import { NewPenalty, penaltySubjectKeyOf } from '../../entities/penalty';
 import { GateUser } from '../../entities/gateUser';
 
 // Synthetic data of a demo sandbox. Nothing here comes from real customers: the names are generated,
@@ -20,6 +21,8 @@ export type DemoData = {
   calls: CallToStore[]
   // oldest first: what the owner of the sandbox and the scheduled job "did" before the visitor came
   activity: NewActivityEvent[]
+  // oldest first: the two penalties in force and what the careless residents got before
+  penalties: NewPenalty[]
 }
 
 // mulberry32: a tiny deterministic generator, the quality is more than enough for demo data
@@ -179,5 +182,26 @@ export const generateDemoData = (
     event([5, 'hours'], actor, 'gateUserAdded', [gateUsers[6]]),
   ];
 
-  return { gateUsers, calls, activity };
+  const penalty = (user: GateUser, from: moment.Moment, until: moment.Moment, isLifted: boolean): NewPenalty => ({
+    subjectKey: penaltySubjectKeyOf(user),
+    apartmentNumber: user.apartmentNumber || null,
+    phoneNumbers: [user.phoneNumber],
+    from: format(from),
+    until: format(until),
+    imposedBy: actor,
+    lifted: isLifted ? { at: format(until), how: 'expired' } : null,
+    source: 'recorded',
+  });
+
+  const penalties = [
+    // the careless residents (every fourth, see the history of calls) were punished before
+    ...[[0, 75], [4, 52], [0, 24], [8, 12]].map(([index, daysAgo]) => {
+      const from = current.clone().subtract(daysAgo, 'days').hour(10).minute(15).second(0);
+      return penalty(residents[index % residents.length], from, from.clone().add(8, 'days').hour(23).minute(50), true);
+    }),
+    penalty(penaltyExpired, moment.tz(penaltyExpired.blackListedFrom, TIME_FORMAT, timeZone), moment.tz(penaltyExpired.blackListedTo, TIME_FORMAT, timeZone), false),
+    penalty(blocked, moment.tz(blocked.blackListedFrom, TIME_FORMAT, timeZone), moment.tz(blocked.blackListedTo, TIME_FORMAT, timeZone), false),
+  ].sort((a, b) => a.from.localeCompare(b.from));
+
+  return { gateUsers, calls, activity, penalties };
 };

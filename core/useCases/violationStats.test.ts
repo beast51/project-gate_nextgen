@@ -107,11 +107,11 @@ describe('sumViolationStats', () => {
     const stats = sumViolationStats(byDay, statsPeriods('2024-03-14'));
 
     expect(stats['12']).toEqual({
-      week: { overstays: 1, openVisits: 1 },
-      month: { overstays: 2, openVisits: 1 },
-      threeMonths: { overstays: 3, openVisits: 1 },
+      week: { overstays: 1, openVisits: 1, penalties: 0 },
+      month: { overstays: 2, openVisits: 1, penalties: 0 },
+      threeMonths: { overstays: 3, openVisits: 1, penalties: 0 },
     });
-    expect(stats['7'].week).toEqual({ overstays: 1, openVisits: 0 });
+    expect(stats['7'].week).toEqual({ overstays: 1, openVisits: 0, penalties: 0 });
   });
 
   it('lists only those who have violations', () => {

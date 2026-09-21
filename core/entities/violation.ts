@@ -51,12 +51,18 @@ export type ViolationCounts = {
   openVisits: number
 }
 
+// what a period of the statistics shows: the violations and how many times they were really punished
+export type PeriodCounts = ViolationCounts & {
+  // penalties that started in the period
+  penalties: number
+}
+
 // Violations of an apartment (or a phone) around a chosen day
 export type ViolationStats = {
   // the calendar week (Monday - Sunday) of the chosen day
-  week: ViolationCounts
+  week: PeriodCounts
   // the calendar month of the chosen day
-  month: ViolationCounts
+  month: PeriodCounts
   // that month and the two calendar months before it
-  threeMonths: ViolationCounts
+  threeMonths: PeriodCounts
 }

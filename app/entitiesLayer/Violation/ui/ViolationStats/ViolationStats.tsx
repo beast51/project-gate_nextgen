@@ -20,10 +20,11 @@ const PERIODS = [
 const KINDS = [
   ['overstays', 'violation stats overstays'],
   ['openVisits', 'violation stats open visits'],
+  ['penalties', 'violation stats penalties'],
 ] as const;
 
 // Violations of the visitor around the chosen day: the week, the month and three months,
-// overstays and visits without an exit apart
+// overstays and visits without an exit apart, and how many times it ended with a penalty
 export const ViolationStats: FC<ViolationStatsProps> = memo(({ stats }) => {
   const { $t } = useIntl();
 

@@ -87,7 +87,7 @@
   "violation stats three months": "3 months",
   "violation stats overstays": "Over 45 min",
   "violation stats open visits": "No exit",
-  "violation stats none": "No violations in 3 months",
+  "violation stats none": "No violations or blocks in 3 months",
   "violation stats are incomplete": "Statistics are incomplete: calls of {days} days are not loaded yet",
   "search mode": "What to search by",
   "search mode: all": "Search everywhere",
@@ -97,5 +97,6 @@
   "search: clear": "Clear",
   "search: open": "Search",
   "search: close": "Close the search",
-  "search: nothing found": "Nothing found"
+  "search: nothing found": "Nothing found",
+  "violation stats penalties": "Blocks"
 }

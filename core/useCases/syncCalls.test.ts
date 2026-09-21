@@ -4,7 +4,7 @@ import { GateUser } from '../entities/gateUser';
 import { createFakeCallsRepository } from './__fixtures__/fakeCallsRepository';
 import { createFakeGateUsersRepository } from './__fixtures__/fakeGateUsersRepository';
 import { createGetCalls } from './getCalls';
-import { createRefreshCalls, createSyncCalls, DEFAULT_SYNC_INTERVAL_SECONDS } from './syncCalls';
+import { createRefreshCalls, createSyncCalls, DEFAULT_SYNC_INTERVAL_SECONDS, toStoredCall } from './syncCalls';
 
 const resident: GateUser = {
   id: 'gate-user-id',
@@ -167,6 +167,29 @@ describe('syncCalls', () => {
     await syncCalls('from', 'to');
 
     expect(state.calls).toHaveLength(3);
+  });
+});
+
+describe('toStoredCall', () => {
+  const blocked: GateUser = { ...resident, isBlackListed: true, blackListedFrom: '2024-03-10 12:00:00', blackListedTo: '2024-03-17 23:50:00' };
+  const callAt = (time: string) => ({ number: blocked.phoneNumber, time } as IncomingCall);
+
+  it('keeps the penalty the caller had at the moment of the call', () => {
+    expect(toStoredCall(callAt('2024-03-11 09:00:00'), blocked)).toMatchObject({
+      isBlackListed: true, blackListedFrom: '2024-03-10 12:00:00', blackListedTo: '2024-03-17 23:50:00',
+    });
+  });
+
+  // history is loaded later: a call of last week must not show the penalty imposed yesterday
+  it('does not give a call a penalty that started after it', () => {
+    expect(toStoredCall(callAt('2024-03-09 09:00:00'), blocked)).toMatchObject({
+      isBlackListed: false, blackListedFrom: '', blackListedTo: '',
+    });
+  });
+
+  // until the penalty is lifted the gate stays closed for the caller, whatever the term says
+  it('still shows the penalty after its term while the caller is blocked', () => {
+    expect(toStoredCall(callAt('2024-03-18 09:00:00'), blocked).isBlackListed).toBe(true);
   });
 });
 

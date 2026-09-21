@@ -3,6 +3,7 @@ import { GateUsersDirectory } from '../ports/gateUsersDirectory';
 import { GateUser } from '../entities/gateUser';
 import { GateUsersRepository } from '../ports/gateUsersRepository';
 import { RecordActivity } from './activity';
+import { PenaltyRecorder } from './penalties';
 
 const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
@@ -18,10 +19,11 @@ type Dependencies = {
   directory: GateUsersDirectory
   gateUsers: GateUsersRepository
   recordActivity: RecordActivity
+  penalties: PenaltyRecorder
 }
 
 // Returns phone numbers of the users whose penalty has expired and who may open the gate again
-export const createUnblockExpiredPenalties = ({ directory, gateUsers, recordActivity }: Dependencies) =>
+export const createUnblockExpiredPenalties = ({ directory, gateUsers, recordActivity, penalties }: Dependencies) =>
   async (now: Date = new Date()): Promise<string[]> => {
     const blackListed = await gateUsers.listBlackListed();
     const expired = blackListed.filter(user => isPenaltyExpired(user.blackListedTo, now));
@@ -51,6 +53,7 @@ export const createUnblockExpiredPenalties = ({ directory, gateUsers, recordActi
         });
 
         unblocked.push(user);
+        await penalties.lifted(user, 'expired');
       } catch (error) {
         // one failed user must not stop the others, the next run will retry
         console.error(`Failed to unblock ${user.phoneNumber}`, error);

@@ -33,6 +33,8 @@ export type ViolationCountsDto = {
   overstays: number
   // entered and did not leave until the end of the day
   openVisits: number
+  // how many times the apartment was really punished: penalties (blocks) that started in the period
+  penalties: number
 }
 
 export type ViolationStatsDto = {

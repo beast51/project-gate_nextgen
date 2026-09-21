@@ -1,3 +1,5 @@
+import { createFakePenaltiesRepository, noPenalties } from './__fixtures__/fakePenaltiesRepository';
+import { createPenaltyRecorder } from './penalties';
 import { describe, expect, it, vi } from 'vitest';
 import { GateUser } from '../entities/gateUser';
 import { GateUsersDirectory } from '../ports/gateUsersDirectory';
@@ -70,7 +72,7 @@ describe('activity journal', () => {
   it('tells blocking, unblocking and a change of data apart, though they arrive as the same edit', async () => {
     const { repository } = createFakeGateUsersRepository([resident('380501111111')]);
     const activity = createFakeActivity();
-    const edit = createEditGateUser({ directory: directory(), gateUsers: repository, recordActivity: activity.recordActivity });
+    const edit = createEditGateUser({ directory: directory(), gateUsers: repository, recordActivity: activity.recordActivity, penalties: noPenalties });
 
     await edit(resident('380501111111', { isBlackListed: true, blackListedFrom: '2024-03-10 12:00:00', blackListedTo: '2024-03-17 23:50:00' }));
     await edit(resident('380501111111', { isBlackListed: false, blackListedFrom: '2024-03-10 12:00:00', blackListedTo: '2024-03-17 23:50:00' }));
@@ -87,7 +89,7 @@ describe('activity journal', () => {
     const { repository } = createFakeGateUsersRepository([resident('380501111111')]);
     const activity = createFakeActivity();
 
-    await createEditGateUser({ directory: directory(), gateUsers: repository, recordActivity: activity.recordActivity })(
+    await createEditGateUser({ directory: directory(), gateUsers: repository, recordActivity: activity.recordActivity, penalties: noPenalties })(
       resident('380501111111', { image: null }),
     );
 
@@ -103,7 +105,7 @@ describe('activity journal', () => {
     ]);
     const activity = createFakeActivity({ id: 'system', name: 'system' });
 
-    await createUnblockExpiredPenalties({ directory: directory(), gateUsers: repository, recordActivity: activity.recordActivity })(
+    await createUnblockExpiredPenalties({ directory: directory(), gateUsers: repository, recordActivity: activity.recordActivity, penalties: noPenalties })(
       new Date('2024-03-10T12:00:00'),
     );
 
@@ -116,7 +118,7 @@ describe('activity journal', () => {
     const { repository } = createFakeGateUsersRepository([resident('380501111111')]);
     const activity = createFakeActivity();
 
-    await createUnblockExpiredPenalties({ directory: directory(), gateUsers: repository, recordActivity: activity.recordActivity })();
+    await createUnblockExpiredPenalties({ directory: directory(), gateUsers: repository, recordActivity: activity.recordActivity, penalties: noPenalties })();
 
     expect(activity.state.events).toEqual([]);
   });
@@ -172,5 +174,34 @@ describe('getActivity', () => {
     expect(await getActivity({ limit: -5 })).toHaveLength(1);
     expect(await getActivity({ limit: 100000 })).toHaveLength(6);
     expect((await log.listActors()).map(actor => actor.id).sort()).toEqual(['olga', 'yuriy']);
+  });
+});
+
+describe('penalties are recorded when gate users are blocked', () => {
+  it('blocking both phones of an apartment, a longer term and the removal are one penalty', async () => {
+    const { repository } = createFakeGateUsersRepository([resident('380501111111'), resident('380502222222')]);
+    const penalties = createFakePenaltiesRepository();
+    const edit = createEditGateUser({
+      directory: directory(),
+      gateUsers: repository,
+      recordActivity: createFakeActivity().recordActivity,
+      penalties: createPenaltyRecorder({
+        penalties: penalties.repository, actor: { id: 'a1', name: 'Olga' }, now: () => new Date('2024-03-12T09:00:00'),
+      }),
+    });
+    const blocked = { isBlackListed: true, blackListedFrom: '2024-03-10 12:00:00', blackListedTo: '2024-03-17 23:50:00' };
+
+    await edit(resident('380501111111', blocked));
+    await edit(resident('380502222222', { ...blocked, blackListedFrom: '2024-03-10 12:00:20' }));
+    await edit(resident('380501111111', { ...blocked, blackListedTo: '2024-03-24 23:50:00' }));
+    await edit(resident('380501111111', { ...blocked, isBlackListed: false }));
+
+    expect(penalties.state.penalties).toHaveLength(1);
+    expect(penalties.state.penalties[0]).toMatchObject({
+      subjectKey: '12',
+      phoneNumbers: ['380501111111', '380502222222'],
+      until: '2024-03-24 23:50:00',
+      lifted: { at: '2024-03-12 09:00:00', how: 'manually' },
+    });
   });
 });

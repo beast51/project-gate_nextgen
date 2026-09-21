@@ -103,6 +103,30 @@ model Call {
   @@unique([time, number])
 }
 
+// A penalty of an apartment (or of a caller without an apartment): its phones may not open the gate
+// for a while. Kept apart from GateUser: removing a gate user must not erase the history of penalties.
+model Penalty {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  // the apartment number or, without an apartment, the phone number
+  subjectKey      String
+  apartmentNumber String?
+  phoneNumbers    String[]
+  // 'YYYY-MM-DD HH:mm:ss', the local time of the gate
+  from            String
+  until           String
+  imposedById     String?
+  imposedByName   String?
+  liftedAt        String?
+  // 'manually' | 'expired'
+  liftedHow       String?
+  // 'recorded' | 'restoredFromCalls'
+  source          String
+  createdAt       DateTime @default(now())
+
+  @@index([from])
+  @@index([subjectKey, from])
+}
+
 // A day ('YYYY-MM-DD' is the id) whose calls were loaded from the telephony after the day was over:
 // the day is complete, it is read from this database and the telephony is not asked about it again
 model CallsDaySync {

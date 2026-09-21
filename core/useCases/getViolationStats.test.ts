@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { Call } from '../entities/call';
 import { createFakeCallsRepository } from './__fixtures__/fakeCallsRepository';
+import { createFakePenaltiesRepository as penalties } from './__fixtures__/fakePenaltiesRepository';
+import { Penalty } from '../entities/penalty';
 import { createGateClock } from './days';
 import { createGetViolationStats } from './getViolationStats';
 
@@ -27,7 +29,7 @@ describe('getViolationStats', () => {
       call('2023-12-31 09:00:00'),                                  // outside of the three months
     ]);
 
-    const { stats, periods } = await createGetViolationStats({ calls: repository, clock })('2024-03-13');
+    const { stats, periods } = await createGetViolationStats({ calls: repository, penalties: penalties().repository, clock })('2024-03-13');
 
     expect(periods).toEqual({
       week: ['2024-03-11', '2024-03-17'],
@@ -35,9 +37,9 @@ describe('getViolationStats', () => {
       threeMonths: ['2024-01-01', '2024-03-31'],
     });
     expect(stats['12']).toEqual({
-      week: { overstays: 1, openVisits: 0 },
-      month: { overstays: 1, openVisits: 1 },
-      threeMonths: { overstays: 2, openVisits: 2 },
+      week: { overstays: 1, openVisits: 0, penalties: 0 },
+      month: { overstays: 1, openVisits: 1, penalties: 0 },
+      threeMonths: { overstays: 2, openVisits: 2, penalties: 0 },
     });
   });
 
@@ -47,10 +49,34 @@ describe('getViolationStats', () => {
       call('2024-03-13 09:00:00', '7', '380502222222'),              // 3 hours ago: over the limit
     ]);
 
-    const { stats } = await createGetViolationStats({ calls: repository, clock })('2024-03-13');
+    const { stats } = await createGetViolationStats({ calls: repository, penalties: penalties().repository, clock })('2024-03-13');
 
     expect(stats['12']).toBeUndefined();
-    expect(stats['7'].week).toEqual({ overstays: 0, openVisits: 1 });
+    expect(stats['7'].week).toEqual({ overstays: 0, openVisits: 1, penalties: 0 });
+  });
+
+  it('counts the penalties that started in the periods, also for somebody without violations', async () => {
+    const penalty = (subjectKey: string, from: string): Penalty => ({
+      id: from, subjectKey, apartmentNumber: subjectKey, phoneNumbers: [], from, until: from,
+      imposedBy: null, lifted: null, source: 'recorded',
+    });
+    const { repository } = createFakeCallsRepository([call('2024-03-12 09:00:00'), call('2024-03-12 10:00:00')]);
+    const imposed = penalties([
+      penalty('12', '2024-03-12 18:00:00'),   // this week
+      penalty('12', '2024-01-20 09:00:00'),   // three months
+      penalty('12', '2023-12-31 23:59:59'),   // too old
+      penalty('90', '2024-03-02 10:00:00'),   // this month, an apartment with no violations
+    ]);
+
+    const { stats } = await createGetViolationStats({ calls: repository, penalties: imposed.repository, clock })('2024-03-13');
+
+    expect(stats['12'].week).toEqual({ overstays: 1, openVisits: 0, penalties: 1 });
+    expect(stats['12'].threeMonths.penalties).toBe(2);
+    expect(stats['90']).toEqual({
+      week: { overstays: 0, openVisits: 0, penalties: 0 },
+      month: { overstays: 0, openVisits: 0, penalties: 1 },
+      threeMonths: { overstays: 0, openVisits: 0, penalties: 1 },
+    });
   });
 
   it('never asks the telephony and reports the finished days that were not loaded', async () => {
@@ -58,7 +84,7 @@ describe('getViolationStats', () => {
     const claimSync = vi.spyOn(repository, 'claimSync');
     state.filledDays.add('2024-03-11');
 
-    const { coverage } = await createGetViolationStats({ calls: repository, clock })('2024-03-13');
+    const { coverage } = await createGetViolationStats({ calls: repository, penalties: penalties().repository, clock })('2024-03-13');
 
     expect(claimSync).not.toHaveBeenCalled();
     // 1 January .. 12 March are over: 31 + 29 + 12 days, one of them is filled
@@ -71,7 +97,7 @@ describe('getViolationStats', () => {
   it('has nothing to miss when the calls do not come from a telephony (a demo)', async () => {
     const { repository } = createFakeCallsRepository();
 
-    const { coverage } = await createGetViolationStats({ calls: repository, clock, tracksCoverage: false })('2024-03-13');
+    const { coverage } = await createGetViolationStats({ calls: repository, penalties: penalties().repository, clock, tracksCoverage: false })('2024-03-13');
 
     expect(coverage.missingDays).toEqual([]);
   });

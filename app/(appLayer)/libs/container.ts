@@ -8,6 +8,7 @@ import { CallsRepository } from '@/core/ports/callsRepository';
 import { CallsSource } from '@/core/ports/callsSource';
 import { GateUsersDirectory } from '@/core/ports/gateUsersDirectory';
 import { GateUsersRepository } from '@/core/ports/gateUsersRepository';
+import { PenaltiesRepository } from '@/core/ports/penaltiesRepository';
 import { createGetAccessLog, createRecordPageView, createRecordSignIn } from '@/core/useCases/access';
 import { createGetActivity, createRecordActivity } from '@/core/useCases/activity';
 import { createAddGateUser } from '@/core/useCases/addGateUser';
@@ -21,6 +22,7 @@ import { createGetCalls } from '@/core/useCases/getCalls';
 import { createGetViolations } from '@/core/useCases/getViolations';
 import { createGetViolationStats } from '@/core/useCases/getViolationStats';
 import { createImportGateUsers } from '@/core/useCases/importGateUsers';
+import { createPenaltyRecorder } from '@/core/useCases/penalties';
 import { createRefreshCalls, createSyncCalls } from '@/core/useCases/syncCalls';
 import { createSyncGateUsers } from '@/core/useCases/syncGateUsers';
 import { createUnblockExpiredPenalties } from '@/core/useCases/unblockExpiredPenalties';
@@ -30,6 +32,7 @@ import { createPrismaAccountsRepository } from '@/infrastructure/prisma/prismaAc
 import { createPrismaActivityLog } from '@/infrastructure/prisma/prismaActivityLog';
 import { createPrismaCallsRepository } from '@/infrastructure/prisma/prismaCallsRepository';
 import { createPrismaGateUsersRepository } from '@/infrastructure/prisma/prismaGateUsersRepository';
+import { createPrismaPenaltiesRepository } from '@/infrastructure/prisma/prismaPenaltiesRepository';
 import { unitalkCallOutcome } from '@/infrastructure/unitalk/unitalkCallOutcome';
 import { createUnitalkCallsSource } from '@/infrastructure/unitalk/unitalkCallsSource';
 import { createUnitalkGateUsersDirectory } from '@/infrastructure/unitalk/unitalkGateUsersDirectory';
@@ -51,6 +54,7 @@ import { DEFAULT_TIMEZONE, getTenantConfig, listTenants } from './tenants';
 type Adapters = {
   gateUsers: GateUsersRepository
   calls: CallsRepository
+  penalties: PenaltiesRepository
   directory: GateUsersDirectory
   source: CallsSource
   // null: the calls are never loaded from the telephony
@@ -66,11 +70,12 @@ type Adapters = {
 }
 
 const assemble = ({
-  gateUsers, calls, directory, source, callsSyncIntervalSeconds, timeZone, activityLog, accessLog, actor, mayReadActivity,
+  gateUsers, calls, penalties, directory, source, callsSyncIntervalSeconds, timeZone, activityLog, accessLog, actor, mayReadActivity,
 }: Adapters) => {
   const clock = createGateClock(timeZone);
   const syncCalls = createSyncCalls({ source, calls, gateUsers });
   const recordActivity = createRecordActivity({ log: activityLog, actor });
+  const penaltyRecorder = createPenaltyRecorder({ penalties, actor, now: clock.now });
 
   const refreshCalls = callsSyncIntervalSeconds === null
     ? async () => {}
@@ -79,18 +84,18 @@ const assemble = ({
   return {
     getCalls: createGetCalls({ calls, refreshCalls }),
     getViolations: createGetViolations({ calls, refreshCalls, now: clock.now }),
-    getViolationStats: createGetViolationStats({ calls, clock, tracksCoverage: callsSyncIntervalSeconds !== null }),
+    getViolationStats: createGetViolationStats({ calls, penalties, clock, tracksCoverage: callsSyncIntervalSeconds !== null }),
     // null: there is no telephony to load the history from, or the account may not start it
     backfillCalls: callsSyncIntervalSeconds !== null && mayReadActivity
       ? createBackfillCalls({ calls, syncCalls, today: clock.today, minIntervalSeconds: callsSyncIntervalSeconds })
       : null,
-    unblockExpiredPenalties: createUnblockExpiredPenalties({ directory, gateUsers, recordActivity }),
+    unblockExpiredPenalties: createUnblockExpiredPenalties({ directory, gateUsers, recordActivity, penalties: penaltyRecorder }),
     listGateUsers: gateUsers.list,
     listBlackListedGateUsers: gateUsers.listBlackListed,
     syncGateUsers: createSyncGateUsers({ directory, gateUsers, recordActivity }),
     importGateUsers: createImportGateUsers({ gateUsers, recordActivity }),
     addGateUser: createAddGateUser({ directory, gateUsers, recordActivity }),
-    editGateUser: createEditGateUser({ directory, gateUsers, recordActivity }),
+    editGateUser: createEditGateUser({ directory, gateUsers, recordActivity, penalties: penaltyRecorder }),
     deleteGateUser: createDeleteGateUser({ directory, gateUsers, recordActivity }),
     // sign ins and opened pages are recorded for everybody
     recordSignIn: createRecordSignIn({ log: accessLog, actor }),
@@ -117,6 +122,7 @@ const buildTenantContainer = (tenant: string, actor: ActivityActor, mayReadActiv
     gateUsers: createPrismaGateUsersRepository(prisma),
     // calls stored before outcomes existed carry only the codes of the provider of this tenant
     calls: createPrismaCallsRepository(prisma, { legacyOutcomeOf: unitalkCallOutcome }),
+    penalties: createPrismaPenaltiesRepository(prisma),
     directory: createUnitalkGateUsersDirectory(config.telephony.unitalk),
     source: createUnitalkCallsSource(config.telephony.unitalk),
     callsSyncIntervalSeconds: config.callsSyncIntervalSeconds,
@@ -139,6 +145,7 @@ const buildSandboxContainer = async (account: Account): Promise<Container> => {
   const gateUsers = createPrismaGateUsersRepository(prisma);
   const calls = createPrismaCallsRepository(prisma);
   const activityLog = createPrismaActivityLog(prisma);
+  const penalties = createPrismaPenaltiesRepository(prisma);
   const actor = { id: account.id, name: account.name };
 
   // once per server instance: fill an empty sandbox and note that it is in use.
@@ -147,7 +154,7 @@ const buildSandboxContainer = async (account: Account): Promise<Container> => {
 
   if (!prepared.has(account.id)) {
     prepared.set(account.id, (async () => {
-      await createSeedDemoSandbox({ gateUsers, calls, activityLog, actor, seed: account.id })();
+      await createSeedDemoSandbox({ gateUsers, calls, activityLog, penalties, actor, seed: account.id })();
       await accounts().markSandboxUsed(account.id, new Date());
     })());
   }
@@ -162,6 +169,7 @@ const buildSandboxContainer = async (account: Account): Promise<Container> => {
   return assemble({
     gateUsers,
     calls,
+    penalties,
     directory: createDemoGateUsersDirectory(),
     source: createDemoCallsSource(),
     callsSyncIntervalSeconds: null,

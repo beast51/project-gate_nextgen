@@ -1,3 +1,4 @@
+import { createFakePenaltiesRepository } from '../__fixtures__/fakePenaltiesRepository';
 import { describe, expect, it, vi } from 'vitest';
 import { Account } from '../../entities/account';
 import { AccountsRepository } from '../../ports/accountsRepository';
@@ -53,9 +54,10 @@ describe('seedDemoSandbox', () => {
     const gateUsers = createFakeGateUsersRepository();
     const calls = createFakeCallsRepository();
     const activity = createFakeActivityLog();
+    const penalties = createFakePenaltiesRepository();
 
     const seeded = await createSeedDemoSandbox({
-      gateUsers: gateUsers.repository, calls: calls.repository, activityLog: activity.log,
+      gateUsers: gateUsers.repository, calls: calls.repository, activityLog: activity.log, penalties: penalties.repository,
       actor: { id: 'account-1', name: 'Visitor' }, seed: 'account-1', now: () => NOW,
     })();
 
@@ -66,6 +68,10 @@ describe('seedDemoSandbox', () => {
     expect(activity.state.events.every(event => event.at <= NOW.toISOString())).toBe(true);
     expect(gateUsers.state.users).toHaveLength(18);
     expect(calls.state.calls.length).toBeGreaterThan(20);
+    // the blocked gate users have their penalties, and the statistics have older ones to show
+    expect(penalties.state.penalties.filter(penalty => !penalty.lifted)).toHaveLength(2);
+    expect(penalties.state.penalties.length).toBeGreaterThan(2);
+    expect(penalties.state.penalties.every(penalty => penalty.from <= '2024-03-10 23:59:59')).toBe(true);
 
     const violations = await createGetViolations({ calls: calls.repository, refreshCalls: async () => {} })(
       '2024-03-08 00:00:00',
@@ -82,6 +88,7 @@ describe('seedDemoSandbox', () => {
     const calls = createFakeCallsRepository();
     const seed = createSeedDemoSandbox({
       gateUsers: gateUsers.repository, calls: calls.repository, activityLog: createFakeActivityLog().log,
+      penalties: createFakePenaltiesRepository().repository,
       actor: { id: 'account-1', name: 'Visitor' }, seed: 'account-1', now: () => NOW,
     });
 

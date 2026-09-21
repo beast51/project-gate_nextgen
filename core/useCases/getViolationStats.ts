@@ -1,10 +1,13 @@
 import { ViolationRules, ViolationStats } from '../entities/violation';
 import { CallsRepository } from '../ports/callsRepository';
+import { PenaltiesRepository } from '../ports/penaltiesRepository';
+import { penaltyDaysBySubject } from './penalties';
 import { daysBetween, GateClock } from './days';
 import { countViolationsByDay, StatsPeriods, statsPeriods, sumViolationStats } from './violationStats';
 
 type Dependencies = {
   calls: CallsRepository
+  penalties: PenaltiesRepository
   clock: GateClock
   rules?: Partial<ViolationRules>
   // false: the calls do not come from a telephony (a demo), there is nothing that could be missing
@@ -23,14 +26,15 @@ export type ViolationStatsResult = {
 
 // Violations around a chosen day. Reads only the storage: three months of history are never requested
 // from the telephony because somebody opened a page. Missing days are filled by backfillCalls.
-export const createGetViolationStats = ({ calls, clock, rules = {}, tracksCoverage = true }: Dependencies) =>
+export const createGetViolationStats = ({ calls, penalties, clock, rules = {}, tracksCoverage = true }: Dependencies) =>
   async (chosenDay: string): Promise<ViolationStatsResult> => {
     const periods = statsPeriods(chosenDay);
     const [fromDay, toDay] = periods.whole;
 
-    const [passages, filledDays] = await Promise.all([
+    const [passages, filledDays, imposed] = await Promise.all([
       calls.findPassagesByTimeRange(`${fromDay} 00:00:00`, `${toDay} 23:59:59`),
       tracksCoverage ? calls.listFilledDays(fromDay, toDay) : [],
+      penalties.listStartedBetween(`${fromDay} 00:00:00`, `${toDay} 23:59:59`),
     ]);
 
     const filled = new Set(filledDays);
@@ -40,7 +44,7 @@ export const createGetViolationStats = ({ calls, clock, rules = {}, tracksCovera
     return {
       day: chosenDay,
       periods: { week: periods.week, month: periods.month, threeMonths: periods.threeMonths },
-      stats: sumViolationStats(countViolationsByDay(passages, rules, clock.now()), periods),
+      stats: sumViolationStats(countViolationsByDay(passages, rules, clock.now()), periods, penaltyDaysBySubject(imposed)),
       coverage: {
         pastDays: pastDays.length,
         missingDays: tracksCoverage ? pastDays.filter(day => !filled.has(day)) : [],

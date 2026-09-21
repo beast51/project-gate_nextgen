@@ -87,7 +87,7 @@
   "violation stats three months": "3 місяці",
   "violation stats overstays": "Понад 45 хв",
   "violation stats open visits": "Без виїзду",
-  "violation stats none": "За 3 місяці порушень немає",
+  "violation stats none": "За 3 місяці порушень і блокувань немає",
   "violation stats are incomplete": "Статистика неповна: дзвінки за {days} дн. ще не завантажені",
   "search mode": "За чим шукати",
   "search mode: all": "Пошук по всьому",
@@ -97,5 +97,6 @@
   "search: clear": "Очистити",
   "search: open": "Пошук",
   "search: close": "Закрити пошук",
-  "search: nothing found": "Нічого не знайдено"
+  "search: nothing found": "Нічого не знайдено",
+  "violation stats penalties": "Блокувань"
 }

@@ -2,11 +2,13 @@ import { GateUser } from '../entities/gateUser';
 import { GateUsersDirectory } from '../ports/gateUsersDirectory';
 import { GateUserChanges, GateUsersRepository } from '../ports/gateUsersRepository';
 import { RecordActivity } from './activity';
+import { PenaltyRecorder } from './penalties';
 
 type Dependencies = {
   directory: GateUsersDirectory
   gateUsers: GateUsersRepository
   recordActivity: RecordActivity
+  penalties: PenaltyRecorder
 }
 
 // Black listing is a part of editing: a black listed user stays in the directory without the right to open the gate
@@ -25,7 +27,7 @@ export const changedFieldsOf = (before: GateUser | undefined, after: GateUser): 
   });
 };
 
-export const createEditGateUser = ({ directory, gateUsers, recordActivity }: Dependencies) =>
+export const createEditGateUser = ({ directory, gateUsers, recordActivity, penalties }: Dependencies) =>
   async (user: GateUser): Promise<void> => {
     // the state before the edit tells what the edit was: a penalty, its removal or a change of data
     const [before] = await gateUsers.list({ phoneNumber: user.phoneNumber });
@@ -61,6 +63,12 @@ export const createEditGateUser = ({ directory, gateUsers, recordActivity }: Dep
     }
 
     await gateUsers.update(changes);
+
+    // A penalty is a fact the statistics count, unlike the journal below it is not optional: a failure
+    // is reported, and saving the blocked user again completes the record (`kept` starts a missing one).
+    if (!wasBlackListed && user.isBlackListed) await penalties.imposed(user);
+    else if (wasBlackListed && user.isBlackListed) await penalties.kept(user);
+    else if (wasBlackListed && !user.isBlackListed) await penalties.lifted(user, 'manually');
 
     if (!wasBlackListed && user.isBlackListed) {
       await recordActivity('gateUserBlocked', [user], { blockedUntil: user.blackListedTo, changedFields });

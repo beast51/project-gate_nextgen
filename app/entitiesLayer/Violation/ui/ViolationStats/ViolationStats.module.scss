@@ -32,6 +32,13 @@
   opacity: .8;
 }
 
+// the penalties are not one more violation, they are what the violations ended with
+.row:last-child {
+  margin-top: 2px;
+  padding-top: 2px;
+  border-top: 1px dashed rgba(0, 0, 0, .1);
+}
+
 .count {
   font-size: 16px;
   font-weight: 600;

@@ -9,22 +9,30 @@ import { dayOf } from './violationStats';
 // The telephony API is rate limited: not more than one synchronization per this number of seconds
 export const DEFAULT_SYNC_INTERVAL_SECONDS = 5;
 
+// History may be loaded long after the call. A penalty that started later did not exist for that call.
+const wasBlackListedAt = (caller: GateUser | null, time: string) =>
+  Boolean(caller?.isBlackListed) && !(caller?.blackListedFrom && time < caller.blackListedFrom);
+
 // A stored call keeps a snapshot of the caller: later changes of the gate user must not rewrite the history
-export const toStoredCall = (call: IncomingCall, caller: GateUser | null): CallToStore => ({
-  number: call.number,
-  time: call.time,
-  callerName: caller?.name || UNREGISTERED_CALLER_NAME,
-  carNumber: caller?.carNumber,
-  apartmentNumber: caller?.apartmentNumber,
-  image: caller?.image,
-  isBlackListed: caller?.isBlackListed || false,
-  blackListedFrom: caller?.blackListedFrom || '',
-  blackListedTo: caller?.blackListedTo || '',
-  secondsFullTime: call.secondsFullTime,
-  outcome: call.outcome,
-  cause: call.cause,
-  state: call.state,
-});
+export const toStoredCall = (call: IncomingCall, caller: GateUser | null): CallToStore => {
+  const isBlackListed = wasBlackListedAt(caller, call.time);
+
+  return {
+    number: call.number,
+    time: call.time,
+    callerName: caller?.name || UNREGISTERED_CALLER_NAME,
+    carNumber: caller?.carNumber,
+    apartmentNumber: caller?.apartmentNumber,
+    image: caller?.image,
+    isBlackListed,
+    blackListedFrom: (isBlackListed && caller?.blackListedFrom) || '',
+    blackListedTo: (isBlackListed && caller?.blackListedTo) || '',
+    secondsFullTime: call.secondsFullTime,
+    outcome: call.outcome,
+    cause: call.cause,
+    state: call.state,
+  };
+};
 
 // one phone can not make two calls in the same second
 const callKey = (call: { number: string, time: string }) => `${call.number}|${call.time}`;
