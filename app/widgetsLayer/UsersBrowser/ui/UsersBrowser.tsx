@@ -7,7 +7,8 @@ import { FaUserPlus } from 'react-icons/fa6';
 import { useIntl } from 'react-intl';
 import { UserBrowserType } from '../UserBrowser.type';
 import { useSearchAndPagination } from '../lib/useSearchAndPagination';
-import { Input } from '@/sharedLayer/ui/Input';
+import { SearchField } from '@/sharedLayer/ui/SearchField';
+import { useListSearch } from '@/sharedLayer/lib/search';
 import classes from './UsersBrowser.module.scss';
 import { usePathname } from '@/sharedLayer/framework/navigation';
 import { useGateUsers, useGateUsersCache } from '@/sharedLayer/api';
@@ -35,23 +36,24 @@ export const UserBrowser: FC<UserBrowserType> = ({ users: initialUsers }) => {
     gateUsersCache.refresh();
   };
 
+  const search = useListSearch();
+
   const {
     page,
-    searchQuery,
     paginatedData,
     searchResult,
     handlePageChange,
-    handleSearchInput,
-  } = useSearchAndPagination(users, ITEMS_PER_PAGE);
+  } = useSearchAndPagination(users, ITEMS_PER_PAGE, search.query, search.mode);
 
   return (
     <>
       <div className={classes.header}>
         <div className={classes.container}>
-          <Input
-            label={$t({ id: 'search' })}
-            value={searchQuery}
-            onChange={handleSearchInput}
+          <SearchField
+            value={search.text}
+            mode={search.mode}
+            onChange={search.setQuery}
+            onModeChange={search.setMode}
           />
           <Button onClick={handleOpen}>
             <FaUserPlus />

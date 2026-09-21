@@ -34,6 +34,41 @@
   gap: 24px;
 }
 
+// the date, the loupe and, on the violations page, the button of the management
+.withSearch {
+  grid-template-columns: minmax(0, 1fr) 40px;
+  gap: 8px;
+  padding-right: 8px;
+}
+
+.threeItems {
+  grid-template-columns: minmax(0, 1fr) 40px 50px;
+}
+
+.searchWrapper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 40px;
+  align-items: center;
+  gap: 8px;
+  padding-right: 8px;
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: #11a694;
+  font-size: 20px;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--green);
+  }
+}
+
 .hidden {
   display: none;
 }
@@ -58,6 +93,11 @@
     justify-content: space-between;
     align-items: center;
 
+  }
+
+  // the date with the loupe, or the search field instead of them
+  .searchContainer {
+    grid-template-columns: minmax(0, 380px) 232px;
   }
 
   // two fields of the journal filters need more room than a single date field

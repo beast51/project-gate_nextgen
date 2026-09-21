@@ -10,7 +10,8 @@ import { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import cn from 'classnames';
 import classes from './MobileHeader.module.scss';
-import { FaEllipsisV, FaUnlock } from 'react-icons/fa';
+import { FaEllipsisV, FaSearch, FaUnlock } from 'react-icons/fa';
+import { MdClose } from 'react-icons/md';
 
 import { FaArrowLeftLong } from 'react-icons/fa6';
 import { AppLink } from '@/sharedLayer/ui/AppLink';
@@ -21,6 +22,8 @@ import { MdOutlineManageAccounts } from 'react-icons/md';
 import { api, useGateUsersCache } from '@/sharedLayer/api';
 import { ActivityFilters } from '@/featuresLayer/ActivityLog';
 import toast from 'react-hot-toast';
+import { SearchField } from '@/sharedLayer/ui/SearchField';
+import { SEARCH_MODE_PARAM, SEARCH_QUERY_PARAM, useListSearch } from '@/sharedLayer/lib/search';
 
 export const getFromToFromDataPicker = (date: string | null) => {
   const from = moment(date, 'ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (zz)').format(
@@ -60,12 +63,29 @@ const MobileHeader = ({
   const [isLoading, setIsLoading] = useState(false);
   const gateUsersCache = useGateUsersCache();
 
+  // The lists of a day are searched from the header: the loupe turns the date field into the search field.
+  const isSearchable = type === 'callsList' || type === 'violationsList';
+  const search = useListSearch();
+  const [isSearchOpen, setIsSearchOpen] = useState(Boolean(search.query));
+
+  const closeSearch = () => {
+    search.clear();
+    setIsSearchOpen(false);
+  };
+
   const datePickerHandler = (value: string | null) => {
     const { from, to } = getFromToFromDataPicker(value);
+    // the person who is looked for stays the same on another day
+    const kept = [SEARCH_QUERY_PARAM, SEARCH_MODE_PARAM]
+      .map((name) => [name, searchParams.get(name)])
+      .filter(([, kept]) => kept)
+      .map(([name, kept]) => `&${name}=${encodeURIComponent(kept!)}`)
+      .join('');
+
     router.push(
       type === 'callsList'
-        ? `/calls?from=${from}&to=${to}`
-        : `/violations?from=${from}&to=${to}`,
+        ? `/calls?from=${from}&to=${to}${kept}`
+        : `/violations?from=${from}&to=${to}${kept}`,
     );
   };
 
@@ -85,15 +105,45 @@ const MobileHeader = ({
 
   return (
     <div className={classes.header}>
-      <div className={cn(classes.container, { [classes.wideContainer]: type === 'journal' })}>
+      <div
+        className={cn(classes.container, {
+          [classes.wideContainer]: type === 'journal',
+          [classes.searchContainer]: isSearchable,
+        })}
+      >
         {type === 'journal' && <ActivityFilters />}
-        <div className={cn(classes.headerWrapper, { [classes.hidden]: type === 'journal' })}>
+        {isSearchable && isSearchOpen && (
+          <div className={classes.searchWrapper}>
+            <SearchField
+              value={search.text}
+              mode={search.mode}
+              onChange={search.setQuery}
+              onModeChange={search.setMode}
+              autoFocus
+            />
+            <button type="button" className={classes.iconButton} onClick={closeSearch} aria-label={$t({ id: 'search: close' })}>
+              <MdClose />
+            </button>
+          </div>
+        )}
+        <div
+          className={cn(classes.headerWrapper, {
+            [classes.hidden]: type === 'journal' || (isSearchable && isSearchOpen),
+            [classes.withSearch]: isSearchable,
+            [classes.threeItems]: type === 'violationsList',
+          })}
+        >
           {(type === 'callsList' || type === 'violationsList') && (
             <DatePicker
               label={$t({ id: 'Select date' })}
               onAccept={datePickerHandler}
               selectedDate={selectedDate}
             />
+          )}
+          {isSearchable && (
+            <button type="button" className={classes.iconButton} onClick={() => setIsSearchOpen(true)} aria-label={$t({ id: 'search: open' })}>
+              <FaSearch />
+            </button>
           )}
           {type === 'violationsList' && (
             <AppLink href="/violations/management">

@@ -1,0 +1,88 @@
+// the same look as sharedLayer/ui/Input, with the mode button inside the field
+.field {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.label {
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  z-index: 1;
+  padding: 0 8px;
+  background-color: var(--input-primary-label-bg);
+  color: var(--input-primary-label-color);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: 0.3px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.input {
+  height: 46px;
+  width: 100%;
+  padding: 0 40px 0 60px;
+  border-radius: 23px;
+  border: var(--input-primary-border);
+  background-color: var(--input-primary-bg);
+  color: var(--input-primary-color);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 125%;
+  letter-spacing: 0.25px;
+
+  &:active,
+  &:focus-visible {
+    border: 2px solid var(--green);
+    outline: none;
+  }
+
+  // the field has its own clear button
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+.mode {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  height: 36px;
+  padding: 0 4px 0 10px;
+  border-radius: 18px;
+  background: rgba(17, 166, 148, .12);
+  color: #11a694;
+  font-size: 16px;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--green);
+  }
+}
+
+.arrow {
+  font-size: 20px;
+}
+
+.clear {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--input-primary-color);
+  font-size: 20px;
+  opacity: .6;
+  cursor: pointer;
+}

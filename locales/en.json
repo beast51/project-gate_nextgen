@@ -88,5 +88,14 @@
   "violation stats overstays": "Over 45 min",
   "violation stats open visits": "No exit",
   "violation stats none": "No violations in 3 months",
-  "violation stats are incomplete": "Statistics are incomplete: calls of {days} days are not loaded yet"
+  "violation stats are incomplete": "Statistics are incomplete: calls of {days} days are not loaded yet",
+  "search mode": "What to search by",
+  "search mode: all": "Search everywhere",
+  "search mode: phone": "By phone number",
+  "search mode: apartment": "By apartment",
+  "search mode: car": "By car number",
+  "search: clear": "Clear",
+  "search: open": "Search",
+  "search: close": "Close the search",
+  "search: nothing found": "Nothing found"
 }

@@ -29,6 +29,14 @@ export const usePathname = (): string => useNextPathname();
 
 export type QueryParams = {
   get: (name: string) => string | null
+  toString: () => string
 }
+
+// Changes the query of the current address without a navigation: nothing is requested from the server,
+// useSearchParams() of every component sees the new value. For state that changes while typing.
+// (Next.js syncs the native History API with its router, see "Native History API" in its docs.)
+export const replaceQuery = (query: string) => {
+  window.history.replaceState(null, '', query ? `?${query}` : window.location.pathname);
+};
 
 export const useSearchParams = (): QueryParams => useNextSearchParams();

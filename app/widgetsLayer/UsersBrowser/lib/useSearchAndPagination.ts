@@ -1,28 +1,31 @@
-import { useMemo, useState } from "react";
-import type { ChangeEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { GateUserType } from '@/entitiesLayer/GateUser/model/types/GateUser.type';
+import { matchesSearch, SearchMode } from '@/sharedLayer/lib/search';
 
-// search by name, car number, phone number and apartment
-export const filterGateUsers = (users: GateUserType[], searchQuery: string) => {
-  const query = searchQuery.toLowerCase();
+// search by everything (name, car number, phone number, apartment) or by one of them
+export const filterGateUsers = (users: GateUserType[], searchQuery: string, mode: SearchMode = 'all') =>
+  searchQuery.trim()
+    ? users.filter((user) => matchesSearch({
+      phones: [user.phoneNumber],
+      apartment: user.apartmentNumber,
+      cars: user.carNumber,
+      name: user.name,
+    }, searchQuery, mode))
+    : users;
 
-  if (!query) return users;
-
-  return users.filter(
-    (user) =>
-      user.name?.toLowerCase().includes(query) ||
-      Boolean(user.carNumber?.filter((number) => number.toLowerCase().includes(query)).length) ||
-      user.phoneNumber?.toLowerCase().includes(query) ||
-      user.apartmentNumber?.toLowerCase().includes(query),
-  );
-};
-
-export const useSearchAndPagination = (data: GateUserType[], itemsPerPage: number) => {
+export const useSearchAndPagination = (
+  data: GateUserType[],
+  itemsPerPage: number,
+  searchQuery: string,
+  mode: SearchMode,
+) => {
   const [page, setPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
 
   // derived from the data: a refreshed list shows up without remounting the component
-  const searchResult = useMemo(() => filterGateUsers(data, searchQuery), [data, searchQuery]);
+  const searchResult = useMemo(() => filterGateUsers(data, searchQuery, mode), [data, searchQuery, mode]);
+
+  // another search is another list: it starts from its first page
+  useEffect(() => setPage(1), [searchQuery, mode]);
 
   const paginatedData = useMemo(() => {
     return searchResult?.slice(
@@ -38,19 +41,10 @@ export const useSearchAndPagination = (data: GateUserType[], itemsPerPage: numbe
     setPage(value);
   };
 
-  const handleSearchInput = (
-    event: ChangeEvent<HTMLInputElement>,
-  ) => {
-    setSearchQuery(event.target.value);
-    setPage(1);
-  };
-
   return {
     page,
-    searchQuery,
     paginatedData,
     searchResult,
     handlePageChange,
-    handleSearchInput,
   };
 };

@@ -33,6 +33,14 @@ describe('filterGateUsers', () => {
     expect(filterGateUsers(users, 'nobody')).toEqual([]);
   });
 
+  it('searches by one field when a mode is chosen', () => {
+    // "1" is in every phone number, and only one apartment starts with it
+    expect(filterGateUsers(users, '1', 'apartment').map(u => u.name)).toEqual(['Ivan']);
+    expect(filterGateUsers(users, '050-222', 'phone').map(u => u.name)).toEqual(['Olga']);
+    expect(filterGateUsers(users, 'вс 7777', 'car').map(u => u.name)).toEqual(['Olga']);
+    expect(filterGateUsers(users, 'olga', 'car')).toEqual([]);
+  });
+
   it('sees a user that appears in a refreshed list', () => {
     const refreshed = [...users, user({ name: 'New resident', phoneNumber: '380504444444' })];
 

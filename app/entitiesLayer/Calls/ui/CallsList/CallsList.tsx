@@ -2,12 +2,13 @@
 import { formatTime } from '@/sharedLayer/utils/date';
 import { paramsToString } from '@/sharedLayer/utils/paramsToString';
 import { useSearchParams } from '@/sharedLayer/framework/navigation';
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useCalls } from '@/sharedLayer/api';
 import { CallsCard } from '../CallsCard';
 import classes from './CallsList.module.scss';
 import { CallType } from '../../model/types/Calls.type';
 import { useIntl } from 'react-intl';
+import { matchesSearch, useListSearch } from '@/sharedLayer/lib/search';
 
 export type CallsListPropsType = {};
 
@@ -41,14 +42,26 @@ export const CallsList: FC<CallsListPropsType> = () => {
     [calls, isFilteredCalls, filteredCalls],
   );
 
+  const { query, mode } = useListSearch();
+  const foundCalls = useMemo(
+    () => filteredCalls?.filter((call) => matchesSearch({
+      phones: [call.number],
+      apartment: call.apartmentNumber,
+      cars: call.carNumber,
+      name: call.callerName,
+    }, query, mode)),
+    [filteredCalls, query, mode],
+  );
+
   if (isLoading) {
     return <p className="m-4">{$t({ id: 'calls are loading' })}</p>;
   }
 
   return (
     <ul className={classes.callsList}>
-      {filteredCalls !== undefined &&
-        filteredCalls.map((call) => {
+      {query && foundCalls?.length === 0 && <li className="m-4">{$t({ id: 'search: nothing found' })}</li>}
+      {foundCalls !== undefined &&
+        foundCalls.map((call) => {
           return (
             <CallsCard
               call={call}
