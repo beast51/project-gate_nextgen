@@ -1,22 +1,19 @@
-import { getContainer } from '@/appLayer/libs/container';
-import { toGateUserDto } from '@/appLayer/api/_lib/mappers';
-import { GateUserType } from '@/entitiesLayer/GateUser/model/types/GateUser.type';
+import { GateUsersQuery, GateUsersResponse } from '@/contracts';
+import { ApiError } from '@/sharedLayer/api/createApiClient';
+import { getServerApi } from '@/sharedLayer/framework/serverApi';
 
-// Data for the server rendered pages. The only place where pages touch the back end:
-// when the pages move to the HTTP API, only this file changes.
+// Data for the server rendered pages, loaded over HTTP like everything else in the UI
 
-export const loadGateUsers = async (phoneNumber = ''): Promise<GateUserType[]> => {
-  const container = await getContainer();
-  if (!container) return [];
-
-  const users = await container.listGateUsers(phoneNumber ? { phoneNumber } : {});
-  return users.map(toGateUserDto);
+const load = async (query: GateUsersQuery): Promise<GateUsersResponse> => {
+  try {
+    return await getServerApi().getGateUsers(query);
+  } catch (error) {
+    // a visitor without a session sees an empty page, the middleware sends them to the sign in form
+    if (error instanceof ApiError && error.status === 401) return [];
+    throw error;
+  }
 };
 
-export const loadBlackListedGateUsers = async (): Promise<GateUserType[]> => {
-  const container = await getContainer();
-  if (!container) return [];
+export const loadGateUsers = (phoneNumber = '') => load(phoneNumber ? { phoneNumber } : {});
 
-  const users = await container.listBlackListedGateUsers();
-  return users.map(toGateUserDto);
-};
+export const loadBlackListedGateUsers = () => load({ blackListed: true });
