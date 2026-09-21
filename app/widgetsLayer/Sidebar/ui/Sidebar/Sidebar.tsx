@@ -14,19 +14,23 @@ export async function Sidebar({
     | 'callsList'
     | 'violationsList'
     | 'settings'
+    // like 'settings' (no footer, a back arrow), with the filters of the journals in the header
+    | 'journal'
     | 'violationsManagement';
   children: React.ReactNode;
 }) {
+  const isOverlay = type === 'settings' || type === 'journal';
+
   return (
     <>
       <div
         className={cn(
-          { 'full-height': type !== 'settings' },
-          { [classes.settings]: type === 'settings' },
+          { 'full-height': !isOverlay },
+          { [classes.settings]: isOverlay },
         )}
       >
         {type !== 'usersList' && <MobileHeader title={title} type={type} />}
-        {type !== 'settings' && <MobileFooter />}
+        {!isOverlay && <MobileFooter />}
         <>{children}</>
       </div>
     </>

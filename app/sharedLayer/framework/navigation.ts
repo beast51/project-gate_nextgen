@@ -9,6 +9,8 @@ import {
 
 export type AppRouter = {
   push: (href: string) => void
+  // the same without a new entry of the browser history
+  replace: (href: string) => void
   // renders the current server rendered page again with fresh data
   refresh: () => void
 }
@@ -18,6 +20,7 @@ export const useRouter = (): AppRouter => {
 
   return useMemo(() => ({
     push: (href: string) => router.push(href),
+    replace: (href: string) => router.replace(href),
     refresh: () => router.refresh(),
   }), [router]);
 };

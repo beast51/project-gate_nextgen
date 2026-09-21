@@ -1,19 +1,15 @@
 'use client';
 
-import { FC, useMemo, useState } from 'react';
+import { FC, useState } from 'react';
 import moment from 'moment';
 import cn from 'classnames';
-import { MenuItem } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { AccessEventDto, ActivityActorDto, ActivityEventDto } from '@/contracts';
-import { ApiError, useAccessActors, useAccessLog, useActivity, useActivityActors } from '@/sharedLayer/api';
-import { DatePicker } from '@/sharedLayer/ui/DatePicker';
-import { Select } from '@/sharedLayer/ui/Select';
+import { ApiError, useAccessLog, useActivity } from '@/sharedLayer/api';
 import { formatPhoneNumber } from '@/sharedLayer/utils/formatPhoneNumber';
+import { useJournalFilters } from '../model/useJournalFilters';
+import { SYSTEM_ACTOR_ID } from './ActivityFilters';
 import classes from './ActivityLog.module.scss';
-
-const EVERYBODY = 'everybody';
-const SYSTEM_ACTOR_ID = 'system';
 
 type Tab = 'actions' | 'access'
 
@@ -22,34 +18,16 @@ const isForbidden = (error: unknown) => error instanceof ApiError && error.statu
 // the journals keep UTC, the operator sees the time of their own time zone
 const formatTime = (at: string) => moment(at).format('DD.MM.YYYY HH:mm:ss');
 
-// What the operators did and when they were in the application, with one filter by the account.
+// What the operators did and when they were in the application, for the day and the user chosen in the header.
 // An account that may not read the journals sees nothing at all.
 export const ActivityLog: FC = () => {
   const { $t } = useIntl();
   const [tab, setTab] = useState<Tab>('actions');
-  const [actor, setActor] = useState(EVERYBODY);
-  // The journals are read by days, like the calls and the violations: the page opens on today.
-  // (An empty picker would also drop its label into the field and show no selected day.)
-  const [day, setDay] = useState(() => moment());
+  // the day and the user are chosen in the header of the page, see ActivityFilters
+  const { query } = useJournalFilters();
 
-  // "the 21st" is the day of the operator: its borders are computed in the time zone of the browser
-  const query = useMemo(() => ({
-    actor: actor === EVERYBODY ? undefined : actor,
-    from: day.clone().startOf('day').toISOString(),
-    to: day.clone().endOf('day').toISOString(),
-  }), [actor, day]);
-
-  const { data: activityActors = [] } = useActivityActors();
-  const { data: accessActors = [] } = useAccessActors();
   const activity = useActivity(query);
   const access = useAccessLog(query);
-
-  // somebody may have only looked around and done nothing, or the other way round
-  const actors = useMemo(() => {
-    const known = new Map<string, ActivityActorDto>();
-    [...activityActors, ...accessActors].forEach((item) => known.set(item.id, item));
-    return Array.from(known.values());
-  }, [activityActors, accessActors]);
 
   if (isForbidden(activity.error) || isForbidden(access.error)) return null;
 
@@ -61,28 +39,6 @@ export const ActivityLog: FC = () => {
   return (
     <section className={classes.activity}>
       <div className={classes.header}>
-        {/* the filters come first, in one row: they apply to both tabs below */}
-        <div className={classes.filters}>
-          <div className={classes.date}>
-            <DatePicker
-              label={$t({ id: 'Select date' })}
-              selectedDate={day}
-              // the picker hands over a moment object, whatever its prop type says
-              onAccept={(value) => value && setDay(moment(value as moment.MomentInput))}
-            />
-          </div>
-          <Select
-            label={$t({ id: 'activity: filter by user' })}
-            value={actor}
-            onChange={(event) => setActor(event.target.value)}
-          >
-            <MenuItem value={EVERYBODY}>{$t({ id: 'activity: everybody' })}</MenuItem>
-            {actors.map((item) => (
-              <MenuItem key={item.id} value={item.id}>{actorName(item)}</MenuItem>
-            ))}
-          </Select>
-        </div>
-
         <div className={classes.tabs} role="tablist">
           {(['actions', 'access'] as const).map((item) => (
             <button

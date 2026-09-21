@@ -1,8 +1,11 @@
 .activity {
   display: grid;
-  grid-template-rows: auto 1fr;
+  // the filters and the tabs stay, the list below takes the rest of the height and scrolls inside.
+  // minmax(0, 1fr), not 1fr: a plain 1fr row never gets smaller than its content, so nothing would scroll
+  grid-template-rows: auto minmax(0, 1fr);
   gap: 16px;
   min-height: 0;
+  height: 100%;
   width: 100%;
 }
 
@@ -11,25 +14,10 @@
   gap: 12px;
 }
 
-// the date and the user side by side, also on a phone
-.filters {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 8px;
-  align-items: center;
-  // the floating labels of the fields stick out above them, they need air under the header
-  padding-top: 8px;
-}
-
 .tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-}
-
-// the picker field is an inline element, in a grid cell it has to be told to take the whole width
-.date {
-  display: grid;
 }
 
 .tab {

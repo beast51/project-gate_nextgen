@@ -8,6 +8,7 @@ import 'moment/locale/uk';
 import { useRouter, useSearchParams, usePathname } from '@/sharedLayer/framework/navigation';
 import { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
+import cn from 'classnames';
 import classes from './MobileHeader.module.scss';
 import { FaEllipsisV, FaUnlock } from 'react-icons/fa';
 
@@ -18,6 +19,7 @@ import { ToggleTheme } from '@/sharedLayer/ui/Toggle';
 import { Button } from '@/sharedLayer/ui/Button';
 import { MdOutlineManageAccounts } from 'react-icons/md';
 import { api, useGateUsersCache } from '@/sharedLayer/api';
+import { ActivityFilters } from '@/featuresLayer/ActivityLog';
 import toast from 'react-hot-toast';
 
 export const getFromToFromDataPicker = (date: string | null) => {
@@ -43,6 +45,8 @@ const MobileHeader = ({
     | 'callsList'
     | 'violationsList'
     | 'settings'
+    // like 'settings' (no footer, a back arrow), with the filters of the journals in the header
+    | 'journal'
     | 'violationsManagement';
 }) => {
   const { $t } = useIntl();
@@ -81,8 +85,9 @@ const MobileHeader = ({
 
   return (
     <div className={classes.header}>
-      <div className={classes.container}>
-        <div className={classes.headerWrapper}>
+      <div className={cn(classes.container, { [classes.wideContainer]: type === 'journal' })}>
+        {type === 'journal' && <ActivityFilters />}
+        <div className={cn(classes.headerWrapper, { [classes.hidden]: type === 'journal' })}>
           {(type === 'callsList' || type === 'violationsList') && (
             <DatePicker
               label={$t({ id: 'Select date' })}
@@ -115,7 +120,7 @@ const MobileHeader = ({
         </div>
       </div>
 
-      {type !== 'settings' ? (
+      {type !== 'settings' && type !== 'journal' ? (
         <div className={classes.settingsWrapper}>
           <AppLink href={`${pathname}/settings`}>
             <FaEllipsisV />

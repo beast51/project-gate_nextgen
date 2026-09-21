@@ -34,6 +34,10 @@
   gap: 24px;
 }
 
+.hidden {
+  display: none;
+}
+
 // Nested on purpose: AppLink centers its content with the same specificity and its styles load later,
 // so a single class here loses to it.
 .headerWrapper .unlockButton {
@@ -54,6 +58,11 @@
     justify-content: space-between;
     align-items: center;
 
+  }
+
+  // two fields of the journal filters need more room than a single date field
+  .wideContainer {
+    grid-template-columns: minmax(0, 440px) 232px;
   }
 
   .wrapper {

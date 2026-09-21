@@ -17,6 +17,19 @@
 // offsets as the lists of the other pages (the 80px of .settings leave room for the switchers).// (.settings.contentOnly, not .contentOnly: the desktop rule of .settings below would win otherwise)
 .settings.contentOnly {
   grid-template-rows: minmax(0, 1fr);
+  // Pinned between the header and the bottom of the screen, whatever the height of the nested section
+  // layouts is (they add up to 64px more than the screen, which let the whole page scroll and the top of
+  // the content slide under the header). Only the content scrolls, inside itself.
+  // top/bottom instead of a height in vh: the browser bar of a phone does not cut the bottom off.
+  position: fixed;
+  top: 64px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: auto;
+  // taken out of the flow, the panel is no longer covered by the background of its wrapper:
+  // without its own one the footer of the section layout shows through
+  background: var(--background-color);
   padding: 8px 8px 24px;
 
   @media (min-width: 400px) {

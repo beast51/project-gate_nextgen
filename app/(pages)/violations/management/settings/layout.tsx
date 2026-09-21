@@ -5,5 +5,6 @@ export default async function SettingsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <Sidebar type="settings">{children}</Sidebar>;
+  // the header of this page holds the filters of the journals
+  return <Sidebar type="journal">{children}</Sidebar>;
 }

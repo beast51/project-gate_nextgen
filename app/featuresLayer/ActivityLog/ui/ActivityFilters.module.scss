@@ -1,0 +1,13 @@
+// the date and the user side by side, also on a phone
+.filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+// the picker field is an inline element, in a grid cell it has to be told to take the whole width
+.date {
+  display: grid;
+}
