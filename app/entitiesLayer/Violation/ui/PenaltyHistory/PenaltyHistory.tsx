@@ -21,7 +21,8 @@ const formatTime = (time: string) => {
 const daysBetween = (from: string, until: string) =>
   Math.max(1, Math.round((Date.parse(`${until.slice(0, 10)}T00:00:00Z`) - Date.parse(`${from.slice(0, 10)}T00:00:00Z`)) / 86_400_000));
 
-// The penalties of an apartment: when, for how long, why, what for and how each of them ended
+// The penalties of an apartment: when, for how long, why (the ground and the words of the operator)
+// and how each of them ended
 export const PenaltyHistory: FC<PenaltyHistoryProps> = ({ penalties }) => {
   const { $t } = useIntl();
   // a ground is stored as a code; one that this version does not know is shown as it is
@@ -61,17 +62,6 @@ export const PenaltyHistory: FC<PenaltyHistoryProps> = ({ penalties }) => {
                 <span className={classes.label}>{$t({ id: 'resident history: ground' })}</span>{' '}
                 {/* a ready-made ground writes its own words into the comment: they are not repeated */}
                 {penalty.comment && ground && penalty.comment.includes(ground) ? penalty.comment : [ground, penalty.comment].filter(Boolean).join('. ')}
-              </p>
-            )}
-
-            {penalty.reason && (
-              <p className={classes.line}>
-                <span className={classes.label}>{$t({ id: 'resident history: what for' })}</span>{' '}
-                {$t({ id: 'resident history: reason' }, {
-                  overstays: penalty.reason.overstays,
-                  minutes: penalty.reason.overstayMinutes,
-                  openVisits: penalty.reason.openVisits,
-                })}
               </p>
             )}
 

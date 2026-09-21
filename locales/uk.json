@@ -125,8 +125,6 @@
   "resident history: term is over": "Строк вийшов",
   "resident history: lifted early": "Знято достроково, {at}",
   "resident history: ground": "Причина:",
-  "resident history: what for": "За що:",
-  "resident history: reason": "понад 45 хв ×{overstays} ({minutes} хв), паровоз ×{openVisits}",
   "resident history: imposed by": "Заблокував(ла) {name}",
   "resident history: restored": "Відновлено зі старих дзвінків",
   "resident: phones of the apartment": "Телефони квартири",
