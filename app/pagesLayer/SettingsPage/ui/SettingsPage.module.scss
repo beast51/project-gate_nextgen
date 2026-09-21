@@ -23,27 +23,30 @@
   // top/bottom instead of a height in vh: the browser bar of a phone does not cut the bottom off.
   position: fixed;
   top: 64px;
-  // the navigation of the section stays visible: a bar of 65px at the bottom of a phone...
-  bottom: 65px;
+  // Like on the other pages, the content goes down to the very bottom and passes UNDER the navigation
+  // bar of a phone, which is translucent and blurs it. The scrolling content adds this much room at its end,
+  // so its last item can be scrolled above the bar (the lists of the other pages use the same 72px).
+  bottom: 0;
+  --under-navigation: 72px;
   left: 0;
   right: 0;
   height: auto;
 
-  // ...and a rail of 80px on the left of a wide screen
+  // on a wide screen the navigation is a rail of 80px on the left, nothing lies over the content
   @media (min-width: 1024px) {
-    bottom: 0;
     left: 80px;
+    --under-navigation: 8px;
   }
-  // the panel ends where the navigation begins, so nothing of the page shows through the list
+  // the panel is opaque: what shows through the navigation is the journal, not the page behind it
   background: var(--background-color);
-  padding: 8px;
+  padding: 8px 8px 0;
 
   @media (min-width: 400px) {
-    padding: 8px 16px;
+    padding: 8px 16px 0;
   }
 
   @media (min-width: 1024px) {
-    padding: 16px 16px 8px;
+    padding: 16px 16px 0;
   }
 }
 

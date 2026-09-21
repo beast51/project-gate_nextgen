@@ -37,6 +37,8 @@
 }
 
 .body {
+  // room at the end of the list for whatever lies over the bottom of the page (the navigation bar)
+  padding-bottom: var(--under-navigation, 0);
   display: grid;
   grid-template-rows: auto;
   align-content: flex-start;
