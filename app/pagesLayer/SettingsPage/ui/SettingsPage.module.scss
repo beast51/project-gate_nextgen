@@ -7,6 +7,12 @@
   max-width: 912px;
 }
 
+// the content takes the free height and scrolls inside, the exit button stays at the bottom
+.withContent {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 24px;
+}
+
 .button {
   align-self: flex-end;
 }

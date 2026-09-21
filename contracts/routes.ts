@@ -10,6 +10,8 @@ export const API_ROUTES = {
   exportGateUsers: '/api/users/export',
   importGateUsers: '/api/users/import',
   syncGateUsersFromDirectory: '/api/users/sync_from_directory',
+  activity: '/api/activity',
+  activityActors: '/api/activity/actors',
   register: '/api/register',
   deleteFiles: '/api/cloudinary/delete_files',
 } as const;

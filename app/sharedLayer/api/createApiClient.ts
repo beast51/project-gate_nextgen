@@ -1,4 +1,7 @@
 import {
+  ActivityActorsResponse,
+  ActivityQuery,
+  ActivityResponse,
   AddGateUserRequest,
   API_ROUTES,
   CallsResponse,
@@ -32,7 +35,7 @@ export type ApiTransport = {
   onUnauthorized?: () => void
 }
 
-type Query = Record<string, string | boolean | undefined>
+type Query = Record<string, string | number | boolean | undefined>
 
 const toQueryString = (query: Query = {}) => {
   const params = new URLSearchParams();
@@ -79,6 +82,9 @@ export const createApiClient = ({ fetch: send, baseUrl = '', headers, onUnauthor
     addGateUser: (user: AddGateUserRequest) => request<unknown>(API_ROUTES.addGateUser, { body: user }),
     editGateUser: (user: EditGateUserRequest) => request<unknown>(API_ROUTES.editGateUser, { body: user }),
     deleteGateUser: (user: DeleteGateUserRequest) => request<unknown>(API_ROUTES.deleteGateUser, { body: user }),
+
+    getActivity: (query: ActivityQuery = {}) => request<ActivityResponse>(API_ROUTES.activity, { query }),
+    getActivityActors: () => request<ActivityActorsResponse>(API_ROUTES.activityActors),
 
     register: (account: RegisterRequest) => request<unknown>(API_ROUTES.register, { body: account }),
     deleteFiles: (files: unknown) => request<unknown>(API_ROUTES.deleteFiles, { body: files }),

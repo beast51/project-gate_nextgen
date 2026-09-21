@@ -1,7 +1,7 @@
 'use client';
 
 import useSWR, { useSWRConfig } from 'swr';
-import { GateUserDto, GateUsersQuery, GateUsersResponse, PeriodQuery } from '@/contracts';
+import { ActivityQuery, GateUserDto, GateUsersQuery, GateUsersResponse, PeriodQuery } from '@/contracts';
 import { apiKeys, isKeyOf } from './apiKeys';
 import { api } from './browserApi';
 import { blackListWithChangedGateUser, withChangedGateUser, withoutGateUser } from './gateUsersCache';
@@ -24,6 +24,15 @@ export const useGateUsers = (query: GateUsersQuery = {}, initial?: GateUsersResp
     revalidateOnMount: true,
   });
 
+// The journal of actions. An account that may not read it gets an ApiError with status 403.
+const NO_RETRY_WHEN_FORBIDDEN = { shouldRetryOnError: false };
+
+export const useActivity = (query: ActivityQuery = {}) =>
+  useSWR(apiKeys.activity(query), () => api.getActivity(query), NO_RETRY_WHEN_FORBIDDEN);
+
+export const useActivityActors = () =>
+  useSWR(apiKeys.activityActors(), () => api.getActivityActors(), NO_RETRY_WHEN_FORBIDDEN);
+
 // Keeps every cached list of gate users in step with a change made anywhere in the application.
 // A list that is on the screen reloads at once, a list that is not reloads when it is opened.
 export const useGateUsersCache = () => {
@@ -34,17 +43,19 @@ export const useGateUsersCache = () => {
 
   return {
     // something changed, the details are unknown (a user was added, penalties were unblocked in bulk)
-    refresh: () => mutate(isKeyOf('gateUsers')),
+    refresh: () => Promise.all([mutate(isKeyOf('gateUsers')), mutate(isKeyOf('activity'))]),
 
     removed: (phoneNumber: string) => Promise.all([
       mutate(all, (list?: GateUserDto[]) => withoutGateUser(list, phoneNumber)),
       mutate(blackList, (list?: GateUserDto[]) => withoutGateUser(list, phoneNumber)),
       mutate(apiKeys.gateUsers({ phoneNumber }), []),
+      mutate(isKeyOf('activity')),
     ]),
 
     changed: (user: GateUserDto) => Promise.all([
       mutate(all, (list?: GateUserDto[]) => withChangedGateUser(list, user)),
       mutate(blackList, (list?: GateUserDto[]) => blackListWithChangedGateUser(list, user)),
+      mutate(isKeyOf('activity')),
     ]),
   };
 };

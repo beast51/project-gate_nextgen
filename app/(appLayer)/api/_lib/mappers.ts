@@ -1,4 +1,5 @@
-import { CallDto, GateUserDto, ViolationsResponse } from '@/contracts';
+import { ActivityEventDto, CallDto, GateUserDto, ViolationsResponse } from '@/contracts';
+import { ActivityEvent } from '@/core/entities/activity';
 import { Call } from '@/core/entities/call';
 import { GateUser } from '@/core/entities/gateUser';
 import { VisitsOutput } from '@/core/entities/violation';
@@ -18,6 +19,8 @@ export const fromGateUserDto = ({ idInApi, ...dto }: GateUserDto): GateUser => (
 });
 
 export const toCallDto = (call: Call): CallDto => call;
+
+export const toActivityEventDto = (event: ActivityEvent): ActivityEventDto => event;
 
 export const toViolationsResponse = (visits: VisitsOutput): ViolationsResponse =>
   Object.fromEntries(Object.entries(visits).map(([key, details]) => [key, {
