@@ -13,9 +13,19 @@
   gap: 24px;
 }
 
-// only the content: it starts at the top and takes the whole height
-.contentOnly {
+// Only the content: it takes the whole height and starts right under the header, with the same
+// offsets as the lists of the other pages (the 80px of .settings leave room for the switchers).// (.settings.contentOnly, not .contentOnly: the desktop rule of .settings below would win otherwise)
+.settings.contentOnly {
   grid-template-rows: minmax(0, 1fr);
+  padding: 8px 8px 24px;
+
+  @media (min-width: 400px) {
+    padding: 8px 16px 24px;
+  }
+
+  @media (min-width: 1024px) {
+    padding: 16px 16px 24px;
+  }
 }
 
 .button {

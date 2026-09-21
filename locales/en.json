@@ -58,7 +58,6 @@
   "activity: filter by user": "User",
   "activity: everybody": "Everybody",
   "activity: loading": "Loading…",
-  "activity: empty": "No actions yet",
   "activity actor: system": "System",
   "activity: blocked until": "Blocked until",
   "activity: changed": "Changed:",
@@ -81,6 +80,5 @@
   "access: signed in": "Signed in",
   "access: unknown address": "address unknown",
   "access: retention": "Records are kept for 30 days",
-  "activity: latest": "Latest",
   "activity: empty day": "Nothing happened on this day"
 }

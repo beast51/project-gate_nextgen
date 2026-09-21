@@ -8,12 +8,17 @@
 
 .header {
   display: grid;
-  gap: 16px;
-  align-items: center;
+  gap: 12px;
+}
 
-  @media (min-width: 768px) {
-    grid-template-columns: 1fr 1fr;
-  }
+// the date and the user side by side, also on a phone
+.filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  // the floating labels of the fields stick out above them, they need air under the header
+  padding-top: 8px;
 }
 
 .tabs {
@@ -25,21 +30,6 @@
 // the picker field is an inline element, in a grid cell it has to be told to take the whole width
 .date {
   display: grid;
-}
-
-.dateNotApplied {
-  opacity: 0.55;
-}
-
-.day {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 8px;
-  align-items: center;
-
-  @media (min-width: 768px) {
-    grid-column: 1 / -1;
-  }
 }
 
 .tab {

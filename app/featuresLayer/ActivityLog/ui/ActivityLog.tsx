@@ -28,18 +28,16 @@ export const ActivityLog: FC = () => {
   const { $t } = useIntl();
   const [tab, setTab] = useState<Tab>('actions');
   const [actor, setActor] = useState(EVERYBODY);
-  // The field always holds a date, like the calendar of the header: an empty picker drops its label into
-  // the field and shows no selected day. Whether the date is applied is a separate switch.
+  // The journals are read by days, like the calls and the violations: the page opens on today.
+  // (An empty picker would also drop its label into the field and show no selected day.)
   const [day, setDay] = useState(() => moment());
-  // the latest records of all days; choosing a date in the calendar turns it off
-  const [showLatest, setShowLatest] = useState(true);
 
   // "the 21st" is the day of the operator: its borders are computed in the time zone of the browser
   const query = useMemo(() => ({
     actor: actor === EVERYBODY ? undefined : actor,
-    from: showLatest ? undefined : day.clone().startOf('day').toISOString(),
-    to: showLatest ? undefined : day.clone().endOf('day').toISOString(),
-  }), [actor, day, showLatest]);
+    from: day.clone().startOf('day').toISOString(),
+    to: day.clone().endOf('day').toISOString(),
+  }), [actor, day]);
 
   const { data: activityActors = [] } = useActivityActors();
   const { data: accessActors = [] } = useAccessActors();
@@ -63,6 +61,28 @@ export const ActivityLog: FC = () => {
   return (
     <section className={classes.activity}>
       <div className={classes.header}>
+        {/* the filters come first, in one row: they apply to both tabs below */}
+        <div className={classes.filters}>
+          <div className={classes.date}>
+            <DatePicker
+              label={$t({ id: 'Select date' })}
+              selectedDate={day}
+              // the picker hands over a moment object, whatever its prop type says
+              onAccept={(value) => value && setDay(moment(value as moment.MomentInput))}
+            />
+          </div>
+          <Select
+            label={$t({ id: 'activity: filter by user' })}
+            value={actor}
+            onChange={(event) => setActor(event.target.value)}
+          >
+            <MenuItem value={EVERYBODY}>{$t({ id: 'activity: everybody' })}</MenuItem>
+            {actors.map((item) => (
+              <MenuItem key={item.id} value={item.id}>{actorName(item)}</MenuItem>
+            ))}
+          </Select>
+        </div>
+
         <div className={classes.tabs} role="tablist">
           {(['actions', 'access'] as const).map((item) => (
             <button
@@ -77,46 +97,13 @@ export const ActivityLog: FC = () => {
             </button>
           ))}
         </div>
-        <Select
-          label={$t({ id: 'activity: filter by user' })}
-          value={actor}
-          onChange={(event) => setActor(event.target.value)}
-        >
-          <MenuItem value={EVERYBODY}>{$t({ id: 'activity: everybody' })}</MenuItem>
-          {actors.map((item) => (
-            <MenuItem key={item.id} value={item.id}>{actorName(item)}</MenuItem>
-          ))}
-        </Select>
-        <div className={classes.day}>
-          {/* dimmed while the date is not applied, so it is clear which of the two controls rules the list */}
-          <div className={cn(classes.date, { [classes.dateNotApplied]: showLatest })}>
-            <DatePicker
-              label={$t({ id: 'Select date' })}
-              selectedDate={day}
-              // the picker hands over a moment object, whatever its prop type says
-              onAccept={(value) => {
-                if (!value) return;
-                setDay(moment(value as moment.MomentInput));
-                setShowLatest(false);
-              }}
-            />
-          </div>
-          <button
-            type="button"
-            aria-pressed={showLatest}
-            className={cn(classes.tab, { [classes.activeTab]: showLatest })}
-            onClick={() => setShowLatest((latest) => !latest)}
-          >
-            {$t({ id: 'activity: latest' })}
-          </button>
-        </div>
       </div>
 
       <div className={classes.body}>
         {current.isLoading && <p className={classes.note}>{$t({ id: 'activity: loading' })}</p>}
         {current.error && <p className={classes.note}>{$t({ id: 'something went wrong' })}</p>}
         {current.data && current.data.length === 0 && (
-          <p className={classes.note}>{$t({ id: showLatest ? 'activity: empty' : 'activity: empty day' })}</p>
+          <p className={classes.note}>{$t({ id: 'activity: empty day' })}</p>
         )}
 
         <ul className={classes.list}>

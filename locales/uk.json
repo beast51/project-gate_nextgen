@@ -58,7 +58,6 @@
   "activity: filter by user": "Користувач",
   "activity: everybody": "Усі",
   "activity: loading": "Завантаження…",
-  "activity: empty": "Дій поки немає",
   "activity actor: system": "Система",
   "activity: blocked until": "Заблоковано до",
   "activity: changed": "Змінено:",
@@ -81,6 +80,5 @@
   "access: signed in": "Вхід у сервіс",
   "access: unknown address": "адреса невідома",
   "access: retention": "Записи зберігаються 30 днів",
-  "activity: latest": "Останні",
   "activity: empty day": "Цього дня нічого не відбувалося"
 }
