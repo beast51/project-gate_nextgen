@@ -3,6 +3,7 @@ import { useIntl } from 'react-intl';
 import cn from 'classnames';
 import { PenaltyNoteDto } from '@/contracts';
 import { Button } from '@/sharedLayer/ui/Button';
+import { settleViewportAfterKeyboard } from '@/sharedLayer/utils/settleViewport';
 import classes from './PenaltyNoteForm.module.scss';
 
 type Ground = NonNullable<PenaltyNoteDto['ground']>;
@@ -74,6 +75,7 @@ export const PenaltyNoteForm: FC<PenaltyNoteFormProps> = ({
           value={comment}
           disabled={isLoading}
           onChange={(event) => setComment(event.target.value)}
+          onBlur={settleViewportAfterKeyboard}
         />
         {!comment.trim() && <p className={classes.hint}>{$t({ id: 'penalty note: hint' })}</p>}
       </div>

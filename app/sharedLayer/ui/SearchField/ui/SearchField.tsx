@@ -8,6 +8,7 @@ import { useIntl } from 'react-intl';
 import { ListItemIcon, ListItemText, Menu, MenuItem, ThemeProvider, createTheme } from '@mui/material';
 import { useTheme } from '@/appLayer/providers/ThemeProvider';
 import { SEARCH_MODES, SearchMode } from '@/sharedLayer/lib/search';
+import { settleViewportAfterKeyboard } from '@/sharedLayer/utils/settleViewport';
 import classes from './SearchField.module.scss';
 
 type SearchFieldProps = {
@@ -73,6 +74,7 @@ export const SearchField: FC<SearchFieldProps> = ({ value, mode, onChange, onMod
         className={classes.input}
         value={value}
         onChange={(event) => onChange(event.target.value)}
+        onBlur={settleViewportAfterKeyboard}
       />
 
       {value && (

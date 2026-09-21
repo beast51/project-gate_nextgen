@@ -23,6 +23,7 @@ import { api, useGateUsersCache } from '@/sharedLayer/api';
 import { ActivityFilters } from '@/featuresLayer/ActivityLog';
 import toast from 'react-hot-toast';
 import { SearchField } from '@/sharedLayer/ui/SearchField';
+import { settleViewportAfterKeyboard } from '@/sharedLayer/utils/settleViewport';
 import { SEARCH_MODE_PARAM, SEARCH_QUERY_PARAM, useListSearch } from '@/sharedLayer/lib/search';
 
 export const getFromToFromDataPicker = (date: string | null) => {
@@ -71,6 +72,8 @@ const MobileHeader = ({
   const closeSearch = () => {
     search.clear();
     setIsSearchOpen(false);
+    // the field disappears together with the keyboard, without losing the focus first
+    settleViewportAfterKeyboard();
   };
 
   const datePickerHandler = (value: string | null) => {
