@@ -42,3 +42,21 @@ export type ViolationRules = {
   // a repeated call from the same number within this window is a redial, minutes
   pairedCallWindowMinutes: number
 }
+
+// Two kinds of violations, never mixed into one number:
+export type ViolationCounts = {
+  // the car left later than the limit allows
+  overstays: number
+  // the car entered and no exit was seen that day (left through an open gate, with another phone, or is still inside)
+  openVisits: number
+}
+
+// Violations of an apartment (or a phone) around a chosen day
+export type ViolationStats = {
+  // the calendar week (Monday - Sunday) of the chosen day
+  week: ViolationCounts
+  // the calendar month of the chosen day
+  month: ViolationCounts
+  // that month and the two calendar months before it
+  threeMonths: ViolationCounts
+}

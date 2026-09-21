@@ -1,6 +1,6 @@
 import moment from 'moment';
-import { Call, isFailedOutcome, UNREGISTERED_CALLER_NAME } from '../entities/call';
-import { ApartmentVisitor, PhoneVisitor, VisitInfo, ViolationRules, VisitsOutput } from '../entities/violation';
+import { Call, isFailedOutcome, PassageCall, UNREGISTERED_CALLER_NAME } from '../entities/call';
+import { ApartmentVisitor, PhoneVisitor, VisitInfo, ViolationCounts, ViolationRules, VisitsOutput } from '../entities/violation';
 
 const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
@@ -15,19 +15,19 @@ type Visits<Visitor> = Record<string, { time: string[], details: Visitor | null 
 const parseTime = (time: string) => moment(time, TIME_FORMAT).valueOf();
 
 // Only calls that really opened the gate for a known and not blocked user take part in the calculation
-export const isGatePassage = (call: Call) =>
+export const isGatePassage = (call: PassageCall) =>
   call.callerName !== UNREGISTERED_CALLER_NAME &&
   call.isBlackListed === false &&
   !isFailedOutcome(call.outcome);
 
-const isRedial = (call: Call, previousCall: Call, rules: ViolationRules) => {
+const isRedial = (call: PassageCall, previousCall: PassageCall, rules: ViolationRules) => {
   const difference = Math.abs(new Date(call.time).getTime() - new Date(previousCall.time).getTime());
   const differenceInMinutes = difference / (1000 * 60);
   return call.number === previousCall.number && !(differenceInMinutes > rules.pairedCallWindowMinutes);
 };
 
 // A call is dropped when one of the two previous calls is a redial from the same number.
-const withoutRedials = (calls: Call[], rules: ViolationRules) =>
+const withoutRedials = <T extends PassageCall>(calls: T[], rules: ViolationRules) =>
   calls.filter((call, index) => {
     if (index < 2) return true; // Always include the first two calls in the array.
     const previousCalls = [calls[index - 1], calls[index - 2]];
@@ -48,9 +48,9 @@ const addPassage = (times: string[], time: string, rules: ViolationRules) => {
   }
 };
 
-const groupByApartment = (calls: Call[], rules: ViolationRules) => {
+const groupByApartment = (calls: PassageCall[], rules: ViolationRules) => {
   const grouped: Visits<ApartmentVisitor> = {};
-  const callsWithoutApartment: Call[] = [];
+  const callsWithoutApartment: PassageCall[] = [];
 
   for (const call of calls) {
     const apartmentNumber = call.apartmentNumber;
@@ -69,7 +69,7 @@ const groupByApartment = (calls: Call[], rules: ViolationRules) => {
     if (!visitor) {
       grouped[apartmentNumber].details = {
         number: [call.number],
-        carNumber: call.carNumber,
+        carNumber: call.carNumber ?? [],
         image: call.image,
         name: call.callerName,
       };
@@ -83,7 +83,7 @@ const groupByApartment = (calls: Call[], rules: ViolationRules) => {
   return { grouped, callsWithoutApartment };
 };
 
-const groupByPhoneNumber = (calls: Call[], rules: ViolationRules) => {
+const groupByPhoneNumber = (calls: PassageCall[], rules: ViolationRules) => {
   const grouped: Visits<PhoneVisitor> = {};
 
   for (const call of calls) {
@@ -92,7 +92,7 @@ const groupByPhoneNumber = (calls: Call[], rules: ViolationRules) => {
     }
     if (!grouped[call.number].details) {
       grouped[call.number].details = {
-        carNumber: call.carNumber,
+        carNumber: call.carNumber ?? [],
         image: call.image,
         apartmentNumber: call.apartmentNumber,
         name: call.callerName,
@@ -107,7 +107,8 @@ const groupByPhoneNumber = (calls: Call[], rules: ViolationRules) => {
 
 // Passages go in pairs: entry, exit, entry, exit...
 const toVisits = (times: string[], rules: ViolationRules, now: Date) => {
-  let violationCount = 0;
+  // a car stayed longer than the limit / a car entered and its exit was never seen
+  const counts: ViolationCounts = { overstays: 0, openVisits: 0 };
   const visits: VisitInfo[] = [];
 
   for (let i = 0; i < times.length; i += 2) {
@@ -124,7 +125,7 @@ const toVisits = (times: string[], rules: ViolationRules, now: Date) => {
     // If there was no exit, we consider it a violation.
     if (!outTime && (now.getTime() - inTime.getTime()) / (1000 * 60) >= rules.limitMinutes) {
       visit.violation = 'still parked or train';
-      violationCount++;
+      counts.openVisits++;
     } else if (outTime) {
       visit.timeOut = moment(outTime).format(TIME_FORMAT);
       // If the time difference is greater than or equal to the limit, we consider it a violation.
@@ -132,7 +133,7 @@ const toVisits = (times: string[], rules: ViolationRules, now: Date) => {
       visit.violationTime = differenceInMinutes;
       if (differenceInMinutes >= rules.limitMinutes) {
         visit.violation = `has been parked for ${differenceInMinutes} minutes`;
-        violationCount++;
+        counts.overstays++;
       } else {
         visit.violation = 'no violation';
       }
@@ -141,7 +142,31 @@ const toVisits = (times: string[], rules: ViolationRules, now: Date) => {
     visits.push(visit);
   }
 
-  return { visits, violationCount };
+  return { visits, counts, violationCount: counts.overstays + counts.openVisits };
+};
+
+// calls -> passages through the gate, grouped by the apartment or, without an apartment, by the phone number
+const groupPassages = (calls: PassageCall[], rules: ViolationRules) => {
+  const passages = withoutRedials(calls.filter(isGatePassage), rules);
+  const { grouped: byApartment, callsWithoutApartment } = groupByApartment(passages, rules);
+  const byPhoneNumber = groupByPhoneNumber(callsWithoutApartment, rules);
+
+  return { byApartment, byPhoneNumber };
+};
+
+// The same rules, only the numbers: how many violations of each kind every apartment (or phone) has.
+// The calls must belong to ONE calendar day, see countViolationsByDay.
+export const countViolations = (
+  calls: PassageCall[],
+  rules: Partial<ViolationRules> = {},
+  now: Date = new Date(),
+): Record<string, ViolationCounts> => {
+  const appliedRules: ViolationRules = { ...defaultViolationRules, ...rules };
+  const { byApartment, byPhoneNumber } = groupPassages(calls, appliedRules);
+
+  return Object.fromEntries(
+    Object.entries({ ...byApartment, ...byPhoneNumber }).map(([key, { time }]) => [key, toVisits(time, appliedRules, now).counts]),
+  );
 };
 
 export const findViolations = (
@@ -150,10 +175,7 @@ export const findViolations = (
   now: Date = new Date(),
 ): VisitsOutput => {
   const appliedRules: ViolationRules = { ...defaultViolationRules, ...rules };
-
-  const passages = withoutRedials(calls.filter(isGatePassage), appliedRules);
-  const { grouped: byApartment, callsWithoutApartment } = groupByApartment(passages, appliedRules);
-  const byPhoneNumber = groupByPhoneNumber(callsWithoutApartment, appliedRules);
+  const { byApartment, byPhoneNumber } = groupPassages(calls, appliedRules);
 
   const result: VisitsOutput = {};
 

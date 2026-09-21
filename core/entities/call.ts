@@ -35,6 +35,10 @@ export type Call = {
   state: string | null
 }
 
+// What the rules of violations need to know about a call. Long periods are read in this light form.
+export type PassageCall = Pick<Call, 'number' | 'time' | 'apartmentNumber' | 'callerName' | 'isBlackListed' | 'outcome'>
+  & Partial<Pick<Call, 'carNumber' | 'image'>>
+
 // Raw call received from the telephony, before it is matched with a gate user
 export type IncomingCall = {
   number: string
