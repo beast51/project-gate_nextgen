@@ -122,3 +122,18 @@ model ActivityEvent {
   subjects  Json
   details   Json
 }
+
+// When the accounts signed in and which pages they opened. High volume, short life:
+// a TTL index on `at` (created by the adapter, see prismaAccessLog.ts) removes records after 30 days.
+model AccessEvent {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  // a real date, not a string: MongoDB expires documents only by a date field
+  at        DateTime
+  actorId   String
+  actorName String
+  // "signIn" | "pageView"
+  kind      String
+  path      String?
+  ip        String?
+  device    String?
+}

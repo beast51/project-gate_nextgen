@@ -2,11 +2,13 @@ import { NextResponse } from 'next/server';
 import { ApiErrorResponse } from '@/contracts';
 import { Account } from '@/core/entities/account';
 import { ActivityActor, SYSTEM_ACTOR } from '@/core/entities/activity';
+import { AccessLog } from '@/core/ports/accessLog';
 import { ActivityLog } from '@/core/ports/activityLog';
 import { CallsRepository } from '@/core/ports/callsRepository';
 import { CallsSource } from '@/core/ports/callsSource';
 import { GateUsersDirectory } from '@/core/ports/gateUsersDirectory';
 import { GateUsersRepository } from '@/core/ports/gateUsersRepository';
+import { createGetAccessLog, createRecordPageView, createRecordSignIn } from '@/core/useCases/access';
 import { createGetActivity, createRecordActivity } from '@/core/useCases/activity';
 import { createAddGateUser } from '@/core/useCases/addGateUser';
 import { createDeleteGateUser } from '@/core/useCases/deleteGateUser';
@@ -20,6 +22,7 @@ import { createRefreshCalls, createSyncCalls } from '@/core/useCases/syncCalls';
 import { createSyncGateUsers } from '@/core/useCases/syncGateUsers';
 import { createUnblockExpiredPenalties } from '@/core/useCases/unblockExpiredPenalties';
 import { createDemoCallsSource, createDemoGateUsersDirectory } from '@/infrastructure/demo/demoTelephony';
+import { createPrismaAccessLog } from '@/infrastructure/prisma/prismaAccessLog';
 import { createPrismaAccountsRepository } from '@/infrastructure/prisma/prismaAccountsRepository';
 import { createPrismaActivityLog } from '@/infrastructure/prisma/prismaActivityLog';
 import { createPrismaCallsRepository } from '@/infrastructure/prisma/prismaCallsRepository';
@@ -29,6 +32,7 @@ import { createUnitalkCallsSource } from '@/infrastructure/unitalk/unitalkCallsS
 import { createUnitalkGateUsersDirectory } from '@/infrastructure/unitalk/unitalkGateUsersDirectory';
 import { databaseList, getPrismaClient, getPrismaClientByUrl } from './prismadb';
 import { getSandboxPrismaClient, sandboxStorage } from './sandboxes';
+import i18nConfig from '@/sharedLayer/config/i18n/i18nConfig';
 import { getSession } from './session';
 import { getTenantConfig, listTenants } from './tenants';
 
@@ -49,6 +53,7 @@ type Adapters = {
   // null: the calls are never loaded from the telephony
   callsSyncIntervalSeconds: number | null
   activityLog: ActivityLog
+  accessLog: AccessLog
   // who the actions are recorded for: the signed in account, or the application for scheduled jobs
   actor: ActivityActor
   // the journal shows what every operator did, so only an admin of the gate may read it
@@ -56,7 +61,7 @@ type Adapters = {
 }
 
 const assemble = ({
-  gateUsers, calls, directory, source, callsSyncIntervalSeconds, activityLog, actor, mayReadActivity,
+  gateUsers, calls, directory, source, callsSyncIntervalSeconds, activityLog, accessLog, actor, mayReadActivity,
 }: Adapters) => {
   const syncCalls = createSyncCalls({ source, calls, gateUsers });
   const recordActivity = createRecordActivity({ log: activityLog, actor });
@@ -76,9 +81,15 @@ const assemble = ({
     addGateUser: createAddGateUser({ directory, gateUsers, recordActivity }),
     editGateUser: createEditGateUser({ directory, gateUsers, recordActivity }),
     deleteGateUser: createDeleteGateUser({ directory, gateUsers, recordActivity }),
-    // null: the account is not allowed to read the journal
+    // sign ins and opened pages are recorded for everybody
+    recordSignIn: createRecordSignIn({ log: accessLog, actor }),
+    recordPageView: createRecordPageView({ log: accessLog, actor, locales: i18nConfig.locales }),
+    // null: the account is not allowed to read the journals
     activity: mayReadActivity
       ? { list: createGetActivity({ log: activityLog }), listActors: activityLog.listActors }
+      : null,
+    access: mayReadActivity
+      ? { list: createGetAccessLog({ log: accessLog }), listActors: accessLog.listActors }
       : null,
   };
 };
@@ -99,6 +110,7 @@ const buildTenantContainer = (tenant: string, actor: ActivityActor, mayReadActiv
     source: createUnitalkCallsSource(config.telephony.unitalk),
     callsSyncIntervalSeconds: config.callsSyncIntervalSeconds,
     activityLog: createPrismaActivityLog(prisma),
+    accessLog: createPrismaAccessLog(prisma),
     actor,
     mayReadActivity,
   });
@@ -142,6 +154,7 @@ const buildSandboxContainer = async (account: Account): Promise<Container> => {
     source: createDemoCallsSource(),
     callsSyncIntervalSeconds: null,
     activityLog,
+    accessLog: createPrismaAccessLog(prisma),
     actor,
     // a sandbox has one visitor, its owner: the journal shows only their own actions
     mayReadActivity: true,
@@ -153,8 +166,11 @@ export const getContainer = async (): Promise<Container | null> => {
   const session = await getSession();
   const accountId = session?.user?.id;
 
-  if (!accountId) return null;
+  return accountId ? getContainerOfAccount(accountId) : null;
+};
 
+// The same without a session: at the moment of signing in there is an account but no session yet
+export const getContainerOfAccount = async (accountId: string): Promise<Container | null> => {
   // the stored account is read on every request: granting and revoking access works immediately
   const account = await accounts().findById(accountId);
 

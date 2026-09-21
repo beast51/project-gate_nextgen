@@ -5,6 +5,27 @@ import { databaseList, getPrismaClient } from '@/appLayer/libs/prismadb'
 
 const prisma = getPrismaClient(databaseList.DATABASE_URL);
 
+// The journal of sign ins. It must never stand in the way of signing in, so every failure stays here.
+// The container is imported lazily: it needs the session, and the session needs these options.
+const recordSignIn = async (accountId: string, headers: Record<string, unknown> | undefined) => {
+  try {
+    const [{ getContainerOfAccount }, { clientInfo }] = await Promise.all([
+      import('./container'),
+      import('../api/_lib/clientInfo'),
+    ]);
+
+    const header = (name: string) => {
+      const value = headers?.[name];
+      return typeof value === 'string' ? value : null;
+    };
+
+    const container = await getContainerOfAccount(accountId);
+    await container?.recordSignIn(clientInfo({ get: header }));
+  } catch (error) {
+    console.error('Failed to record a sign in', error);
+  }
+};
+
 export const authOptions: AuthOptions = {
   // Sign in is possible only with a phone number and a password.
   // Social providers are intentionally absent: anyone with a Google account must not get an account here.
@@ -15,7 +36,7 @@ export const authOptions: AuthOptions = {
         phoneNumber: {label: 'phone number', type: 'text'},
         password: {label: 'password', type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         if (!credentials?.phoneNumber || !credentials.password) {
           throw new Error('Invalid credentials')
         }
@@ -38,6 +59,8 @@ export const authOptions: AuthOptions = {
         if (!isCorrectPassword) {
           throw new Error('Invalid credentials')
         }
+
+        await recordSignIn(user.id, request?.headers)
 
         return user
       }
