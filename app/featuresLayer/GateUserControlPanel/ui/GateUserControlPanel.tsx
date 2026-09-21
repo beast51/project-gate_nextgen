@@ -3,7 +3,7 @@ import { Button } from '@/sharedLayer/ui/Button';
 import { FC, useCallback, useState } from 'react';
 import classes from './GateUserControlPanel.module.scss';
 import { GateUserType } from '@/entitiesLayer/GateUser/model/types/GateUser.type';
-import { api } from '@/sharedLayer/api';
+import { api, useRefreshGateUsers } from '@/sharedLayer/api';
 import toast from 'react-hot-toast';
 import Popup from '@/sharedLayer/ui/Popup/ui/Popup';
 import { useRouter } from 'next/navigation';
@@ -34,6 +34,7 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
   const [isOpenPopup, setIsOpenPopup] = useState(false);
   const [action, setAction] = useState<ActionType>(null);
   const router = useRouter();
+  const refreshGateUsers = useRefreshGateUsers();
   const { $t } = useIntl();
 
   const handleOpen = (actionType: ActionType) => {
@@ -50,8 +51,8 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
     api
       .deleteGateUser({ phoneNumber, id })
       .then(() => {
+        refreshGateUsers();
         router.push('/users');
-        router.refresh();
       })
       .catch(() => {
         toast.error('Something went wrong');
@@ -80,6 +81,9 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
         isBlackListed: !user.isBlackListed,
       })
       .then(() => {
+        // the lists (all users, black listed) are refreshed through the cache,
+        // the card itself is a server rendered page and is rendered again
+        refreshGateUsers();
         router.refresh();
       })
       .catch(() => toast.error('Something went wrong'))

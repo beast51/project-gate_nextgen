@@ -9,7 +9,8 @@ import { UserBrowserType } from '../UserBrowser.type';
 import { useSearchAndPagination } from '../lib/useSearchAndPagination';
 import { Input } from '@/sharedLayer/ui/Input';
 import classes from './UsersBrowser.module.scss';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { useGateUsers, useRefreshGateUsers } from '@/sharedLayer/api';
 import { AppLink } from '@/sharedLayer/ui/AppLink';
 import { FaEllipsisV } from 'react-icons/fa';
 import { GateUserCardsList } from '@/entitiesLayer/GateUser/ui/GateUserCardsList/GateUserCardsList';
@@ -20,18 +21,18 @@ import { ToggleTheme } from '@/sharedLayer/ui/Toggle';
 
 const ITEMS_PER_PAGE = 30;
 
-export const UserBrowser: FC<UserBrowserType> = ({ users }) => {
+export const UserBrowser: FC<UserBrowserType> = ({ users: initialUsers }) => {
   const pathname = usePathname();
-  const router = useRouter();
   const { $t } = useIntl();
+  // the page arrives with the list already rendered, later the list is refreshed without reloading the page
+  const { data: users = initialUsers } = useGateUsers({}, initialUsers);
+  const refreshGateUsers = useRefreshGateUsers();
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    router.prefetch('/users');
-    router.push('/users?add=new');
-    router.refresh();
+    refreshGateUsers();
   };
 
   const {
