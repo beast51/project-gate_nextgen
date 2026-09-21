@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { Call, CALL_OUTCOMES, CallOutcome } from '@/core/entities/call';
+import { Call, CALL_OUTCOMES, CallOutcome, PassageCall } from '@/core/entities/call';
 import { CallsRepository } from '@/core/ports/callsRepository';
 
 const callFields = {
@@ -13,6 +13,18 @@ const callFields = {
   blackListedFrom: true,
   blackListedTo: true,
   secondsFullTime: true,
+  outcome: true,
+  cause: true,
+  state: true,
+} as const;
+
+// what the rules of violations read; months of calls are loaded with it, so nothing extra
+const passageFields = {
+  number: true,
+  time: true,
+  callerName: true,
+  apartmentNumber: true,
+  isBlackListed: true,
   outcome: true,
   cause: true,
   state: true,
@@ -52,6 +64,18 @@ export const createPrismaCallsRepository = (
       }
     },
 
+    findPassagesByTimeRange: async (from, to) => {
+      const records = await prisma.call.findMany({
+        where: { time: { gte: from, lte: to } },
+        select: passageFields,
+      });
+
+      return records.map(({ cause, state, outcome, ...passage }): PassageCall => ({
+        ...passage,
+        outcome: isCallOutcome(outcome) ? outcome : legacyOutcomeOf({ cause, state }),
+      }));
+    },
+
     findLast: async () => {
       try {
         const record = await prisma.call.findFirst({ orderBy: { time: 'desc' }, select: callFields });
@@ -68,6 +92,23 @@ export const createPrismaCallsRepository = (
       await prisma.call.createMany({
         data: calls.map(({ call, gateUserId }) => ({ ...call, gateUserId })),
       });
+    },
+
+    listFilledDays: async (fromDay, toDay) => {
+      const days = await prisma.callsDaySync.findMany({
+        where: { id: { gte: fromDay, lte: toDay } },
+        select: { id: true },
+      });
+      return days.map(day => day.id);
+    },
+
+    markDaysFilled: async (days, at) => {
+      // the day is the id, so marking twice (two requests at once) is harmless
+      await Promise.all(days.map(day => prisma.callsDaySync.upsert({
+        where: { id: day },
+        create: { id: day, syncedAt: at },
+        update: { syncedAt: at },
+      })));
     },
 
     // The time is stored as an ISO string in UTC, ISO strings are compared lexicographically.

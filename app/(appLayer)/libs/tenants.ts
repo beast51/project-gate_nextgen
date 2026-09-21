@@ -8,6 +8,7 @@ import { UnitalkConfig } from '@/infrastructure/unitalk/unitalkConfig';
 //   TENANT_<KEY>_UNITALK_URL / _UNITALK_AUTHORIZATION / _UNITALK_INTERNAL_API_AUTHORIZATION /
 //   TENANT_<KEY>_UNITALK_PROJECT_ID / _UNITALK_CAN_OPEN_GATES
 //   TENANT_<KEY>_CALLS_SYNC_INTERVAL_SECONDS          rate limit of the telephony API, 5 by default
+//   TENANT_<KEY>_TIMEZONE                             where the gate stands, "Europe/Kyiv" by default
 //
 // <KEY> is the tenant key in upper case: the tenant "shota" reads TENANT_SHOTA_*.
 // The first customer was configured before tenants existed: its variables have no prefix
@@ -17,12 +18,16 @@ export const LEGACY_TENANT = 'shota';
 
 const DEFAULT_CALLS_SYNC_INTERVAL_SECONDS = 5;
 
+// Call times are stored as the wall clock time of the gate, the server may run in any zone (UTC on Vercel)
+export const DEFAULT_TIMEZONE = 'Europe/Kyiv';
+
 type Env = Record<string, string | undefined>
 
 export type TenantConfig = {
   key: string
   databaseUrl: string
   callsSyncIntervalSeconds: number
+  timeZone: string
   telephony: { provider: 'unitalk', unitalk: UnitalkConfig }
 }
 
@@ -72,6 +77,8 @@ export const getTenantConfig = (tenant: string, env: Env = process.env): TenantC
     key: tenant,
     databaseUrl: required('DATABASE_URL'),
     callsSyncIntervalSeconds: interval > 0 ? interval : DEFAULT_CALLS_SYNC_INTERVAL_SECONDS,
+    // only the prefixed name: a bare TIMEZONE variable may belong to the hosting
+    timeZone: env[`TENANT_${tenant.toUpperCase()}_TIMEZONE`] || DEFAULT_TIMEZONE,
     telephony: {
       provider,
       unitalk: {

@@ -7,6 +7,7 @@ export const createFakeCallsRepository = (stored: Call[] = [], lastSyncTime: Dat
     calls: [...stored] as (Call | CallToStore)[],
     links: [] as (string | undefined)[],
     lastSyncTime,
+    filledDays: new Set<string>(),
   };
 
   const inRange = (from: string, to: string) =>
@@ -14,6 +15,10 @@ export const createFakeCallsRepository = (stored: Call[] = [], lastSyncTime: Dat
 
   const repository: CallsRepository = {
     findByTimeRange: async (from, to) => inRange(from, to),
+    findPassagesByTimeRange: async (from, to) => inRange(from, to),
+    listFilledDays: async (fromDay, toDay) =>
+      Array.from(state.filledDays).filter(day => day >= fromDay && day <= toDay).sort(),
+    markDaysFilled: async (days) => { days.forEach(day => state.filledDays.add(day)); },
     findLast: async () =>
       ([...state.calls] as Call[]).sort((a, b) => b.time.localeCompare(a.time))[0] ?? null,
     addMany: async (calls) => {

@@ -11,12 +11,15 @@ import { GateUsersRepository } from '@/core/ports/gateUsersRepository';
 import { createGetAccessLog, createRecordPageView, createRecordSignIn } from '@/core/useCases/access';
 import { createGetActivity, createRecordActivity } from '@/core/useCases/activity';
 import { createAddGateUser } from '@/core/useCases/addGateUser';
+import { createBackfillCalls } from '@/core/useCases/backfillCalls';
+import { createGateClock } from '@/core/useCases/days';
 import { createDeleteGateUser } from '@/core/useCases/deleteGateUser';
 import { createCleanupDemoSandboxes } from '@/core/useCases/demo/cleanupDemoSandboxes';
 import { createSeedDemoSandbox } from '@/core/useCases/demo/seedDemoSandbox';
 import { createEditGateUser } from '@/core/useCases/editGateUser';
 import { createGetCalls } from '@/core/useCases/getCalls';
 import { createGetViolations } from '@/core/useCases/getViolations';
+import { createGetViolationStats } from '@/core/useCases/getViolationStats';
 import { createImportGateUsers } from '@/core/useCases/importGateUsers';
 import { createRefreshCalls, createSyncCalls } from '@/core/useCases/syncCalls';
 import { createSyncGateUsers } from '@/core/useCases/syncGateUsers';
@@ -34,7 +37,7 @@ import { databaseList, getPrismaClient, getPrismaClientByUrl } from './prismadb'
 import { getSandboxPrismaClient, sandboxStorage } from './sandboxes';
 import i18nConfig from '@/sharedLayer/config/i18n/i18nConfig';
 import { getSession } from './session';
-import { getTenantConfig, listTenants } from './tenants';
+import { DEFAULT_TIMEZONE, getTenantConfig, listTenants } from './tenants';
 
 // Composition root: the only place that knows the session, the environment and the concrete adapters.
 //
@@ -52,6 +55,8 @@ type Adapters = {
   source: CallsSource
   // null: the calls are never loaded from the telephony
   callsSyncIntervalSeconds: number | null
+  // where the gate stands: call times are its wall clock time
+  timeZone: string
   activityLog: ActivityLog
   accessLog: AccessLog
   // who the actions are recorded for: the signed in account, or the application for scheduled jobs
@@ -61,18 +66,24 @@ type Adapters = {
 }
 
 const assemble = ({
-  gateUsers, calls, directory, source, callsSyncIntervalSeconds, activityLog, accessLog, actor, mayReadActivity,
+  gateUsers, calls, directory, source, callsSyncIntervalSeconds, timeZone, activityLog, accessLog, actor, mayReadActivity,
 }: Adapters) => {
+  const clock = createGateClock(timeZone);
   const syncCalls = createSyncCalls({ source, calls, gateUsers });
   const recordActivity = createRecordActivity({ log: activityLog, actor });
 
   const refreshCalls = callsSyncIntervalSeconds === null
     ? async () => {}
-    : createRefreshCalls({ calls, syncCalls, minIntervalSeconds: callsSyncIntervalSeconds });
+    : createRefreshCalls({ calls, syncCalls, today: clock.today, minIntervalSeconds: callsSyncIntervalSeconds });
 
   return {
     getCalls: createGetCalls({ calls, refreshCalls }),
-    getViolations: createGetViolations({ calls, refreshCalls }),
+    getViolations: createGetViolations({ calls, refreshCalls, now: clock.now }),
+    getViolationStats: createGetViolationStats({ calls, clock }),
+    // null: there is no telephony to load the history from, or the account may not start it
+    backfillCalls: callsSyncIntervalSeconds !== null && mayReadActivity
+      ? createBackfillCalls({ calls, syncCalls, today: clock.today, minIntervalSeconds: callsSyncIntervalSeconds })
+      : null,
     unblockExpiredPenalties: createUnblockExpiredPenalties({ directory, gateUsers, recordActivity }),
     listGateUsers: gateUsers.list,
     listBlackListedGateUsers: gateUsers.listBlackListed,
@@ -109,6 +120,7 @@ const buildTenantContainer = (tenant: string, actor: ActivityActor, mayReadActiv
     directory: createUnitalkGateUsersDirectory(config.telephony.unitalk),
     source: createUnitalkCallsSource(config.telephony.unitalk),
     callsSyncIntervalSeconds: config.callsSyncIntervalSeconds,
+    timeZone: config.timeZone,
     activityLog: createPrismaActivityLog(prisma),
     accessLog: createPrismaAccessLog(prisma),
     actor,
@@ -153,6 +165,7 @@ const buildSandboxContainer = async (account: Account): Promise<Container> => {
     directory: createDemoGateUsersDirectory(),
     source: createDemoCallsSource(),
     callsSyncIntervalSeconds: null,
+    timeZone: DEFAULT_TIMEZONE,
     activityLog,
     accessLog: createPrismaAccessLog(prisma),
     actor,

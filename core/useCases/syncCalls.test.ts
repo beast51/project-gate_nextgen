@@ -131,7 +131,7 @@ describe('syncCalls', () => {
     const now = () => new Date(clock);
 
     const syncCalls = createSyncCalls({ source: slowSource, calls: repository, gateUsers: gateUsersWith(resident), now });
-    const refreshCalls = createRefreshCalls({ calls: repository, syncCalls, now });
+    const refreshCalls = createRefreshCalls({ calls: repository, syncCalls, today: () => '2024-03-10', now });
 
     const first = refreshCalls('from', 'to');
     clock += 6000; // the rate limit interval has passed while the telephony was answering
@@ -172,26 +172,27 @@ describe('syncCalls', () => {
 
 describe('refreshCalls (rate limit guard of the telephony)', () => {
   const at = (iso: string) => () => new Date(iso);
+  const today = () => '2024-03-10';
 
   it('goes to the telephony not more often than once per 5 seconds by default', async () => {
     expect(DEFAULT_SYNC_INTERVAL_SECONDS).toBe(5);
 
     const { repository } = createFakeCallsRepository([], new Date('2024-03-10T12:00:00.000Z'));
-    const syncCalls = vi.fn(async () => {});
+    const syncCalls = vi.fn(async () => 0);
 
-    await createRefreshCalls({ calls: repository, syncCalls, now: at('2024-03-10T12:00:03.000Z') })('from', 'to');
-    await createRefreshCalls({ calls: repository, syncCalls, now: at('2024-03-10T12:00:05.000Z') })('from', 'to');
+    await createRefreshCalls({ calls: repository, syncCalls, today, now: at('2024-03-10T12:00:03.000Z') })('from', 'to');
+    await createRefreshCalls({ calls: repository, syncCalls, today, now: at('2024-03-10T12:00:05.000Z') })('from', 'to');
     expect(syncCalls).not.toHaveBeenCalled();
 
-    await createRefreshCalls({ calls: repository, syncCalls, now: at('2024-03-10T12:00:05.001Z') })('from', 'to');
+    await createRefreshCalls({ calls: repository, syncCalls, today, now: at('2024-03-10T12:00:05.001Z') })('from', 'to');
     expect(syncCalls).toHaveBeenCalledTimes(1);
     expect(syncCalls).toHaveBeenCalledWith('from', 'to');
   });
 
   it('lets only one of several simultaneous requests through', async () => {
     const { repository } = createFakeCallsRepository();
-    const syncCalls = vi.fn(async () => {});
-    const refreshCalls = createRefreshCalls({ calls: repository, syncCalls, now: at('2024-03-10T12:00:00.000Z') });
+    const syncCalls = vi.fn(async () => 0);
+    const refreshCalls = createRefreshCalls({ calls: repository, syncCalls, today, now: at('2024-03-10T12:00:00.000Z') });
 
     await Promise.all([refreshCalls('from', 'to'), refreshCalls('from', 'to'), refreshCalls('from', 'to')]);
 
@@ -201,7 +202,7 @@ describe('refreshCalls (rate limit guard of the telephony)', () => {
   it('keeps the limit when the synchronization fails', async () => {
     const { repository } = createFakeCallsRepository();
     const syncCalls = vi.fn(async () => { throw new Error('telephony is down'); });
-    const refreshCalls = createRefreshCalls({ calls: repository, syncCalls, now: at('2024-03-10T12:00:00.000Z') });
+    const refreshCalls = createRefreshCalls({ calls: repository, syncCalls, today, now: at('2024-03-10T12:00:00.000Z') });
 
     await expect(refreshCalls('from', 'to')).rejects.toThrow('telephony is down');
     await refreshCalls('from', 'to');
@@ -211,13 +212,83 @@ describe('refreshCalls (rate limit guard of the telephony)', () => {
 
   it('uses the interval of the tenant', async () => {
     const { repository } = createFakeCallsRepository([], new Date('2024-03-10T12:00:00.000Z'));
-    const syncCalls = vi.fn(async () => {});
+    const syncCalls = vi.fn(async () => 0);
 
     await createRefreshCalls({
-      calls: repository, syncCalls, minIntervalSeconds: 60, now: at('2024-03-10T12:00:30.000Z'),
+      calls: repository, syncCalls, today, minIntervalSeconds: 60, now: at('2024-03-10T12:00:30.000Z'),
     })('from', 'to');
 
     expect(syncCalls).not.toHaveBeenCalled();
+  });
+});
+
+describe('refreshCalls (finished days are read from the storage)', () => {
+  const today = () => '2024-03-10';
+  const day = (value: string): [string, string] => [`${value} 00:00:00`, `${value} 23:59:59`];
+  const setup = () => {
+    const { repository, state } = createFakeCallsRepository();
+    const syncCalls = vi.fn(async () => 0);
+    let clock = new Date('2024-03-10T12:00:00.000Z').getTime();
+    const refreshCalls = createRefreshCalls({
+      calls: repository, syncCalls, today, now: () => new Date(clock += 60_000),
+    });
+    return { state, syncCalls, refreshCalls };
+  };
+
+  it('loads a finished day from the telephony once, then never again', async () => {
+    const { state, syncCalls, refreshCalls } = setup();
+
+    await refreshCalls(...day('2024-03-08'));
+    expect(syncCalls).toHaveBeenCalledTimes(1);
+    expect(Array.from(state.filledDays)).toEqual(['2024-03-08']);
+
+    await refreshCalls(...day('2024-03-08'));
+    expect(syncCalls).toHaveBeenCalledTimes(1);
+  });
+
+  it('always asks the telephony about today and never marks it as filled', async () => {
+    const { state, syncCalls, refreshCalls } = setup();
+
+    await refreshCalls(...day('2024-03-10'));
+    await refreshCalls(...day('2024-03-10'));
+
+    expect(syncCalls).toHaveBeenCalledTimes(2);
+    expect(state.filledDays.size).toBe(0);
+  });
+
+  it('marks only the finished days of a period that reaches today', async () => {
+    const { state, refreshCalls } = setup();
+
+    await refreshCalls('2024-03-09 00:00:00', '2024-03-10 23:59:59');
+
+    expect(Array.from(state.filledDays)).toEqual(['2024-03-09']);
+  });
+
+  it('does not mark days when the telephony was not asked or has failed', async () => {
+    const { repository, state } = createFakeCallsRepository([], new Date('2024-03-10T12:00:00.000Z'));
+    const busy = createRefreshCalls({
+      calls: repository, syncCalls: vi.fn(async () => 0), today, now: () => new Date('2024-03-10T12:00:01.000Z'),
+    });
+    await busy(...day('2024-03-08'));
+    expect(state.filledDays.size).toBe(0);
+
+    const failing = createRefreshCalls({
+      calls: repository,
+      syncCalls: vi.fn(async () => { throw new Error('telephony is down'); }),
+      today,
+      now: () => new Date('2024-03-10T13:00:00.000Z'),
+    });
+    await expect(failing(...day('2024-03-08'))).rejects.toThrow('telephony is down');
+    expect(state.filledDays.size).toBe(0);
+  });
+
+  it('does not trust one request for a very long period', async () => {
+    const { state, syncCalls, refreshCalls } = setup();
+
+    await refreshCalls('2023-12-01 00:00:00', '2024-03-09 23:59:59');
+
+    expect(syncCalls).toHaveBeenCalledTimes(1);
+    expect(state.filledDays.size).toBe(0);
   });
 });
 

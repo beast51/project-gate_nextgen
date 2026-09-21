@@ -103,6 +103,13 @@ model Call {
   @@unique([time, number])
 }
 
+// A day ('YYYY-MM-DD' is the id) whose calls were loaded from the telephony after the day was over:
+// the day is complete, it is read from this database and the telephony is not asked about it again
+model CallsDaySync {
+  id       String   @id @map("_id")
+  syncedAt DateTime
+}
+
 model LastCallsRequestFromApi {
   id   String @id @default(auto()) @map("_id") @db.ObjectId
   time String
