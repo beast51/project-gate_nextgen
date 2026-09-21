@@ -41,5 +41,4 @@ export type ViolationRules = {
   secondsBetweenTwoCalls: number
   // a repeated call from the same number within this window is a redial, minutes
   pairedCallWindowMinutes: number
-  failedCauses: readonly number[]
 }

@@ -82,3 +82,36 @@ describe('prismaCallsRepository.claimSync', () => {
     expect(await createPrismaCallsRepository(prisma).claimSync(NOW, 5)).toBe(false);
   });
 });
+
+describe('prismaCallsRepository outcomes', () => {
+  const record = (overrides: Record<string, unknown>) => ({
+    number: '380501111111', time: '2024-03-10 10:00:00', callerName: 'Ivan', carNumber: [], apartmentNumber: '12',
+    image: null, isBlackListed: false, blackListedFrom: '', blackListedTo: '', secondsFullTime: 5,
+    outcome: null, cause: null, state: null, ...overrides,
+  });
+
+  const prismaWith = (records: unknown[]) =>
+    ({ call: { findMany: vi.fn(async () => records) } }) as unknown as PrismaClient;
+
+  it('reads the stored outcome of new calls', async () => {
+    const repository = createPrismaCallsRepository(prismaWith([record({ outcome: 'operatorError', cause: 17 })]), {
+      legacyOutcomeOf: () => 'opened',
+    });
+
+    expect((await repository.findByTimeRange('a', 'b'))[0].outcome).toBe('operatorError');
+  });
+
+  // calls stored before outcomes existed are not rewritten, their outcome is derived when they are read
+  it('derives the outcome of old calls from the raw codes with the translation of the provider', async () => {
+    const legacyOutcomeOf = vi.fn(({ cause }: { cause: number | null }) => (cause === 31 ? 'connectionFailed' as const : 'opened' as const));
+    const repository = createPrismaCallsRepository(prismaWith([record({ cause: 31, state: 'FAIL' }), record({ cause: 17 })]), { legacyOutcomeOf });
+
+    expect((await repository.findByTimeRange('a', 'b')).map(call => call.outcome)).toEqual(['connectionFailed', 'opened']);
+  });
+
+  it('does not trust an outcome it does not know', async () => {
+    const repository = createPrismaCallsRepository(prismaWith([record({ outcome: 'something new' })]));
+
+    expect((await repository.findByTimeRange('a', 'b'))[0].outcome).toBe('unknown');
+  });
+});

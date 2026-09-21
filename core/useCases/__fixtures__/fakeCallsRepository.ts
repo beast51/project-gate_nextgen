@@ -1,7 +1,7 @@
-import { Call, CallToStore, UNREGISTERED_CALLER_NAME } from '../../entities/call';
+import { Call, CallToStore } from '../../entities/call';
 import { CallsRepository } from '../../ports/callsRepository';
 
-// In-memory CallsRepository with the same filtering rules as the real storage
+// In-memory CallsRepository
 export const createFakeCallsRepository = (stored: Call[] = [], lastSyncTime: Date | null = null) => {
   const state = {
     calls: [...stored] as (Call | CallToStore)[],
@@ -14,12 +14,6 @@ export const createFakeCallsRepository = (stored: Call[] = [], lastSyncTime: Dat
 
   const repository: CallsRepository = {
     findByTimeRange: async (from, to) => inRange(from, to),
-    findGatePassagesByTimeRange: async (from, to, failedCauses) =>
-      inRange(from, to).filter(call =>
-        call.callerName !== UNREGISTERED_CALLER_NAME &&
-        call.isBlackListed === false &&
-        (call.cause === null || call.cause === undefined || !failedCauses.includes(call.cause))
-      ),
     findLast: async () =>
       ([...state.calls] as Call[]).sort((a, b) => b.time.localeCompare(a.time))[0] ?? null,
     addMany: async (calls) => {

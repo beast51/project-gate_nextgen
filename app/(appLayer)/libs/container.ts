@@ -20,6 +20,7 @@ import { createDemoCallsSource, createDemoGateUsersDirectory } from '@/infrastru
 import { createPrismaAccountsRepository } from '@/infrastructure/prisma/prismaAccountsRepository';
 import { createPrismaCallsRepository } from '@/infrastructure/prisma/prismaCallsRepository';
 import { createPrismaGateUsersRepository } from '@/infrastructure/prisma/prismaGateUsersRepository';
+import { unitalkCallOutcome } from '@/infrastructure/unitalk/unitalkCallOutcome';
 import { createUnitalkCallsSource } from '@/infrastructure/unitalk/unitalkCallsSource';
 import { createUnitalkGateUsersDirectory } from '@/infrastructure/unitalk/unitalkGateUsersDirectory';
 import { databaseList, getPrismaClient, getPrismaClientByUrl } from './prismadb';
@@ -76,7 +77,8 @@ const buildTenantContainer = (tenant: string): Container | null => {
 
   return assemble({
     gateUsers: createPrismaGateUsersRepository(prisma),
-    calls: createPrismaCallsRepository(prisma),
+    // calls stored before outcomes existed carry only the codes of the provider of this tenant
+    calls: createPrismaCallsRepository(prisma, { legacyOutcomeOf: unitalkCallOutcome }),
     directory: createUnitalkGateUsersDirectory(config.telephony.unitalk),
     source: createUnitalkCallsSource(config.telephony.unitalk),
     callsSyncIntervalSeconds: config.callsSyncIntervalSeconds,

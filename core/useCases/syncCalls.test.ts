@@ -33,15 +33,16 @@ const storedCall = (number: string, time: string): Call => ({
   blackListedFrom: '',
   blackListedTo: '',
   secondsFullTime: 5,
+  outcome: 'opened',
   cause: 17,
   state: 'BUSY',
 });
 
 describe('syncCalls', () => {
   const incoming: IncomingCall[] = [
-    { number: '380501111111', time: '2024-03-10 09:00:00', secondsFullTime: 4, cause: 17, state: 'BUSY' },
-    { number: '380501111111', time: '2024-03-10 10:00:00', secondsFullTime: 5, cause: 17, state: 'BUSY' },
-    { number: '380509999999', time: '2024-03-10 10:05:00', secondsFullTime: 3, cause: 31, state: 'NOANSWER' },
+    { number: '380501111111', time: '2024-03-10 09:00:00', secondsFullTime: 4, outcome: 'opened', cause: 17, state: 'BUSY' },
+    { number: '380501111111', time: '2024-03-10 10:00:00', secondsFullTime: 5, outcome: 'opened', cause: 17, state: 'BUSY' },
+    { number: '380509999999', time: '2024-03-10 10:05:00', secondsFullTime: 3, outcome: 'connectionFailed', cause: 31, state: 'NOANSWER' },
   ];
 
   it('stores only calls that are not stored yet, with a snapshot of the caller', async () => {
@@ -65,6 +66,7 @@ describe('syncCalls', () => {
         blackListedFrom: '',
         blackListedTo: '',
         secondsFullTime: 5,
+        outcome: 'opened',
         cause: 17,
         state: 'BUSY',
       },
@@ -79,6 +81,7 @@ describe('syncCalls', () => {
         blackListedFrom: '',
         blackListedTo: '',
         secondsFullTime: 3,
+        outcome: 'connectionFailed',
         cause: 31,
         state: 'NOANSWER',
       },

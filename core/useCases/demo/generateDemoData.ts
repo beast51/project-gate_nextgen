@@ -1,5 +1,5 @@
 import moment from 'moment-timezone';
-import { CallToStore, UNREGISTERED_CALLER_NAME } from '../../entities/call';
+import { CallOutcome, CallToStore, UNREGISTERED_CALLER_NAME } from '../../entities/call';
 import { GateUser } from '../../entities/gateUser';
 
 // Synthetic data of a demo sandbox. Nothing here comes from real customers: the names are generated,
@@ -12,9 +12,6 @@ const FIRST_NAMES = ['Андрій', 'Олена', 'Тарас', 'Ірина', '
 const LAST_NAMES = ['Демченко', 'Зразковий', 'Тестовий', 'Макетний', 'Прикладенко', 'Умовний', 'Показовий', 'Вигаданий', 'Еталонний', 'Пробний'];
 const PLATE_REGIONS = ['AA', 'KA', 'BC', 'AE', 'BH', 'AI', 'AX'];
 const PLATE_LETTERS = 'ABCEHIKMOPTX';
-
-const GATE_OPENED = { cause: 17, state: 'BUSY' };
-const CONNECTION_FAILED = { cause: 31, state: 'NOANSWER' };
 
 export type DemoData = {
   gateUsers: GateUser[]
@@ -82,7 +79,7 @@ export const generateDemoData = (seed: string, now: Date, timeZone = 'Europe/Kie
 
   const calls: CallToStore[] = [];
 
-  const callFrom = (user: GateUser, time: moment.Moment, outcome = GATE_OPENED) => {
+  const callFrom = (user: GateUser, time: moment.Moment, outcome: CallOutcome = 'opened') => {
     if (time.isAfter(current)) return;
 
     calls.push({
@@ -96,7 +93,7 @@ export const generateDemoData = (seed: string, now: Date, timeZone = 'Europe/Kie
       blackListedFrom: user.blackListedFrom,
       blackListedTo: user.blackListedTo,
       secondsFullTime: random.int(3, 9),
-      ...outcome,
+      outcome,
     });
   };
 
@@ -115,11 +112,11 @@ export const generateDemoData = (seed: string, now: Date, timeZone = 'Europe/Kie
 
       callFrom(resident, entry);
       // people often redial when the gate is slow
-      if (index % 5 === 0) callFrom(resident, entry.clone().add(30, 'seconds'));
+      if (index % 5 === 0) callFrom(resident, entry.clone().add(30, 'seconds'), 'openedAfterLongWait');
       callFrom(resident, exit);
     });
 
-    callFrom(residents[1], day.clone().add(6, 'hours').add(40, 'minutes'), CONNECTION_FAILED);
+    callFrom(residents[1], day.clone().add(6, 'hours').add(40, 'minutes'), 'connectionFailed');
     callFrom(gateUsers[GATE_USERS_COUNT - 1], day.clone().add(8, 'hours').add(15, 'minutes'));
     callFrom(
       { ...gateUsers[0], phoneNumber: '380009999999', name: UNREGISTERED_CALLER_NAME, carNumber: [], apartmentNumber: null },

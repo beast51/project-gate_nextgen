@@ -36,7 +36,9 @@ describe('generateDemoData', () => {
   });
 
   it('shows every feature: violations, an open visit, failed and unknown calls, penalties', () => {
-    expect(data.calls.some(call => call.cause === 31)).toBe(true);
+    expect(data.calls.some(call => call.outcome === 'connectionFailed')).toBe(true);
+    // demo data is not tied to a telephony provider
+    expect(data.calls.every(call => call.cause === undefined && call.state === undefined)).toBe(true);
     expect(data.calls.some(call => call.callerName === 'Not registered')).toBe(true);
     expect(data.gateUsers.filter(user => user.isBlackListed)).toHaveLength(2);
   });

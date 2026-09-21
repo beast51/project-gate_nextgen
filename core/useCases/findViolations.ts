@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { Call, FAILED_CALL_CAUSES, UNREGISTERED_CALLER_NAME } from '../entities/call';
+import { Call, isFailedOutcome, UNREGISTERED_CALLER_NAME } from '../entities/call';
 import { ApartmentVisitor, PhoneVisitor, VisitInfo, ViolationRules, VisitsOutput } from '../entities/violation';
 
 const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
@@ -8,7 +8,6 @@ export const defaultViolationRules: ViolationRules = {
   limitMinutes: 45,
   secondsBetweenTwoCalls: 118,
   pairedCallWindowMinutes: 2,
-  failedCauses: FAILED_CALL_CAUSES,
 };
 
 type Visits<Visitor> = Record<string, { time: string[], details: Visitor | null }>
@@ -16,10 +15,10 @@ type Visits<Visitor> = Record<string, { time: string[], details: Visitor | null 
 const parseTime = (time: string) => moment(time, TIME_FORMAT).valueOf();
 
 // Only calls that really opened the gate for a known and not blocked user take part in the calculation
-export const isGatePassage = (call: Call, rules: ViolationRules = defaultViolationRules) =>
+export const isGatePassage = (call: Call) =>
   call.callerName !== UNREGISTERED_CALLER_NAME &&
   call.isBlackListed === false &&
-  (call.cause === null || call.cause === undefined || !rules.failedCauses.includes(call.cause));
+  !isFailedOutcome(call.outcome);
 
 const isRedial = (call: Call, previousCall: Call, rules: ViolationRules) => {
   const difference = Math.abs(new Date(call.time).getTime() - new Date(previousCall.time).getTime());
@@ -152,7 +151,7 @@ export const findViolations = (
 ): VisitsOutput => {
   const appliedRules: ViolationRules = { ...defaultViolationRules, ...rules };
 
-  const passages = withoutRedials(calls.filter(call => isGatePassage(call, appliedRules)), appliedRules);
+  const passages = withoutRedials(calls.filter(isGatePassage), appliedRules);
   const { grouped: byApartment, callsWithoutApartment } = groupByApartment(passages, appliedRules);
   const byPhoneNumber = groupByPhoneNumber(callsWithoutApartment, appliedRules);
 

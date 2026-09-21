@@ -76,6 +76,9 @@ model Call {
   blackListedFrom String?
   blackListedTo   String?
   secondsFullTime Int?
+  // what the call ended with in terms of the gate (core CallOutcome). Calls stored before it existed
+  // have only the raw provider codes below, their outcome is derived when they are read
+  outcome         String?
   cause           Int?
   state           String?
 

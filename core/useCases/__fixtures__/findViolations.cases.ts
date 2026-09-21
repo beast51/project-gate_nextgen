@@ -2,6 +2,8 @@
 // They fix the behaviour that existed BEFORE the logic was moved to core,
 // the same cases run against the legacy service and against the core use case.
 
+import { CallOutcome } from '../../entities/call';
+
 export type FixtureCall = {
   number: string
   time: string
@@ -13,6 +15,7 @@ export type FixtureCall = {
   blackListedFrom: string | null
   blackListedTo: string | null
   secondsFullTime: number | null
+  outcome: CallOutcome
   cause: number | null
   state: string | null
 }
@@ -27,7 +30,12 @@ export type FindViolationsCase = {
 const DAY = '2024-03-10';
 const NOW = `${DAY} 12:00:00`;
 
-const call = (number: string, time: string, overrides: Partial<FixtureCall> = {}): FixtureCall => ({
+// the cases were recorded with raw provider causes; this is the outcome the provider adapter reports for them
+const OUTCOME_OF_RECORDED_CAUSE: Record<number, CallOutcome> = {
+  16: 'openedAfterLongWait', 17: 'opened', 31: 'connectionFailed', 38: 'operatorError',
+};
+
+const call = (number: string, time: string, overrides: Partial<FixtureCall> = {}): FixtureCall => withOutcome({
   number,
   time: `${DAY} ${time}`,
   carNumber: ['AA1111AA'],
@@ -42,6 +50,10 @@ const call = (number: string, time: string, overrides: Partial<FixtureCall> = {}
   state: 'BUSY',
   ...overrides,
 });
+
+function withOutcome(recorded: Omit<FixtureCall, 'outcome'>): FixtureCall {
+  return { ...recorded, outcome: recorded.cause === null ? 'unknown' : OUTCOME_OF_RECORDED_CAUSE[recorded.cause] };
+}
 
 export const findViolationsCases: FindViolationsCase[] = [
   {
@@ -255,10 +267,3 @@ export const findViolationsCases: FindViolationsCase[] = [
     },
   },
 ];
-
-// The same filter that the database query applies (getCallsByTimeRangeWithoutBlockedAndWithCause).
-export const EXCLUDED_CAUSES = [31, 38];
-export const passesDatabaseFilter = (c: FixtureCall) =>
-  c.callerName !== 'Not registered' &&
-  c.isBlackListed === false &&
-  (c.cause === null || c.cause === undefined || !EXCLUDED_CAUSES.includes(c.cause));

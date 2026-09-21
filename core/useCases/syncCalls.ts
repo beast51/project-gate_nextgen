@@ -19,6 +19,7 @@ export const toStoredCall = (call: IncomingCall, caller: GateUser | null): CallT
   blackListedFrom: caller?.blackListedFrom || '',
   blackListedTo: caller?.blackListedTo || '',
   secondsFullTime: call.secondsFullTime,
+  outcome: call.outcome,
   cause: call.cause,
   state: call.state,
 });
