@@ -41,12 +41,18 @@ describe('getSubjectHistory', () => {
 
   it('judges today by the clock of the gate', async () => {
     const history = await setup([
-      call('2026-09-21 09:02:07'),                                   // almost four hours ago: a violation already
-      call('2026-09-21 12:40:00', { number: '380670000001' }),       // another phone of the apartment closes the visit
+      call('2026-09-21 09:02:07'),
+      call('2026-09-21 10:40:00', { number: '380670000001' }),       // another phone of the apartment closes the visit
     ])('174');
 
     expect(history.violations).toEqual([
-      { day: '2026-09-21', timeIn: '2026-09-21 09:02:07', timeOut: '2026-09-21 12:40:00', minutes: 217, kind: 'overstay' },
+      { day: '2026-09-21', timeIn: '2026-09-21 09:02:07', timeOut: '2026-09-21 10:40:00', minutes: 97, kind: 'overstay' },
+    ]);
+
+    // an entry of almost four hours ago without an exit is a violation already
+    const open = await setup([call('2026-09-21 09:02:07')])('174');
+    expect(open.violations).toEqual([
+      { day: '2026-09-21', timeIn: '2026-09-21 09:02:07', timeOut: null, minutes: null, kind: 'openVisit' },
     ]);
 
     const fresh = await setup([call('2026-09-21 12:45:00')])('174');
@@ -66,8 +72,9 @@ describe('getSubjectHistory', () => {
 
     const history = await setup(calls)('174');
 
-    expect(history.violations.map(item => item.timeIn)).toEqual(
-      page.visits.filter(visit => visit.violation !== 'no violation' && visit.violation !== '').map(visit => visit.timeIn),
+    // the history shows the newest first, the page of a day in the order of the day
+    expect(history.violations.map(item => item.timeIn).sort()).toEqual(
+      page.visits.filter(visit => visit.violation !== 'no violation' && visit.violation !== '').map(visit => visit.timeIn).sort(),
     );
   });
 

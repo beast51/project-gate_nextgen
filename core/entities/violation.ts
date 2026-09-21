@@ -37,6 +37,10 @@ export type VisitsOutput = {
 export type ViolationRules = {
   // how long a car may stay inside, minutes
   limitMinutes: number
+  // Two passages of an apartment this many minutes apart, or more, are not one visit: they are two passages
+  // without a pair (two "trains"). Real stays end by about three hours; beyond that the production calls show
+  // only an even background of shifted pairs.
+  longestVisitMinutes: number
   // calls of one visitor closer than this are the same passage through the gate, seconds
   secondsBetweenTwoCalls: number
   // a repeated call from the same number within this window is a redial, minutes
