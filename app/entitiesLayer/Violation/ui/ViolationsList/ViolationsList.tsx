@@ -2,9 +2,8 @@
 
 import { formatTime } from '@/sharedLayer/utils/date';
 import { useSearchParams } from 'next/navigation';
-import useSWR from 'swr';
 import { paramsToString } from '@/sharedLayer/utils/paramsToString';
-import { ViolationsResponseType } from '../../model/types/ViolationList.types';
+import { useViolations } from '@/sharedLayer/api';
 import { ViolationsCard } from '../ViolationsCard/ViolationsCard';
 import classes from './ViolationsList.module.scss';
 import { useIntl } from 'react-intl';
@@ -12,23 +11,13 @@ import { useIntl } from 'react-intl';
 const START_OF_THE_DAY = formatTime(Date.now(), true);
 const DATE_AND_TIME_NOW = formatTime(Date.now(), false);
 
-const getViolations = async (url: string): Promise<ViolationsResponseType> => {
-  const response = await fetch(url).then((res) => res.json());
-  return response;
-};
-
 export const ViolationsList = () => {
   const { $t } = useIntl();
   const searchParams = useSearchParams();
   const from = paramsToString(searchParams.get('from')) || START_OF_THE_DAY;
   const to = paramsToString(searchParams.get('to')) || DATE_AND_TIME_NOW;
 
-  const { data: violations, isLoading } = useSWR(
-    `api/violations/?from=${from}&to=${to}`,
-    getViolations,
-    // the server asks the telephony not more often than once per 5 seconds, more frequent requests are useless
-    { dedupingInterval: 5000 },
-  );
+  const { data: violations, isLoading } = useViolations({ from, to });
 
   if (isLoading) {
     return <p className="m-4">{$t({ id: 'the visitor list is loading' })}</p>;

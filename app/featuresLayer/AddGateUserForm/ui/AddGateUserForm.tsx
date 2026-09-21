@@ -1,6 +1,7 @@
 'use client';
 
-import axios from 'axios';
+import { AddGateUserRequest } from '@/contracts';
+import { api } from '@/sharedLayer/api';
 import classes from './AddGateUserForm.module.scss';
 import { useEffect, useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
@@ -44,19 +45,14 @@ export const AddGateUserForm = () => {
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
-    axios
-      .post('/api/users/add_user', data, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      .then(() => console.log('data', data))
-      .catch(() => toast.error($t({ id: 'something went wrong' })))
-      .finally(() => {
-        setIsLoading(false);
+    api
+      .addGateUser(data as AddGateUserRequest)
+      .then(() => {
         toast.success($t({ id: 'user added successful' }));
         reset();
-      });
+      })
+      .catch(() => toast.error($t({ id: 'something went wrong' })))
+      .finally(() => setIsLoading(false));
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {

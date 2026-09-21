@@ -3,7 +3,7 @@ import { formatTime } from '@/sharedLayer/utils/date';
 import { paramsToString } from '@/sharedLayer/utils/paramsToString';
 import { useSearchParams } from 'next/navigation';
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import useSWR from 'swr';
+import { useCalls } from '@/sharedLayer/api';
 import { CallsCard } from '../CallsCard';
 import classes from './CallsList.module.scss';
 import { CallType } from '../../model/types/Calls.type';
@@ -14,23 +14,13 @@ export type CallsListPropsType = {};
 const START_OF_THE_DAY = formatTime(Date.now(), true);
 const DATE_AND_TIME_NOW = formatTime(Date.now(), false);
 
-const getCalls = async (url: string) => {
-  const response = await fetch(url).then((res) => res.json());
-  return response;
-};
-
 export const CallsList: FC<CallsListPropsType> = () => {
   const { $t } = useIntl();
   const searchParams = useSearchParams();
   const from = paramsToString(searchParams.get('from')) || START_OF_THE_DAY;
   const to = paramsToString(searchParams.get('to')) || DATE_AND_TIME_NOW;
 
-  const { data: calls, isLoading } = useSWR<CallType[]>(
-    `api/calls/?from=${from}&to=${to}`,
-    getCalls,
-    // the server asks the telephony not more often than once per 5 seconds, more frequent requests are useless
-    { dedupingInterval: 5000 },
-  );
+  const { data: calls, isLoading } = useCalls({ from, to });
 
   const [filteredCalls, setFilteredCalls] = useState(calls);
   const [isFilteredCalls, setIsFilteredCalls] = useState(false);

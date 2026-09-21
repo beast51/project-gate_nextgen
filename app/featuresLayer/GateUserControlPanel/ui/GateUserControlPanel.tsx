@@ -3,7 +3,7 @@ import { Button } from '@/sharedLayer/ui/Button';
 import { FC, useCallback, useState } from 'react';
 import classes from './GateUserControlPanel.module.scss';
 import { GateUserType } from '@/entitiesLayer/GateUser/model/types/GateUser.type';
-import axios from 'axios';
+import { api } from '@/sharedLayer/api';
 import toast from 'react-hot-toast';
 import Popup from '@/sharedLayer/ui/Popup/ui/Popup';
 import { useRouter } from 'next/navigation';
@@ -47,18 +47,9 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
 
   const deleteUserHandler = (phoneNumber: string, id: string) => {
     setIsLoading(true);
-    axios
-      .post(
-        '/api/users/delete_user',
-        { phoneNumber, id },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      )
+    api
+      .deleteGateUser({ phoneNumber, id })
       .then(() => {
-        console.log('data', phoneNumber);
         router.push('/users');
         router.refresh();
       })
@@ -77,27 +68,18 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
 
     // console.log(data);
     // setIsLoading(false);
-    axios
-      .post(
-        '/api/users/edit_user',
-        {
-          ...data,
-          blackListedFrom: user.isBlackListed
-            ? user.blackListedFrom
-            : formatTime(Date.now(), false),
-          blackListedTo: user.isBlackListed
-            ? user.blackListedTo
-            : formatTime(getTimestampInDays(days), false),
-          isBlackListed: !user.isBlackListed,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      )
+    api
+      .editGateUser({
+        ...data,
+        blackListedFrom: user.isBlackListed
+          ? user.blackListedFrom
+          : formatTime(Date.now(), false),
+        blackListedTo: user.isBlackListed
+          ? user.blackListedTo
+          : formatTime(getTimestampInDays(days), false),
+        isBlackListed: !user.isBlackListed,
+      })
       .then(() => {
-        console.log('data changed');
         router.refresh();
       })
       .catch(() => toast.error('Something went wrong'))

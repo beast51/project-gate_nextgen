@@ -17,7 +17,7 @@ import LangSwitcher from '@/sharedLayer/ui/LangSwitcher/LangSwitcher';
 import { ToggleTheme } from '@/sharedLayer/ui/Toggle';
 import { Button } from '@/sharedLayer/ui/Button';
 import { MdOutlineManageAccounts } from 'react-icons/md';
-import axios from 'axios';
+import { api } from '@/sharedLayer/api';
 import toast from 'react-hot-toast';
 
 export const getFromToFromDataPicker = (date: string | null) => {
@@ -66,14 +66,10 @@ const MobileHeader = ({
 
   const unblockAllGreens = async () => {
     setIsLoading(true);
-    axios
-      .post('/api/violations/unblock_expired_penalties_users', {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+    api
+      .unblockExpiredPenalties()
       .then((response) => {
-        toast.success(response.data.message);
+        toast.success(response.message);
         router.refresh();
       })
       .catch(() => toast.error($t({ id: 'something went wrong' })))
