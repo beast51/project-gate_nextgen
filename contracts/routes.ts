@@ -1,7 +1,9 @@
 // Paths of the HTTP API. The front end and the route handlers take them from here, nowhere else.
 export const API_ROUTES = {
   calls: '/api/calls',
+  backfillCalls: '/api/calls/backfill',
   violations: '/api/violations',
+  violationStats: '/api/violations/stats',
   unblockExpiredPenalties: '/api/violations/unblock_expired_penalties_users',
   gateUsers: '/api/users',
   addGateUser: '/api/users/add_user',

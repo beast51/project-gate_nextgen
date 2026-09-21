@@ -1,0 +1,53 @@
+.stats {
+  display: grid;
+  gap: 2px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, .08);
+  color: var(--violations-card-color);
+  font-size: 14px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) repeat(3, 64px);
+  align-items: baseline;
+  gap: 4px;
+
+  @media (min-width: 400px) {
+    grid-template-columns: minmax(0, 1fr) repeat(3, 76px);
+  }
+}
+
+.title {
+  font-weight: 600;
+}
+
+.period {
+  font-size: 12px;
+  text-align: right;
+  opacity: .65;
+}
+
+.kind {
+  opacity: .8;
+}
+
+.count {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.zero {
+  font-weight: 400;
+  opacity: .4;
+}
+
+.none {
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, .08);
+  color: var(--violations-card-color);
+  font-size: 13px;
+  opacity: .6;
+}

@@ -80,5 +80,13 @@
   "access: signed in": "Signed in",
   "access: unknown address": "address unknown",
   "access: retention": "Records are kept for 30 days",
-  "activity: empty day": "Nothing happened on this day"
+  "activity: empty day": "Nothing happened on this day",
+  "violation stats title": "Violations",
+  "violation stats week": "Week",
+  "violation stats month": "Month",
+  "violation stats three months": "3 months",
+  "violation stats overstays": "Over 45 min",
+  "violation stats open visits": "No exit",
+  "violation stats none": "No violations in 3 months",
+  "violation stats are incomplete": "Statistics are incomplete: calls of {days} days are not loaded yet"
 }

@@ -17,6 +17,8 @@ import {
   RegisterRequest,
   UnblockExpiredPenaltiesResponse,
   ViolationsResponse,
+  ViolationStatsQuery,
+  ViolationStatsResponse,
 } from '@/contracts';
 
 // The only way the front end talks to the back end: HTTP + the types from contracts/.
@@ -79,6 +81,8 @@ export const createApiClient = ({ fetch: send, baseUrl = '', headers, onUnauthor
   return {
     getCalls: (period: PeriodQuery) => request<CallsResponse>(API_ROUTES.calls, { query: period }),
     getViolations: (period: PeriodQuery) => request<ViolationsResponse>(API_ROUTES.violations, { query: period }),
+    getViolationStats: (query: ViolationStatsQuery) =>
+      request<ViolationStatsResponse>(API_ROUTES.violationStats, { query }),
     unblockExpiredPenalties: () =>
       request<UnblockExpiredPenaltiesResponse>(API_ROUTES.unblockExpiredPenalties, { body: {} }),
 

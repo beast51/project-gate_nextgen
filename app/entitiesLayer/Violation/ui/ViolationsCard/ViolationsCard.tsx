@@ -11,10 +11,13 @@ import { usePathname } from '@/sharedLayer/framework/navigation';
 import { formatPhoneNumber } from '@/sharedLayer/utils/formatPhoneNumber';
 import { CarNumbersList } from '@/entitiesLayer/GateUser';
 import { StayTimerCardList } from '../StayTimerCardList';
+import { ViolationStats, ViolationStatsType } from '../ViolationStats/ViolationStats';
 
 export type ViolationsCardPropsType = {
   phoneNumberOrApartment: string;
   violation: VisitsType;
+  // undefined: the statistics are not loaded (yet), null: loaded, this visitor has no violations
+  stats?: ViolationStatsType | null;
 };
 
 export const ViolationsCard: React.FC<ViolationsCardPropsType> = ({
@@ -25,6 +28,7 @@ export const ViolationsCard: React.FC<ViolationsCardPropsType> = ({
     visitCount,
     visits,
   },
+  stats,
 }) => {
   return (
     <Link
@@ -65,6 +69,8 @@ export const ViolationsCard: React.FC<ViolationsCardPropsType> = ({
       </div>
 
       <StayTimerCardList visits={visits} visitCount={visitCount} />
+
+      {stats !== undefined && <ViolationStats stats={stats} />}
     </Link>
   );
 };

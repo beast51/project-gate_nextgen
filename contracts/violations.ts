@@ -27,5 +27,43 @@ export type VisitsDto = {
 // GET /api/violations — the key is an apartment number or, for callers without an apartment, a phone number
 export type ViolationsResponse = Record<string, VisitsDto>
 
+// Violations of one kind are counted apart: the staff reacts to them differently
+export type ViolationCountsDto = {
+  // stayed inside longer than the limit
+  overstays: number
+  // entered and did not leave until the end of the day
+  openVisits: number
+}
+
+export type ViolationStatsDto = {
+  week: ViolationCountsDto
+  month: ViolationCountsDto
+  threeMonths: ViolationCountsDto
+}
+
+// inclusive, 'YYYY-MM-DD'
+export type DayPeriodDto = [from: string, to: string]
+
+export type ViolationStatsQuery = { day: string }
+
+// GET /api/violations/stats?day=YYYY-MM-DD — violations around the chosen day: its week (Monday to Sunday),
+// its calendar month, and the month with the two calendar months before it.
+export type ViolationStatsResponse = {
+  day: string
+  periods: { week: DayPeriodDto, month: DayPeriodDto, threeMonths: DayPeriodDto }
+  // the same keys as in ViolationsResponse; only those who have violations
+  stats: Record<string, ViolationStatsDto>
+  // finished days of the periods whose calls were never loaded: the numbers may be lower than the truth
+  coverage: { pastDays: number, missingDays: string[] }
+}
+
+// POST /api/calls/backfill — loads ONE missing day of history from the telephony. Admins only.
+export type BackfillCallsRequest = { from: string, to: string }
+
+export type BackfillCallsResponse =
+  | { status: 'done' }
+  | { status: 'rateLimited', remaining: number }
+  | { status: 'filled', day: string, added: number, remaining: number }
+
 // POST /api/violations/unblock_expired_penalties_users
 export type UnblockExpiredPenaltiesResponse = { message: string }

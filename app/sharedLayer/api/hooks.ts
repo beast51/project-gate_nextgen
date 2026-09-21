@@ -1,7 +1,9 @@
 'use client';
 
 import useSWR, { useSWRConfig } from 'swr';
-import { AccessQuery, ActivityQuery, GateUserDto, GateUsersQuery, GateUsersResponse, PeriodQuery } from '@/contracts';
+import {
+  AccessQuery, ActivityQuery, GateUserDto, GateUsersQuery, GateUsersResponse, PeriodQuery, ViolationStatsQuery,
+} from '@/contracts';
 import { apiKeys, isKeyOf } from './apiKeys';
 import { api } from './browserApi';
 import { blackListWithChangedGateUser, withChangedGateUser, withoutGateUser } from './gateUsersCache';
@@ -14,6 +16,13 @@ export const useCalls = (period: PeriodQuery) =>
 
 export const useViolations = (period: PeriodQuery) =>
   useSWR(apiKeys.violations(period), () => api.getViolations(period), TELEPHONY_BACKED);
+
+// Three months of history change slowly and cost a heavy query: asked once per day chosen in the calendar,
+// not on every focus of the window. null: the day is not known yet, nothing is requested.
+const SLOW_HISTORY = { dedupingInterval: 5 * 60 * 1000, revalidateOnFocus: false, keepPreviousData: true };
+
+export const useViolationStats = (query: ViolationStatsQuery | null) =>
+  useSWR(query && apiKeys.violationStats(query), () => api.getViolationStats(query!), SLOW_HISTORY);
 
 // `initial` is the list a server rendered page already has, so the first paint needs no request.
 // The list is still confirmed by the server after mounting: the page may come from the router cache

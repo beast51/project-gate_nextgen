@@ -80,5 +80,13 @@
   "access: signed in": "Вхід у сервіс",
   "access: unknown address": "адреса невідома",
   "access: retention": "Записи зберігаються 30 днів",
-  "activity: empty day": "Цього дня нічого не відбувалося"
+  "activity: empty day": "Цього дня нічого не відбувалося",
+  "violation stats title": "Порушення",
+  "violation stats week": "Тиждень",
+  "violation stats month": "Місяць",
+  "violation stats three months": "3 місяці",
+  "violation stats overstays": "Понад 45 хв",
+  "violation stats open visits": "Без виїзду",
+  "violation stats none": "За 3 місяці порушень немає",
+  "violation stats are incomplete": "Статистика неповна: дзвінки за {days} дн. ще не завантажені"
 }
