@@ -28,15 +28,18 @@ export const ActivityLog: FC = () => {
   const { $t } = useIntl();
   const [tab, setTab] = useState<Tab>('actions');
   const [actor, setActor] = useState(EVERYBODY);
-  // null: the latest records, whatever the day
-  const [day, setDay] = useState<moment.Moment | null>(null);
+  // The field always holds a date, like the calendar of the header: an empty picker drops its label into
+  // the field and shows no selected day. Whether the date is applied is a separate switch.
+  const [day, setDay] = useState(() => moment());
+  // the latest records of all days; choosing a date in the calendar turns it off
+  const [showLatest, setShowLatest] = useState(true);
 
   // "the 21st" is the day of the operator: its borders are computed in the time zone of the browser
   const query = useMemo(() => ({
     actor: actor === EVERYBODY ? undefined : actor,
-    from: day ? day.clone().startOf('day').toISOString() : undefined,
-    to: day ? day.clone().endOf('day').toISOString() : undefined,
-  }), [actor, day]);
+    from: showLatest ? undefined : day.clone().startOf('day').toISOString(),
+    to: showLatest ? undefined : day.clone().endOf('day').toISOString(),
+  }), [actor, day, showLatest]);
 
   const { data: activityActors = [] } = useActivityActors();
   const { data: accessActors = [] } = useAccessActors();
@@ -85,13 +88,25 @@ export const ActivityLog: FC = () => {
           ))}
         </Select>
         <div className={classes.day}>
-          <DatePicker
-            label={$t({ id: 'Select date' })}
-            selectedDate={day}
-            // the picker hands over a moment object, whatever its prop type says
-            onAccept={(value) => setDay(value ? moment(value as moment.MomentInput) : null)}
-          />
-          <button type="button" className={classes.tab} disabled={!day} onClick={() => setDay(null)}>
+          {/* dimmed while the date is not applied, so it is clear which of the two controls rules the list */}
+          <div className={cn(classes.date, { [classes.dateNotApplied]: showLatest })}>
+            <DatePicker
+              label={$t({ id: 'Select date' })}
+              selectedDate={day}
+              // the picker hands over a moment object, whatever its prop type says
+              onAccept={(value) => {
+                if (!value) return;
+                setDay(moment(value as moment.MomentInput));
+                setShowLatest(false);
+              }}
+            />
+          </div>
+          <button
+            type="button"
+            aria-pressed={showLatest}
+            className={cn(classes.tab, { [classes.activeTab]: showLatest })}
+            onClick={() => setShowLatest((latest) => !latest)}
+          >
             {$t({ id: 'activity: latest' })}
           </button>
         </div>
@@ -101,7 +116,7 @@ export const ActivityLog: FC = () => {
         {current.isLoading && <p className={classes.note}>{$t({ id: 'activity: loading' })}</p>}
         {current.error && <p className={classes.note}>{$t({ id: 'something went wrong' })}</p>}
         {current.data && current.data.length === 0 && (
-          <p className={classes.note}>{$t({ id: day ? 'activity: empty day' : 'activity: empty' })}</p>
+          <p className={classes.note}>{$t({ id: showLatest ? 'activity: empty' : 'activity: empty day' })}</p>
         )}
 
         <ul className={classes.list}>
