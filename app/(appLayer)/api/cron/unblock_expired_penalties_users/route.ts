@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { UnblockExpiredPenaltiesResponse } from "@/contracts";
 import { getContainer, getCronContainers } from "@/appLayer/libs/container";
 import getIntl from "@/appLayer/providers/ServerIntlProvider/lib/intl";
 
@@ -13,5 +14,7 @@ export async function GET(req: Request) {
     unblocked.push(...await container.unblockExpiredPenalties())
   }
 
-  return NextResponse.json({ message: unblocked.length > 0 ? `${unblocked.join(', ')} ${$t({ id: 'unblocked' })}` : $t({ id: 'no users to unblock' }) })
+  const response: UnblockExpiredPenaltiesResponse = { message: unblocked.length > 0 ? `${unblocked.join(', ')} ${$t({ id: 'unblocked' })}` : $t({ id: 'no users to unblock' }) }
+
+  return NextResponse.json(response)
 }

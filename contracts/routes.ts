@@ -1,0 +1,15 @@
+// Paths of the HTTP API. The front end and the route handlers take them from here, nowhere else.
+export const API_ROUTES = {
+  calls: '/api/calls',
+  violations: '/api/violations',
+  unblockExpiredPenalties: '/api/violations/unblock_expired_penalties_users',
+  gateUsers: '/api/users',
+  addGateUser: '/api/users/add_user',
+  editGateUser: '/api/users/edit_user',
+  deleteGateUser: '/api/users/delete_user',
+  exportGateUsers: '/api/users/export',
+  importGateUsers: '/api/users/import',
+  syncGateUsersFromDirectory: '/api/users/sync_from_directory',
+  register: '/api/register',
+  deleteFiles: '/api/cloudinary/delete_files',
+} as const;

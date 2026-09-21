@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getContainer, unauthorized } from "@/appLayer/libs/container";
-import { fromGateUserDto } from "@/entitiesLayer/GateUser/model/lib/gateUserDto";
+import { ImportGateUsersResponse } from "@/contracts";
+import { fromGateUserDto } from "../../_lib/mappers";
 
 // Restores gate users from a backup made by /api/users/export, stored users are not overwritten
 export async function POST(request: Request) {
@@ -14,7 +15,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    return NextResponse.json(await container.importGateUsers(backup.map(fromGateUserDto)))
+    const result: ImportGateUsersResponse = await container.importGateUsers(backup.map(fromGateUserDto))
+    return NextResponse.json(result)
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Invalid backup' }, { status: 400 })
   }

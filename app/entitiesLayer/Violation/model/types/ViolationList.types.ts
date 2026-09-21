@@ -20,5 +20,3 @@ export type VisitsType = {
 export type ViolationsResponseType = {
   [key: string]: VisitsType;
 };
-
-export type { VisitInfo, VisitDetails, VisitsOutput } from '@/core/entities/violation';

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { ApiErrorResponse } from '@/contracts';
 import { Account } from '@/core/entities/account';
 import { CallsRepository } from '@/core/ports/callsRepository';
 import { CallsSource } from '@/core/ports/callsSource';
@@ -153,4 +154,4 @@ export const getCleanupDemoSandboxes = (request: Request) =>
     ? createCleanupDemoSandboxes({ accounts: accounts(), sandboxes: sandboxStorage })
     : null;
 
-export const unauthorized = () => NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+export const unauthorized = () => NextResponse.json<ApiErrorResponse>({ error: 'Unauthorized' }, { status: 401 });

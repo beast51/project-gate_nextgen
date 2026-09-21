@@ -8,8 +8,8 @@ const withPWA = require('next-pwa')({
 const nextConfig = {
   reactStrictMode: true,
   eslint: {
-    // core and infrastructure are outside of app/, the import boundaries are checked there
-    dirs: ['app', 'core', 'infrastructure'],
+    // these folders are outside of app/, the import boundaries are checked there
+    dirs: ['app', 'core', 'infrastructure', 'contracts'],
   },
   images: {
     remotePatterns: [

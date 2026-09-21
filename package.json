@@ -88,6 +88,28 @@
     "overrides": [
       {
         "files": [
+          "contracts/**/*.ts"
+        ],
+        "rules": {
+          "no-restricted-imports": [
+            "error",
+            {
+              "patterns": [
+                {
+                  "group": [
+                    "*",
+                    "!.",
+                    "!./*"
+                  ],
+                  "message": "contracts/ is the HTTP contract shared by the front end and the back end, it must not depend on anything"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "files": [
           "core/**/*.ts"
         ],
         "rules": {

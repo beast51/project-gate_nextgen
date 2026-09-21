@@ -1,10 +1,6 @@
-import { GateUser, NewGateUser } from '@/core/entities/gateUser';
+import { GateUserDto } from '@/contracts';
 
-export type { GateUser, NewGateUser };
-
-// Shape of a gate user in API responses and in the UI.
-// The domain entity calls the telephony id `externalId`, the wire format keeps the historical `idInApi`.
-export type GateUserType = Omit<GateUser, 'externalId'> & { idInApi: string }
+export type GateUserType = GateUserDto
 
 export type GateUserCardProps = {
   data: GateUserType;

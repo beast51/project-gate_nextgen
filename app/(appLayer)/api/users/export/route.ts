@@ -1,7 +1,7 @@
 import moment from "moment";
 import { NextResponse } from "next/server";
 import { getContainer, unauthorized } from "@/appLayer/libs/container";
-import { toGateUserDto } from "@/entitiesLayer/GateUser/model/lib/gateUserDto";
+import { toGateUserDto } from "../../_lib/mappers";
 
 // Backup of all gate users as a JSON file, the same format that /api/users/import accepts
 export async function GET() {

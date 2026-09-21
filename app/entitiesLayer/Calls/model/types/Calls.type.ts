@@ -1,6 +1,6 @@
-import { Call } from "@/core/entities/call";
+import { CallDto } from "@/contracts";
 
-export type CallType = Call
+export type CallType = CallDto
 
 export type CallsType = CallType[]
 

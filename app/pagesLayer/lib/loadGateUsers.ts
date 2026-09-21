@@ -1,5 +1,5 @@
 import { getContainer } from '@/appLayer/libs/container';
-import { toGateUserDto } from '@/entitiesLayer/GateUser/model/lib/gateUserDto';
+import { toGateUserDto } from '@/appLayer/api/_lib/mappers';
 import { GateUserType } from '@/entitiesLayer/GateUser/model/types/GateUser.type';
 
 // Data for the server rendered pages. The only place where pages touch the back end:
