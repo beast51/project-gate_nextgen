@@ -1,6 +1,6 @@
 import classes from './GateUserCardsList.module.scss';
 
-import { FC, memo, useEffect, useState } from 'react';
+import { FC, memo } from 'react';
 
 import React from 'react';
 import { GateUserCard } from '../GateUserCard/GateUserCard';

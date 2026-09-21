@@ -1,3 +1,5 @@
+'use client';
+
 import { FC, memo } from 'react';
 import cn from 'classnames';
 import classes from './StayTimerCard.module.scss';

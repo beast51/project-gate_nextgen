@@ -1,3 +1,5 @@
+'use client';
+
 import { FC, memo } from 'react';
 import { useIntl } from 'react-intl';
 import cn from 'classnames';
