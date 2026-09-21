@@ -7,7 +7,7 @@ import LangSwitcher from '@/sharedLayer/ui/LangSwitcher/LangSwitcher';
 import { signOut } from '@/sharedLayer/framework/session';
 import { ToggleTheme } from '@/sharedLayer/ui/Toggle';
 
-export const SettingsPage = async () => {
+export const SettingsPage = () => {
   const { $t } = useIntl();
   return (
     <div className={styles.settings}>

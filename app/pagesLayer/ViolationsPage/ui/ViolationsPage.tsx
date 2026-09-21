@@ -7,7 +7,7 @@ import { ViolationsList } from '@/entitiesLayer/Violation';
 
 // import { useIntl } from 'react-intl';
 
-export const ViolationsPage = async () => {
+export const ViolationsPage = () => {
   const { $t } = useIntl();
   return (
     <main className={styles.violations}>
