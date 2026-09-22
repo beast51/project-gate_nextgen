@@ -6,6 +6,7 @@ import {
   ActivityQuery,
   ActivityResponse,
   AddGateUserRequest,
+  BlackListedGateUsersResponse,
   API_ROUTES,
   CallsResponse,
   DeleteGateUserRequest,
@@ -91,6 +92,7 @@ export const createApiClient = ({ fetch: send, baseUrl = '', headers, onUnauthor
       request<UnblockExpiredPenaltiesResponse>(API_ROUTES.unblockExpiredPenalties, { body: {} }),
 
     getGateUsers: (query: GateUsersQuery = {}) => request<GateUsersResponse>(API_ROUTES.gateUsers, { query }),
+    getBlackListedGateUsers: () => request<BlackListedGateUsersResponse>(API_ROUTES.gateUsers, { query: { blackListed: true } }),
     addGateUser: (user: AddGateUserRequest) => request<unknown>(API_ROUTES.addGateUser, { body: user }),
     editGateUser: (user: EditGateUserRequest) => request<unknown>(API_ROUTES.editGateUser, { body: user }),
     deleteGateUser: (user: DeleteGateUserRequest) => request<unknown>(API_ROUTES.deleteGateUser, { body: user }),

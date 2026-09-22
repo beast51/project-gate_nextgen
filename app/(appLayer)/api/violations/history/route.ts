@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     subject: history.subjectKey,
     period: history.period,
     violations: history.violations,
-    penalties: history.penalties.map(toPenaltyDto),
+    penalties: history.penalties.map(toPenaltyDto(container.displayNameOf)),
   }
 
   return NextResponse.json(response)

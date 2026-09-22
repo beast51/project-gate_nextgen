@@ -9,6 +9,7 @@ import { UnitalkConfig } from '@/infrastructure/unitalk/unitalkConfig';
 //   TENANT_<KEY>_UNITALK_PROJECT_ID / _UNITALK_CAN_OPEN_GATES
 //   TENANT_<KEY>_CALLS_SYNC_INTERVAL_SECONDS          rate limit of the telephony API, 5 by default
 //   TENANT_<KEY>_TIMEZONE                             where the gate stands, "Europe/Kyiv" by default
+//   TENANT_<KEY>_OWNER_PHONE                          the account the operators see as "admin", not by name
 //
 // <KEY> is the tenant key in upper case: the tenant "shota" reads TENANT_SHOTA_*.
 // The first customer was configured before tenants existed: its variables have no prefix
@@ -28,6 +29,7 @@ export type TenantConfig = {
   databaseUrl: string
   callsSyncIntervalSeconds: number
   timeZone: string
+  ownerPhoneNumber: string | null
   telephony: { provider: 'unitalk', unitalk: UnitalkConfig }
 }
 
@@ -79,6 +81,7 @@ export const getTenantConfig = (tenant: string, env: Env = process.env): TenantC
     callsSyncIntervalSeconds: interval > 0 ? interval : DEFAULT_CALLS_SYNC_INTERVAL_SECONDS,
     // only the prefixed name: a bare TIMEZONE variable may belong to the hosting
     timeZone: env[`TENANT_${tenant.toUpperCase()}_TIMEZONE`] || DEFAULT_TIMEZONE,
+    ownerPhoneNumber: env[`TENANT_${tenant.toUpperCase()}_OWNER_PHONE`] || null,
     telephony: {
       provider,
       unitalk: {

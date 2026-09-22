@@ -1,3 +1,6 @@
+import { BlackListedGateUserDto } from '@/contracts';
+import { ActivityActor } from '@/core/entities/activity';
+import { BlackListedGateUser } from '@/core/useCases/listBlackListed';
 import { PenaltyDto } from '@/contracts';
 import { Penalty } from '@/core/entities/penalty';
 import { AccessEventDto, ActivityEventDto, CallDto, GateUserDto, ViolationsResponse } from '@/contracts';
@@ -16,6 +19,15 @@ export const toGateUserDto = ({ externalId, ...user }: GateUser): GateUserDto =>
   idInApi: externalId,
 });
 
+type DisplayName = (who: ActivityActor | null) => string | null
+
+export const toBlackListedGateUserDto = (displayNameOf: DisplayName) => ({ penalty, ...user }: BlackListedGateUser): BlackListedGateUserDto => ({
+  ...toGateUserDto(user),
+  penalty: penalty && (penalty.ground || penalty.comment || penalty.imposedBy)
+    ? { ground: penalty.ground, comment: penalty.comment, imposedBy: displayNameOf(penalty.imposedBy) }
+    : null,
+});
+
 export const fromGateUserDto = ({ idInApi, ...dto }: GateUserDto): GateUser => ({
   ...dto,
   externalId: idInApi,
@@ -23,13 +35,13 @@ export const fromGateUserDto = ({ idInApi, ...dto }: GateUserDto): GateUser => (
 
 export const toCallDto = (call: Call): CallDto => call;
 
-export const toPenaltyDto = (penalty: Penalty): PenaltyDto => ({
+export const toPenaltyDto = (displayNameOf: DisplayName) => (penalty: Penalty): PenaltyDto => ({
   id: penalty.id,
   phoneNumbers: penalty.phoneNumbers,
   from: penalty.from,
   until: penalty.until,
   // the name only: who the account is stays on the server
-  imposedBy: penalty.imposedBy?.name ?? null,
+  imposedBy: displayNameOf(penalty.imposedBy),
   ground: penalty.ground,
   comment: penalty.comment,
   reason: penalty.reason,

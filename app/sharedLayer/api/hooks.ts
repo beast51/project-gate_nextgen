@@ -2,7 +2,7 @@
 
 import useSWR, { useSWRConfig } from 'swr';
 import {
-  AccessQuery, ActivityQuery, GateUserDto, GateUsersQuery, GateUsersResponse, PeriodQuery, ViolationHistoryQuery,
+  AccessQuery, ActivityQuery, BlackListedGateUsersResponse, GateUserDto, GateUsersQuery, GateUsersResponse, PeriodQuery, ViolationHistoryQuery,
   ViolationStatsQuery,
 } from '@/contracts';
 import { apiKeys, isKeyOf } from './apiKeys';
@@ -34,6 +34,13 @@ export const useViolationHistory = (query: ViolationHistoryQuery | null) =>
 // of the browser, and only a fetched list gets into the SWR cache where later changes can reach it.
 export const useGateUsers = (query: GateUsersQuery = {}, initial?: GateUsersResponse) =>
   useSWR(apiKeys.gateUsers(query), () => api.getGateUsers(query), {
+    fallbackData: initial,
+    revalidateOnMount: true,
+  });
+
+// the black list with why everybody is blocked; the same cache key the changes of gate users refresh
+export const useBlackListedGateUsers = (initial?: BlackListedGateUsersResponse) =>
+  useSWR(apiKeys.gateUsers({ blackListed: true }), () => api.getBlackListedGateUsers(), {
     fallbackData: initial,
     revalidateOnMount: true,
   });
@@ -75,6 +82,8 @@ export const useGateUsersCache = () => {
 
     changed: (user: GateUserDto) => Promise.all([
       mutate(all, (list?: GateUserDto[]) => withChangedGateUser(list, user)),
+      // the entry of the black list carries why the user is blocked, which only the server knows: it is
+      // patched at once and fetched again right after
       mutate(blackList, (list?: GateUserDto[]) => blackListWithChangedGateUser(list, user)),
       mutate(isKeyOf('activity')),
     ]),

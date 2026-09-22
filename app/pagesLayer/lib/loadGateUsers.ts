@@ -1,4 +1,4 @@
-import { GateUsersQuery, GateUsersResponse } from '@/contracts';
+import { BlackListedGateUsersResponse, GateUsersQuery, GateUsersResponse } from '@/contracts';
 import { ApiError } from '@/sharedLayer/api/createApiClient';
 import { getServerApi } from '@/sharedLayer/framework/serverApi';
 
@@ -19,4 +19,11 @@ export const loadGateUsers = (phoneNumber = '') => load(phoneNumber ? { phoneNum
 // everybody who lives in the apartment
 export const loadGateUsersOfApartment = (apartmentNumber: string) => load({ apartmentNumber });
 
-export const loadBlackListedGateUsers = () => load({ blackListed: true });
+export const loadBlackListedGateUsers = async (): Promise<BlackListedGateUsersResponse> => {
+  try {
+    return await (await getServerApi()).getBlackListedGateUsers();
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) return [];
+    throw error;
+  }
+};

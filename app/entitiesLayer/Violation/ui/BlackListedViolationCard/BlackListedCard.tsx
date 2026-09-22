@@ -6,7 +6,7 @@ import classes from './BlackListedCard.module.scss';
 import cn from 'classnames';
 import { formatPhoneNumber } from '@/sharedLayer/utils/formatPhoneNumber';
 import { CarNumbersList } from '@/entitiesLayer/GateUser';
-import { GateUserType } from '@/entitiesLayer/GateUser/model/types/GateUser.type';
+import { BlackListedGateUserDto } from '@/contracts';
 import { changeFormatTime, formatTime } from '@/sharedLayer/utils/date';
 import { useIntl } from 'react-intl';
 import {
@@ -15,7 +15,7 @@ import {
 } from '@/sharedLayer/utils/utils';
 
 type BlackListedCardType = {
-  user: GateUserType;
+  user: BlackListedGateUserDto;
 };
 
 const unlockHandler = (event: { preventDefault: () => void }) => {
@@ -24,6 +24,15 @@ const unlockHandler = (event: { preventDefault: () => void }) => {
 };
 
 export const BlackListedCard: React.FC<BlackListedCardType> = (user) => {
+  const { $t: translate } = useIntl();
+  // a ready-made ground writes its own words into the comment: they are not repeated
+  const reasonText = (ground: string | null, comment: string | null) => {
+    const groundText = ground && translate({ id: `penalty ground: ${ground}`, defaultMessage: ground });
+    if (!groundText) return comment;
+    if (!comment) return groundText;
+    return comment.includes(groundText) ? comment : `${groundText}. ${comment}`;
+  };
+
   const {
     carNumber,
     image,
@@ -32,6 +41,7 @@ export const BlackListedCard: React.FC<BlackListedCardType> = (user) => {
     name,
     blackListedFrom,
     blackListedTo,
+    penalty,
   } = user.user;
   const { $t } = useIntl();
   const isTimeToUnblock = isTimeToRemoveFromBlackList(blackListedTo!);
@@ -85,6 +95,19 @@ export const BlackListedCard: React.FC<BlackListedCardType> = (user) => {
         {timeToUnblock && (
           <p className={classes.timeToUnblock}>{timeToUnblock}</p>
         )}
+      </div>
+
+      {penalty && (
+        <div className={classes.reason}>
+          {(penalty.ground || penalty.comment) && (
+            <p className={classes.reasonText}>{reasonText(penalty.ground, penalty.comment)}</p>
+          )}
+          {penalty.imposedBy && (
+            <p className={classes.reasonBy}>{$t({ id: 'blocked by' }, { name: penalty.imposedBy })}</p>
+          )}
+        </div>
+      )}
+      <div className={classes.hidden}>
         {/* {!timeToUnblock ? (
           <p className={classes.timeToUnblock}>{timeToUnblock}</p>
         ) : (

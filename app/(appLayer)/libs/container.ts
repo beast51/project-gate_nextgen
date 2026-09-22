@@ -21,6 +21,7 @@ import { createEditGateUser } from '@/core/useCases/editGateUser';
 import { createGetCalls } from '@/core/useCases/getCalls';
 import { createGetViolations } from '@/core/useCases/getViolations';
 import { createGetSubjectHistory } from '@/core/useCases/getSubjectHistory';
+import { createListBlackListed } from '@/core/useCases/listBlackListed';
 import { createGetViolationStats } from '@/core/useCases/getViolationStats';
 import { createImportGateUsers } from '@/core/useCases/importGateUsers';
 import { createPenaltyRecorder } from '@/core/useCases/penalties';
@@ -69,10 +70,13 @@ type Adapters = {
   actor: ActivityActor
   // the journal shows what every operator did, so only an admin of the gate may read it
   mayReadActivity: boolean
+  // the id of the account the operators see as "admin" instead of the name; null: nobody
+  ownerAccountId: string | null
 }
 
 const assemble = ({
   gateUsers, calls, penalties, directory, source, callsSyncIntervalSeconds, timeZone, activityLog, accessLog, actor, mayReadActivity,
+  ownerAccountId,
 }: Adapters) => {
   const clock = createGateClock(timeZone);
   const syncCalls = createSyncCalls({ source, calls, gateUsers, penalties });
@@ -96,7 +100,9 @@ const assemble = ({
     restorePenalties: mayReadActivity ? createRestorePenalties({ calls, gateUsers, penalties, now: clock.now }) : null,
     unblockExpiredPenalties: createUnblockExpiredPenalties({ directory, gateUsers, recordActivity, penalties: penaltyRecorder }),
     listGateUsers: gateUsers.list,
-    listBlackListedGateUsers: gateUsers.listBlackListed,
+    listBlackListedGateUsers: createListBlackListed({ gateUsers, penalties }),
+    // how the operators see who did something: the owner of the gate under a common name
+    displayNameOf: (who: ActivityActor | null) => (who ? (who.id === ownerAccountId ? ADMIN_DISPLAY_NAME : who.name) : null),
     syncGateUsers: createSyncGateUsers({ directory, gateUsers, recordActivity }),
     importGateUsers: createImportGateUsers({ gateUsers, recordActivity }),
     addGateUser: createAddGateUser({ directory, gateUsers, recordActivity }),
@@ -117,9 +123,15 @@ const assemble = ({
 
 export type Container = ReturnType<typeof assemble>
 
-const buildTenantContainer = (tenant: string, actor: ActivityActor, mayReadActivity: boolean): Container | null => {
+const accounts = () => createPrismaAccountsRepository(getPrismaClient(databaseList.DATABASE_URL));
+
+export const ADMIN_DISPLAY_NAME = 'admin';
+
+const buildTenantContainer = async (tenant: string, actor: ActivityActor, mayReadActivity: boolean): Promise<Container | null> => {
   const config = getTenantConfig(tenant);
   if (!config) return null;
+
+  const owner = config.ownerPhoneNumber ? await accounts().findByPhoneNumber(config.ownerPhoneNumber) : null;
 
   const prisma = getPrismaClientByUrl(`tenant:${config.key}`, config.databaseUrl);
 
@@ -136,10 +148,10 @@ const buildTenantContainer = (tenant: string, actor: ActivityActor, mayReadActiv
     accessLog: createPrismaAccessLog(prisma),
     actor,
     mayReadActivity,
+    ownerAccountId: owner?.id ?? null,
   });
 };
 
-const accounts = () => createPrismaAccountsRepository(getPrismaClient(databaseList.DATABASE_URL));
 
 declare global {
   var preparedSandboxes: Map<string, Promise<void>> | undefined;
@@ -184,6 +196,7 @@ const buildSandboxContainer = async (account: Account): Promise<Container> => {
     actor,
     // a sandbox has one visitor, its owner: the journal shows only their own actions
     mayReadActivity: true,
+    ownerAccountId: null,
   });
 };
 
@@ -219,10 +232,9 @@ const isCronRequest = (request: Request) => {
 };
 
 // containers of all gates: a scheduled job has to serve every customer
-export const getCronContainers = (request: Request): Container[] | null =>
+export const getCronContainers = async (request: Request): Promise<Container[] | null> =>
   isCronRequest(request)
-    ? listTenants()
-      .map(tenant => buildTenantContainer(tenant, SYSTEM_ACTOR, false))
+    ? (await Promise.all(listTenants().map(tenant => buildTenantContainer(tenant, SYSTEM_ACTOR, false))))
       .filter((container): container is Container => Boolean(container))
     : null;
 

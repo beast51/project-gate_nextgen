@@ -108,6 +108,7 @@ describe('cleanupDemoSandboxes', () => {
 
   const accountsWith = (stored: Account[]): AccountsRepository => ({
     findById: async (id) => stored.find(a => a.id === id) ?? null,
+    findByPhoneNumber: async () => null,
     markSandboxUsed: vi.fn(async () => {}),
     listIdleSandboxOwners: async (usedBefore) =>
       stored.filter(a => a.sandboxLastUsedAt && a.sandboxLastUsedAt < usedBefore),

@@ -15,6 +15,17 @@ export type GateUserDto = {
   blackListedTo: string
 }
 
+// Why a user is blocked, from the penalty in force of the apartment. Only in the black list (?blackListed=true).
+export type PenaltyReasonDto = {
+  // PenaltyGroundDto
+  ground: string | null
+  comment: string | null
+  // the name of the operator; the owner of the gate is shown as "admin"
+  imposedBy: string | null
+}
+
+export type BlackListedGateUserDto = GateUserDto & { penalty: PenaltyReasonDto | null }
+
 // GET /api/users
 export type GateUsersQuery = {
   phoneNumber?: string
@@ -24,6 +35,9 @@ export type GateUsersQuery = {
   blackListed?: boolean
 }
 export type GateUsersResponse = GateUserDto[]
+
+// GET /api/users?blackListed=true
+export type BlackListedGateUsersResponse = BlackListedGateUserDto[]
 
 // POST /api/users/add_user — car numbers come as one comma separated string
 export type AddGateUserRequest = {

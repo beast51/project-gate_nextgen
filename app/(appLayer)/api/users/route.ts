@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { GateUsersResponse } from "@/contracts";
+import { BlackListedGateUsersResponse, GateUsersResponse } from "@/contracts";
 import { getContainer, unauthorized } from "@/appLayer/libs/container";
-import { toGateUserDto } from "../_lib/mappers";
+import { toBlackListedGateUserDto, toGateUserDto } from "../_lib/mappers";
 
 // GET /api/users?phoneNumber=380...&apartmentNumber=174&blackListed=true, see contracts/gateUsers.ts
 export async function GET(req: Request) {
@@ -12,10 +12,13 @@ export async function GET(req: Request) {
   const phoneNumber = searchParams.get('phoneNumber') || undefined
   const apartmentNumber = searchParams.get('apartmentNumber') || undefined
 
-  const users = searchParams.get('blackListed') === 'true'
-    ? await container.listBlackListedGateUsers()
-    : await container.listGateUsers({ phoneNumber, apartmentNumber })
+  if (searchParams.get('blackListed') === 'true') {
+    const response: BlackListedGateUsersResponse =
+      (await container.listBlackListedGateUsers()).map(toBlackListedGateUserDto(container.displayNameOf))
+    return NextResponse.json(response)
+  }
 
+  const users = await container.listGateUsers({ phoneNumber, apartmentNumber })
   const response: GateUsersResponse = users.map(toGateUserDto)
 
   return NextResponse.json(response)

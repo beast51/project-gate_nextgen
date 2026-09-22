@@ -145,3 +145,24 @@
     transform: translateY(-50%);
   }
 }
+
+// why the user is blocked: the same white card as the dates
+.reason {
+  display: grid;
+  gap: 2px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--violations-card-color);
+  font-size: 14px;
+}
+
+.reasonText {
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.reasonBy {
+  font-size: 12px;
+  opacity: .65;
+}

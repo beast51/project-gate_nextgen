@@ -7,7 +7,7 @@ export async function GET(req: Request) {
   const { $t } = await getIntl();
   // Vercel cron has no user session: it is recognized by CRON_SECRET, a signed in user may also run the job
   const userContainer = await getContainer()
-  const containers = getCronContainers(req) ?? (userContainer ? [userContainer] : [])
+  const containers = (await getCronContainers(req)) ?? (userContainer ? [userContainer] : [])
 
   const unblocked: string[] = []
   for (const container of containers) {

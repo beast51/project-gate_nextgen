@@ -128,5 +128,6 @@
   "resident history: imposed by": "Blocked by {name}",
   "resident history: restored": "Restored from old calls",
   "resident: phones of the apartment": "Phones of the apartment",
-  "violation: tailgating": "Tailgating"
+  "violation: tailgating": "Tailgating",
+  "blocked by": "Blocked by {name}"
 }

@@ -128,5 +128,6 @@
   "resident history: imposed by": "Заблокував(ла) {name}",
   "resident history: restored": "Відновлено зі старих дзвінків",
   "resident: phones of the apartment": "Телефони квартири",
-  "violation: tailgating": "Паровоз"
+  "violation: tailgating": "Паровоз",
+  "blocked by": "Заблокував(ла) {name}"
 }

@@ -10,6 +10,11 @@ type AccountRecord = Omit<Account, 'role'> & { role: string | null }
 const toAccount = (record: AccountRecord): Account => ({ ...record, role: record.role === 'admin' ? 'admin' : null });
 
 export const createPrismaAccountsRepository = (prisma: PrismaClient): AccountsRepository => ({
+  findByPhoneNumber: async (phoneNumber) => {
+    const record = await prisma.user.findUnique({ where: { phoneNumber }, select: accountFields });
+    return record && toAccount(record);
+  },
+
   findById: async (id) => {
     const record = await prisma.user.findUnique({ where: { id }, select: accountFields });
     return record && toAccount(record);
