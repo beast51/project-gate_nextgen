@@ -1,4 +1,4 @@
-import { GateUser } from '../entities/gateUser';
+import { GateUser, normalizeCarNumber } from '../entities/gateUser';
 import { PenaltyNote } from '../entities/penalty';
 import { GateUsersDirectory } from '../ports/gateUsersDirectory';
 import { GateUserChanges, GateUsersRepository } from '../ports/gateUsersRepository';
@@ -30,7 +30,13 @@ export const changedFieldsOf = (before: GateUser | undefined, after: GateUser): 
 
 export const createEditGateUser = ({ directory, gateUsers, recordActivity, penalties }: Dependencies) =>
   // `penaltyNote`: the ground the operator chose and what they wrote when blocking or unblocking
-  async (user: GateUser, penaltyNote: PenaltyNote = {}): Promise<void> => {
+  async (edited: GateUser, penaltyNote: PenaltyNote = {}): Promise<void> => {
+    // the plates arrive as the operator typed them, the storage and the directory keep them normalized
+    const user: GateUser = {
+      ...edited,
+      carNumber: (Array.isArray(edited.carNumber) ? edited.carNumber : []).map(normalizeCarNumber),
+    };
+
     // the state before the edit tells what the edit was: a penalty, its removal or a change of data
     const [before] = await gateUsers.list({ phoneNumber: user.phoneNumber });
     const changedFields = changedFieldsOf(before, user);
@@ -40,7 +46,7 @@ export const createEditGateUser = ({ directory, gateUsers, recordActivity, penal
       externalId: user.externalId,
       name: user.name,
       phoneNumber: user.phoneNumber,
-      carNumber: Array.isArray(user.carNumber) ? user.carNumber : [],
+      carNumber: user.carNumber,
       apartmentNumber: user.apartmentNumber || '',
       isBlackListed: user.isBlackListed,
     });

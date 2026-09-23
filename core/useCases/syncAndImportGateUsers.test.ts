@@ -50,6 +50,15 @@ describe('syncGateUsers', () => {
     });
   });
 
+  it('stores the plates of the directory normalized: the telephony keeps them as they were typed', async () => {
+    const { repository, state } = createFakeGateUsersRepository();
+    const directory = directoryWith([entry('380501111111', { carNumber: ['вн 1096 іс', '  ВН9754НІ'] })]);
+
+    await createSyncGateUsers({ directory, gateUsers: repository, recordActivity: noActivity })();
+
+    expect(state.users[0].carNumber).toEqual(['BH1096IC', 'BH9754HI']);
+  });
+
   it('downloads the directory not more often than once per 2 minutes', async () => {
     expect(DEFAULT_DIRECTORY_SYNC_INTERVAL_SECONDS).toBe(120);
 

@@ -12,6 +12,7 @@ import { PENALTY_GROUNDS, PENALTY_LIFT_GROUNDS, PenaltyNoteDto } from '@/contrac
 import { PenaltyNoteForm } from './PenaltyNoteForm/PenaltyNoteForm';
 import { BlockButtons } from './BlockButtons/BlockButtons';
 import { ConfirmButtons } from './ConfirmButtons/ConfirmButtons';
+import { EditGateUserForm, GateUserEdits } from './EditGateUserForm/EditGateUserForm';
 import {
   ActionType,
   GateUserControlPanelPropsType,
@@ -103,6 +104,24 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
       });
   };
 
+  const editUserHandler = (edits: GateUserEdits) => {
+    setIsLoading(true);
+
+    api
+      .editGateUser({ ...user, ...edits })
+      .then(async () => {
+        // the server brings the plates to the stored form: the lists are fetched again rather than patched
+        await gateUsersCache.refresh();
+        toast.success($t({ id: 'user changed successful' }));
+        router.refresh();
+      })
+      .catch(() => toast.error($t({ id: 'something went wrong' })))
+      .finally(() => {
+        setIsLoading(false);
+        setIsOpenPopup(false);
+      });
+  };
+
   const confirmAction = useCallback(
     (action: ActionType, time = ONE_WEEK) => {
       if (action === 'delete') {
@@ -110,7 +129,6 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
       }
       // the term of a block is only remembered here: the block is confirmed together with its reason
       if (action === 'block') setBlockDays(time);
-      // if (action === 'edit') editUserHandler(data);
     },
     [deleteUserHandler, user.phoneNumber, user.idInApi],
   );
@@ -126,7 +144,9 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
         >
           {$t({ id: user.isBlackListed ? 'unblock' : 'block' })}
         </Button>
-        <Button disabled={isSpectator}>{$t({ id: 'edit' })}</Button>
+        <Button onClick={() => handleOpen('edit')} disabled={isSpectator}>
+          {$t({ id: 'edit' })}
+        </Button>
         <Button
           onClick={() => handleOpen('delete')}
           variant="warning"
@@ -141,7 +161,9 @@ export const GateUserControlPanel: FC<GateUserControlPanelPropsType> = ({
         className={classes.popup}
         // className="flex flex-col w-3/4 h-32 max-w-xs justify-between items-center p-5"
       >
-        {action === 'edit' && <>Редактирование</>}
+        {action === 'edit' && (
+          <EditGateUserForm user={user} isLoading={isLoading} onSave={editUserHandler} onBack={handleClose} />
+        )}
         {(action === 'block' || action === 'unblock') && (
           <>
             {user.isBlackListed ? (

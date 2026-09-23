@@ -1,0 +1,41 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  width: min(100%, 420px);
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.phone {
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.note {
+  margin: -8px 4px 0;
+  font-size: 13px;
+  line-height: 130%;
+  text-align: center;
+  opacity: .6;
+}
+
+.hint {
+  margin: -8px 4px 0;
+  font-size: 13px;
+  opacity: .6;
+}
+
+.actions {
+  display: grid;
+  gap: 12px;
+}

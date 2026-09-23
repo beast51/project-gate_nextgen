@@ -1,4 +1,4 @@
-import { GateUser } from '../entities/gateUser';
+import { GateUser, normalizeCarNumber } from '../entities/gateUser';
 import { DirectoryEntry, GateUsersDirectory } from '../ports/gateUsersDirectory';
 import { GateUsersRepository } from '../ports/gateUsersRepository';
 import { RecordActivity } from './activity';
@@ -6,9 +6,10 @@ import { RecordActivity } from './activity';
 // The directory API is rate limited as well: a full download not more often than once per 2 minutes
 export const DEFAULT_DIRECTORY_SYNC_INTERVAL_SECONDS = 120;
 
-// The directory knows nothing about images and penalties
+// The directory knows nothing about images and penalties, and keeps the plates as they were typed
 const toGateUser = (entry: DirectoryEntry): GateUser => ({
   ...entry,
+  carNumber: entry.carNumber.map(normalizeCarNumber),
   image: null,
   additionalImages: [],
   blackListedFrom: '',
